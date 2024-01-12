@@ -121,6 +121,7 @@ const ColbyChartForm = () => {
             </Tabs>
             <div className="w-full flex justify-between mt-10">
                 <Button color="blue">Force Refresh</Button>
+                <Button color="gray" outline>Clear Cache</Button>
                 <Button color="success">Download Chart</Button>
             </div>
 

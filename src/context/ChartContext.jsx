@@ -1,22 +1,28 @@
 // ChartContext.js
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useEffect, useReducer } from 'react';
 
 // Initial state
 const initialState = {
-    count: 0,
+    annotation: {},
+    general: {},
+    datasets: [],
+    xAxis: {},
+    yAxis: {},
+    styles: {},
 };
 
 // Action types
-const INCREMENT = 'INCREMENT';
-const DECREMENT = 'DECREMENT';
+export const INCREMENT = 'INCREMENT';
+export const DECREMENT = 'DECREMENT';
 
 // Reducer function
 const reducer = (state, action) => {
-    switch (action.type) {
+    const { type, ...payload } = action
+    switch (type) {
         case INCREMENT:
-            return { count: state.count + 1 };
+            return { ...state, count: payload.count + 1 };
         case DECREMENT:
-            return { count: state.count - 1 };
+            return { count: payload.count - 1 };
         default:
             return state;
     }
@@ -24,7 +30,12 @@ const reducer = (state, action) => {
 export const ChartContext = createContext();
 
 export const ChartProvider = ({ children }) => {
-    const [state, dispatch] = useReducer(reducer, initialState);
+    const storedState = JSON.parse(localStorage.getItem('appState')) || initialState;
+    const [state, dispatch] = useReducer(reducer, storedState);
+
+    useEffect(() => {
+        localStorage.setItem('appState', JSON.stringify(state));
+    }, [state]);
 
     return (
         <ChartContext.Provider value={{ state, dispatch }}>

@@ -1,34 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import NarrativeMessage from './components/NarrativeMessage'
+import ColbyChart from './components/ColbyChart'
+import ColbyChartForm from './components/ColbyChartForm'
+import { ChartProvider } from './context/ChartContext'
+
+import './App.scss'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <ChartProvider>
+      <div className="max-w-7xl mx-auto">
+        <div className="w-full flex ">
+          <div className="w-full xl:w-8/12 px-2">
+            <ColbyChart />
+            <ColbyChartForm />
+          </div>
+          <div className="w-full xl:w-4/12 px-2">
+            <NarrativeMessage />
+          </div>
+        </div>
+        <div className="w-full flex mt-4">
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </ChartProvider>
   )
 }
 

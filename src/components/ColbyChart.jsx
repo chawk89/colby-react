@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -9,6 +9,7 @@ import {
     Legend,
 } from 'chart.js';
 import { Bar, Chart as ReactChart } from 'react-chartjs-2';
+import { useChartContext } from '../hooks/useChartContext'
 
 ChartJS.register(
     CategoryScale,
@@ -19,41 +20,14 @@ ChartJS.register(
     Legend
 );
 
-export const options = {
-    responsive: true,
-    plugins: {
-        legend: {
-            position: 'top',
-        },
-        title: {
-            display: true,
-            text: 'Chart.js Bar Chart',
-        },
-    },
-};
-
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-export const data = {
-    labels,
-    datasets: [
-        {
-            label: 'Dataset 1',
-            data: [1, 2, 3, 4, 5, 6, 7],
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        },
-        {
-            label: 'Dataset 2',
-            data: [5, 6, 4, 7, 3, 1, 2],
-            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-        },
-    ],
-};
 
 
 const ColbyChart = () => {
+    const context = useChartContext()
+    const { state: { options, data, chartType } } = context
+    console.log('[ColbyChart]', context.state)
     return (
-        <ReactChart type="bar" options={options} data={data} />
+        <ReactChart type={chartType} options={options} data={data} />
     )
 }
 

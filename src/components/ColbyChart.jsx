@@ -10,6 +10,7 @@ import {
 } from 'chart.js';
 import { Bar, Chart as ReactChart } from 'react-chartjs-2';
 import { useChartContext } from '../hooks/useChartContext'
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(
     CategoryScale,
@@ -17,7 +18,8 @@ ChartJS.register(
     BarElement,
     Title,
     Tooltip,
-    Legend
+    Legend,
+    ChartDataLabels
 );
 
 

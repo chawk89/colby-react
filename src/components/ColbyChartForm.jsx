@@ -105,13 +105,13 @@ const ColbyChartForm = () => {
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="xMin" value="X-Min:" />
-                                    <TextInput id="xMin" type="number" placeholder="xMin" {...register('xAxis.xMin')} />
+                                    <TextInput id="xMin" type="number" placeholder="xMin" {...register('xAxis.min')} />
                                 </div>
                             </div>
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="xMax" value="X-Max:" />
-                                    <TextInput id="xMax" type="number" placeholder="xMax" {...register('xAxis.xMax')} />
+                                    <TextInput id="xMax" type="number" placeholder="xMax" {...register('xAxis.max')} />
                                 </div>
                             </div>
                         </div>
@@ -123,13 +123,13 @@ const ColbyChartForm = () => {
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="yMin" value="Y-Min:" />
-                                    <TextInput id="yMin" type="number" placeholder="yMin" {...register('yAxis.yMin')} />
+                                    <TextInput id="yMin" type="number" placeholder="yMin" {...register('yAxis.min')} />
                                 </div>
                             </div>
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="yMax" value="Y-Max:" />
-                                    <TextInput id="yMax" type="number" placeholder="yMax" {...register('yAxis.yMax')} />
+                                    <TextInput id="yMax" type="number" placeholder="yMax" {...register('yAxis.max')} />
                                 </div>
                             </div>
                         </div>
@@ -146,14 +146,14 @@ const ColbyChartForm = () => {
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="style-titlefont" value="Title Font:" />
-                                    <TextInput id="style-titlefont" type="text" placeholder="Lora" {...register('styles.titlefont')} />
+                                    <TextInput id="style-titlefont" type="text" placeholder="Lora" {...register('styles.fontName')} />
                                 </div>
                             </div>
                             <div className="col-span-1">
                                 <div className="flex items-center h-full">
                                     <Label className="inline mr-2" htmlFor="style-color" value="Title Color:" />
                                     <Controller
-                                        name="styles.color"
+                                        name="styles.fontColor"
                                         control={control}
                                         render={({ field: { value, onChange } }) => {
                                             return <PopoverPicker color={value} onChange={onChange} />;
@@ -164,7 +164,7 @@ const ColbyChartForm = () => {
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="style-fontsize" value="Font Size:" />
-                                    <TextInput id="style-fontsize" type="text" placeholder="18" {...register('styles.fontsize')} />
+                                    <TextInput id="style-fontsize" type="text" placeholder="18" {...register('styles.fontSize')} />
                                 </div>
                             </div>
                         </div>

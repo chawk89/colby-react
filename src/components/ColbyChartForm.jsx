@@ -3,14 +3,23 @@ import { Button, Checkbox, Label, Select, Tabs, TextInput, ToggleSwitch, Accordi
 import { HiAdjustments, HiClipboardList, HiUserCircle } from 'react-icons/hi';
 import { MdDashboard } from 'react-icons/md';
 import Annotation from './form/Annotation';
-import { useForm, FormProvider, useFormContext, Controller } from "react-hook-form"
+import { useChartContext } from '../hooks/useChartContext';
 import { PopoverPicker } from './common/PopoverPicker'
+import { useForm, FormProvider, useFormContext, Controller } from "react-hook-form"
 
 const ColbyChartForm = () => {
-    const methods = useForm()
+
+    const {state, dispatch} = useChartContext()
+
+
+    const methods = useForm({
+
+    })
     const { register, control } = methods
 
-    const onSubmit = (data) => console.log('[onSubmit]', data)
+    const onSubmit = (data) => {
+        console.log('[onSubmit]', data)
+    }
     return (
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)}>

@@ -4,10 +4,9 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { PopoverPicker } from '../common/PopoverPicker';
 
 const Annotation = () => {
-    const { control, getValues, register, watch } = useFormContext()
+    const { control, register, watch } = useFormContext()
     const lineEnabled = watch('annotation.line.enabled')
     console.log('[line]', lineEnabled)
-
 
     return (
         <div className="flex flex-col gap-4">

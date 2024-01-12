@@ -25,7 +25,6 @@ ChartJS.register(
 const ColbyChart = () => {
     const context = useChartContext()
     const { state: { options, data, chartType } } = context
-    console.log('[ColbyChart]', context.state)
     return (
         <ReactChart type={chartType} options={options} data={data} />
     )

@@ -33,8 +33,10 @@ export const UPDATE_DATASETS = 'UPDATE_DATASETS';
 const reducer = (state, action) => {
     const { type, ...payload } = action
     switch (type) {
-        case UDPATE_FORM:
-            return { ...state, form: payload };
+        case UDPATE_FORM: {
+            const { data: forms } = payload
+            return { ...state, forms };
+        }
         case UPDATE_DATASETS:
             return { ...state, datasets: payload };
         default:
@@ -53,7 +55,7 @@ export const ChartProvider = ({ children }) => {
         throw Error('ColbyChartInfo is insufficient')
     }
 
-    console.log('[ColbyChartInfo]', ColbyChartInfo)
+    // console.log('[ColbyChartInfo]', ColbyChartInfo)
     const storedState = JSON.parse(localStorage.getItem(storageKey)) || { ...initialState, chartType, data: createDatasets() };
     const [state, dispatch] = useReducer(reducer, storedState);
 

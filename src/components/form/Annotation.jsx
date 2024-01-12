@@ -6,7 +6,7 @@ import { PopoverPicker } from '../common/PopoverPicker';
 const Annotation = () => {
     const { control, register, watch } = useFormContext()
     const lineEnabled = watch('annotation.line.enabled')
-    console.log('[line]', lineEnabled)
+    // console.log('[line]', lineEnabled)
 
     return (
         <div className="flex flex-col gap-4">

@@ -6,19 +6,20 @@ import Annotation from './form/Annotation';
 import { useChartContext } from '../hooks/useChartContext';
 import { PopoverPicker } from './common/PopoverPicker'
 import { useForm, FormProvider, useFormContext, Controller } from "react-hook-form"
+import { UDPATE_FORM } from '../context/ChartContext';
 
 const ColbyChartForm = () => {
 
-    const {state, dispatch} = useChartContext()
+    const { state: { forms, data }, dispatch } = useChartContext()
+    const { labels } = data
+    console.log('[ColbyChartForm]', labels)
 
 
-    const methods = useForm({
-
-    })
+    const methods = useForm({ defaultValues: forms })
     const { register, control } = methods
 
     const onSubmit = (data) => {
-        console.log('[onSubmit]', data)
+        dispatch({ type: UDPATE_FORM, data })
     }
     return (
         <FormProvider {...methods}>
@@ -37,10 +38,8 @@ const ColbyChartForm = () => {
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="generalXAxisSelect" value="X-Axis Dataset:" />
                                     <Select id="generalXAxisSelect" {...register('general.xAxis')}>
-                                        <option>United States</option>
-                                        <option>Canada</option>
-                                        <option>France</option>
-                                        <option>Germany</option>
+                                        {labels.map(v => <option key={v}>{v}</option>)}
+
                                     </Select>
                                 </div>
                             </div>
@@ -147,14 +146,14 @@ const ColbyChartForm = () => {
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="style-titlefont" value="Title Font:" />
-                                    <TextInput id="style-titlefont" type="text" placeholder="Lora" {...register('style.titlefont')} />
+                                    <TextInput id="style-titlefont" type="text" placeholder="Lora" {...register('styles.titlefont')} />
                                 </div>
                             </div>
                             <div className="col-span-1">
                                 <div className="flex items-center h-full">
                                     <Label className="inline mr-2" htmlFor="style-color" value="Title Color:" />
                                     <Controller
-                                        name="style.color"
+                                        name="styles.color"
                                         control={control}
                                         render={({ field: { value, onChange } }) => {
                                             return <PopoverPicker color={value} onChange={onChange} />;
@@ -165,7 +164,7 @@ const ColbyChartForm = () => {
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="style-fontsize" value="Font Size:" />
-                                    <TextInput id="style-fontsize" type="text" placeholder="18" {...register('style.fontsize')} />
+                                    <TextInput id="style-fontsize" type="text" placeholder="18" {...register('styles.fontsize')} />
                                 </div>
                             </div>
                         </div>

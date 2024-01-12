@@ -114,6 +114,12 @@ const ColbyChartForm = () => {
                                     <TextInput id="xMax" type="number" placeholder="xMax" {...register('xAxis.max')} />
                                 </div>
                             </div>
+                            <div className="col-span-2">
+                                <div className="flex items-center">
+                                    <Label className="inline mr-2" htmlFor="xLabel" value="Label:" />
+                                    <TextInput id="xLabel" type="number" placeholder="Default X Axis" {...register('xAxis.label')} />
+                                </div>
+                            </div>
                         </div>
                     </Tabs.Item>
                     {/* X Axis tab end */}
@@ -130,6 +136,12 @@ const ColbyChartForm = () => {
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="yMax" value="Y-Max:" />
                                     <TextInput id="yMax" type="number" placeholder="yMax" {...register('yAxis.max')} />
+                                </div>
+                            </div>
+                            <div className="col-span-2">
+                                <div className="flex items-center">
+                                    <Label className="inline mr-2" htmlFor="yLabel" value="Label:" />
+                                    <TextInput id="yLabel" type="number" placeholder="Default Y Axis" {...register('yAxis.label')} />
                                 </div>
                             </div>
                         </div>

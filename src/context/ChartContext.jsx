@@ -116,8 +116,10 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
 
     if (xAxis.min) newOptions.scales.x.suggestedMin = xAxis.min;
     if (xAxis.max) newOptions.scales.x.suggestedMax = xAxis.max;
+    if (xAxis.label) newOptions.scales.x.title.text = xAxis.label;
     if (yAxis.min) newOptions.scales.y.suggestedMin = yAxis.min;
     if (yAxis.max) newOptions.scales.y.suggestedMax = yAxis.max;
+    if (yAxis.label) newOptions.scales.y.title.text = yAxis.label;
 
     return newOptions
 }

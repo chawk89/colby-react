@@ -12,7 +12,7 @@ const ColbyChartForm = () => {
 
     const { state: { forms, data }, dispatch } = useChartContext()
     const { labels } = data
-    console.log('[ColbyChartForm]', labels)
+    // console.log('[ColbyChartForm]', labels)
 
 
     const methods = useForm({ defaultValues: forms })

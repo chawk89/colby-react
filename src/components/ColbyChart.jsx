@@ -8,9 +8,10 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-import { Bar, Chart as ReactChart } from 'react-chartjs-2';
+import { Chart as ReactChart } from 'react-chartjs-2';
 import { useChartContext } from '../hooks/useChartContext'
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import AnnotationPlugin from 'chartjs-plugin-annotation';
 
 ChartJS.register(
     CategoryScale,
@@ -19,7 +20,8 @@ ChartJS.register(
     Title,
     Tooltip,
     Legend,
-    ChartDataLabels
+    ChartDataLabels,
+    AnnotationPlugin
 );
 
 

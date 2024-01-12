@@ -12,7 +12,8 @@ const initialState = {
                 position: "",
                 style: "None",
                 thickness: "1",
-                color: "#180a0a"
+                color: "#180a0a",
+                label: "",
             },
             box: {
                 enabled: false
@@ -138,8 +139,56 @@ const updateGlobalStyles = (oldOptions, styles) => {
     if (fontSize) {
         font.size = +fontSize
     }
-    console.log('[font]', font, styles)
     newOptions.plugins.title.font = font
+    return newOptions
+}
+
+const updateAnnotation = (oldOptions, param) => {
+    const newOptions = { ...oldOptions }
+
+    const { line, box, label, arrow } = param
+    const annotation = {
+        annotations: {}
+    }
+    if (line.enabled) {
+        const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel } = line
+        const lineAnnotation = {
+            type: "line",
+            id: "lineAnnotation",
+            borderColor: lineColor,
+            borderWidth: lineThickness,
+        };
+
+
+
+        if (lineStyle == "dashed") {
+            lineAnnotation.borderDash = [5, 5];
+        } else if (lineStyle == "wave") {
+            lineAnnotation.borderDash = [10, 5, 5];
+        }
+
+        if (lineLabel) {
+            lineAnnotation.label = {
+                content: [lineLabel],
+                display: true,
+                textAlign: 'center',
+            };
+        }
+        const axis = lineAxis.toLowerCase()
+        if (axis == "y") {
+            lineAnnotation.yScaleID = "y"
+            lineAnnotation.yMin = linePosition
+            lineAnnotation.yMax = linePosition
+        } else if (axis == "x") {
+            lineAnnotation.xScaleID = "x"
+            lineAnnotation.xMin = linePosition
+            lineAnnotation.xMax = linePosition
+        }
+        annotation.annotations.lineAnnotation = lineAnnotation
+    }
+
+    newOptions.plugins.annotation = annotation
+
     return newOptions
 }
 
@@ -154,11 +203,17 @@ const updateChartOptions = (oldOptions, forms) => {
     // axis options
     newOptions = updateAxisRangeValue(newOptions, { xAxis, yAxis })
 
+    // updateAnnotation
+    newOptions = updateAnnotation(newOptions, annotation)
+
     // updateGlobalStyles
     newOptions = updateGlobalStyles(newOptions, styles)
 
+    console.log('[newOptions]', newOptions)
+
     return newOptions
 }
+
 // Reducer function
 const reducer = (state, action) => {
     const { type, ...payload } = action
@@ -190,7 +245,7 @@ export const ChartProvider = ({ children }) => {
     // console.log('[ColbyChartInfo]', ColbyChartInfo)
     const storedState = JSON.parse(localStorage.getItem(storageKey)) || { ...initialState, chartType, data: createDatasets() };
     const [state, dispatch] = useReducer(reducer, storedState);
-    console.log('[storedState]', storedState)
+    // console.log('[storedState]', storedState)
 
     useEffect(() => {
         localStorage.setItem(storageKey, JSON.stringify(state));

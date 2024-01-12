@@ -24,8 +24,8 @@ const Annotation = () => {
                         <div className="flex items-center">
                             <Label className="inline mr-2" htmlFor="annotationAxisSelect" value="Axis:" />
                             <Select id="annotationAxisSelect" {...register('annotation.line.axis')}>
-                                <option>X</option>
-                                <option>Y</option>
+                                <option value="x">X</option>
+                                <option value="y">Y</option>
                             </Select>
                         </div>
                     </div>
@@ -39,9 +39,9 @@ const Annotation = () => {
                         <div className="flex items-center">
                             <Label className="inline mr-2 shrink-0" htmlFor="anno-linestyle" value="Line Style:" />
                             <Select id="anno-linestyle" {...register("annotation.line.style")} >
-                                <option>None</option>
-                                <option>Dashed</option>
-                                <option>Wave</option>
+                                <option value='none'>None</option>
+                                <option value='dashed'>Dashed</option>
+                                <option value='wave'>Wave</option>
                             </Select>
                         </div>
                     </div>

@@ -10,7 +10,7 @@ import { UDPATE_FORM } from '../context/ChartContext';
 
 const ColbyChartForm = () => {
 
-    const { state: { forms, data }, dispatch } = useChartContext()
+    const { state: { forms, data }, dispatch, onDownloadChart } = useChartContext()
     const { labels } = data
     // console.log('[ColbyChartForm]', labels)
 
@@ -39,7 +39,6 @@ const ColbyChartForm = () => {
                                     <Label className="inline mr-2" htmlFor="generalXAxisSelect" value="X-Axis Dataset:" />
                                     <Select id="generalXAxisSelect" {...register('general.xAxis')}>
                                         {labels.map(v => <option key={v}>{v}</option>)}
-
                                     </Select>
                                 </div>
                             </div>
@@ -117,7 +116,7 @@ const ColbyChartForm = () => {
                             <div className="col-span-2">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="xLabel" value="Label:" />
-                                    <TextInput id="xLabel" type="number" placeholder="Default X Axis" {...register('xAxis.label')} />
+                                    <TextInput id="xLabel" type="text" placeholder="Default X Axis" {...register('xAxis.label')} />
                                 </div>
                             </div>
                         </div>
@@ -141,7 +140,7 @@ const ColbyChartForm = () => {
                             <div className="col-span-2">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="yLabel" value="Label:" />
-                                    <TextInput id="yLabel" type="number" placeholder="Default Y Axis" {...register('yAxis.label')} />
+                                    <TextInput id="yLabel" type="text" placeholder="Default Y Axis" {...register('yAxis.label')} />
                                 </div>
                             </div>
                         </div>
@@ -185,8 +184,8 @@ const ColbyChartForm = () => {
                 </Tabs>
                 <div className="w-full flex justify-between mt-10">
                     <Button type="submit" color="blue">Save</Button>
-                    <Button color="blue" outline>Force Refresh</Button>
-                    <Button color="success">Download Chart</Button>
+                    {/* <Button color="blue" outline>Force Refresh</Button> */}
+                    <Button color="success" onClick={onDownloadChart}>Download Chart</Button>
                 </div>
 
             </form>

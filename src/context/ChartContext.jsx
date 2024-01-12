@@ -1,5 +1,5 @@
 // ChartContext.js
-import React, { createContext, useEffect, useReducer } from 'react';
+import React, { createContext, useEffect, useReducer, useRef } from 'react';
 
 
 // Initial state
@@ -90,6 +90,7 @@ const initialState = {
 export const UDPATE_FORM = 'UDPATE_FORM';
 export const UPDATE_DATASETS = 'UPDATE_DATASETS';
 
+
 const generalOptionUpdate = (oldOptions, general) => {
     const newOptions = { ...oldOptions }
     const {
@@ -159,8 +160,6 @@ const updateAnnotation = (oldOptions, param) => {
             borderWidth: lineThickness,
         };
 
-
-
         if (lineStyle == "dashed") {
             lineAnnotation.borderDash = [5, 5];
         } else if (lineStyle == "wave") {
@@ -174,12 +173,12 @@ const updateAnnotation = (oldOptions, param) => {
                 textAlign: 'center',
             };
         }
-        const axis = lineAxis.toLowerCase()
-        if (axis == "y") {
+
+        if (lineAxis == "y") {
             lineAnnotation.yScaleID = "y"
             lineAnnotation.yMin = linePosition
             lineAnnotation.yMax = linePosition
-        } else if (axis == "x") {
+        } else if (lineAxis == "x") {
             lineAnnotation.xScaleID = "x"
             lineAnnotation.xMin = linePosition
             lineAnnotation.xMax = linePosition
@@ -246,6 +245,27 @@ export const ChartProvider = ({ children }) => {
     const storedState = JSON.parse(localStorage.getItem(storageKey)) || { ...initialState, chartType, data: createDatasets() };
     const [state, dispatch] = useReducer(reducer, storedState);
     // console.log('[storedState]', storedState)
+    const chartRef = useRef(null);
+
+    const onDownloadChart = () => {
+        const canvas = chartRef.current.canvas;
+        
+        if (canvas) {
+            console.log('chartRef.current', canvas)
+            // Convert canvas to data URL
+            const dataURL = canvas.toDataURL('image/png');
+            // Create a link element
+            const downloadLink = document.createElement('a');
+            downloadLink.href = dataURL;
+            downloadLink.download = 'canvas_image.jpg';
+
+            // Trigger a click event on the link to initiate download
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+
+        }
+    }
 
     useEffect(() => {
         localStorage.setItem(storageKey, JSON.stringify(state));
@@ -253,7 +273,7 @@ export const ChartProvider = ({ children }) => {
 
 
     return (
-        <ChartContext.Provider value={{ state, dispatch }}>
+        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart }}>
             {children}
         </ChartContext.Provider>
     );

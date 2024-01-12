@@ -1,16 +1,24 @@
 import React, { useState } from 'react'
-import { Accordion, Label, Select, TextInput, ToggleSwitch } from 'flowbite-react'
+import { Label, Select, TextInput, ToggleSwitch } from 'flowbite-react'
+import { Controller, useFormContext } from 'react-hook-form';
+import { PopoverPicker } from '../common/PopoverPicker';
 
 const Annotation = () => {
-    const [switch1, setSwitch1] = useState(false);
-    const [switch2, setSwitch2] = useState(false);
-    const [switch3, setSwitch3] = useState(false);
-
+    const { control, getValues, register } = useFormContext()
+    const values = getValues("root");
+    console.log('[values]', values)
     return (
         <div className="flex flex-col gap-4">
             <div>
-                <ToggleSwitch checked={switch1} label="Line Annotation" onChange={setSwitch1} />
-                {switch1 && <div className="w-full grid grid-cols-3 gap-3 my-4 p-2">
+                <Controller
+                    name="lineAnnotation"
+                    control={control}
+                    render={({ field: { value, onChange } }) => {
+                        return <ToggleSwitch label="Line Annotation" checked={value} onChange={onChange} />
+                    }}
+                />
+
+                <div className="w-full grid grid-cols-3 gap-3 my-4 p-2">
                     <div className="col-span-1">
                         <div className="flex items-center">
                             <Label className="inline mr-2" htmlFor="generalXAxisSelect" value="Axis:" />
@@ -23,7 +31,7 @@ const Annotation = () => {
                     <div className="col-span-1">
                         <div className="flex items-center">
                             <Label className="inline mr-2" htmlFor="axis-position" value="Axis Position:" />
-                            <TextInput id="axis-position" type="text" placeholder="10" required />
+                            <TextInput id="axis-position" type="text" placeholder="10" {...register("axis-position")} />
                         </div>
                     </div>
                     <div className="col-span-1">
@@ -37,29 +45,52 @@ const Annotation = () => {
                         </div>
                     </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
-                            <Label className="inline mr-2" htmlFor="anno-linecolor" value="Line Color:" />
-                            <TextInput id="anno-linecolor" type="color" placeholder="10" required />
+                        <div className="flex items-center h-full">
+                            <Label className="inline mr-2" htmlFor="anno-linecolor" value="Line Color:" />                            
+                            <Controller
+                                name="anno-linecolor"
+                                control={control}
+                                render={({ field: { value, onChange } }) => {
+                                    return <PopoverPicker color={value} onChange={onChange} />;
+                                }}
+                            />
                         </div>
                     </div>
                     <div className="col-span-1">
                         <div className="flex items-center">
                             <Label className="inline mr-2" htmlFor="anno-line-thickness" value="Line Thickness:" />
-                            <TextInput id="anno-line-thickness" type="text" placeholder="10" required />
+                            <TextInput id="anno-line-thickness" type="text" placeholder="10" {...register("anno-line-thickness")} />
                         </div>
                     </div>
 
                 </div>
-                }
             </div>
             <div>
-                <ToggleSwitch checked={switch2} label="Box Annotation" onChange={setSwitch2} />
+                <Controller
+                    name="boxAnnotation"
+                    control={control}
+                    render={({ field: { value, onChange } }) => {
+                        return <ToggleSwitch label="Box Annotation" checked={value} onChange={onChange} />
+                    }}
+                />
             </div>
             <div>
-                <ToggleSwitch checked={switch3} label="Label Annotation" onChange={setSwitch3} />
+                <Controller
+                    name="labelAnnotation"
+                    control={control}
+                    render={({ field: { value, onChange } }) => {
+                        return <ToggleSwitch label="Label Annotation" checked={value} onChange={onChange} />
+                    }}
+                />
             </div>
             <div>
-                <ToggleSwitch checked={switch2} label="Arrow Annotation" onChange={setSwitch2} />
+                <Controller
+                    name="arrowAnnotation"
+                    control={control}
+                    render={({ field: { value, onChange } }) => {
+                        return <ToggleSwitch label="Arrow Annotation" checked={value} onChange={onChange} />
+                    }}
+                />
             </div>
         </div>
     );

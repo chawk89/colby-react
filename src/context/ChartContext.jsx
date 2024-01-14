@@ -1,5 +1,6 @@
 // ChartContext.js
-import React, { createContext, useEffect, useReducer, useRef } from 'react';
+import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
+import { AnnotationDragger } from '../utils/chart/AnnotationDragger';
 
 
 // Initial state
@@ -50,6 +51,7 @@ const initialState = {
     },
     options: {
         responsive: true,
+        events: ["mousedown", "mouseup", "mousemove", "mouseout", "mouseleave"],
         aspectRatio: 1,
         plugins: {
             legend: {
@@ -65,6 +67,9 @@ const initialState = {
                 anchor: "end",
                 formatter: (value) => value,
             },
+            annotation: {
+                annotations: {}
+            }
         },
         scales: {
             x: {
@@ -83,7 +88,6 @@ const initialState = {
             }
         }
     }
-
 };
 
 // Action types
@@ -149,7 +153,8 @@ const updateAnnotation = (oldOptions, param) => {
 
     const { line, box, label, arrow } = param
     const annotation = {
-        annotations: {}
+        annotations: {},
+
     }
     if (line.enabled) {
         const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel } = line
@@ -186,7 +191,8 @@ const updateAnnotation = (oldOptions, param) => {
         annotation.annotations.lineAnnotation = lineAnnotation
     }
 
-    newOptions.plugins.annotation = annotation
+    newOptions.plugins.annotation = { ...newOptions.plugins.annotation, ...annotation }
+    console.log('[newOptions.plugins.annotation]', newOptions.plugins.annotation)
 
     return newOptions
 }
@@ -240,16 +246,26 @@ export const ChartProvider = ({ children }) => {
     if (!chartType || !createDatasets || !storageKey) {
         throw Error('ColbyChartInfo is insufficient')
     }
+    const annotationController = useMemo(() => new AnnotationDragger(), [])
 
     // console.log('[ColbyChartInfo]', ColbyChartInfo)
     const storedState = JSON.parse(localStorage.getItem(storageKey)) || { ...initialState, chartType, data: createDatasets() };
+    storedState.options.plugins.annotation = {
+        ...storedState.options.plugins.annotation,
+        enter: function (ctx) {
+            annotationController?.enter(ctx)
+        },
+        leave: function () {
+            annotationController?.leave()
+        }
+    }
+
     const [state, dispatch] = useReducer(reducer, storedState);
-    // console.log('[storedState]', storedState)
     const chartRef = useRef(null);
 
     const onDownloadChart = () => {
         const canvas = chartRef.current.canvas;
-        
+
         if (canvas) {
             console.log('chartRef.current', canvas)
             // Convert canvas to data URL
@@ -273,7 +289,7 @@ export const ChartProvider = ({ children }) => {
 
 
     return (
-        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart }}>
+        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart, annotationController }}>
             {children}
         </ChartContext.Provider>
     );

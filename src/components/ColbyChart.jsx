@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useMemo } from 'react'
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -21,16 +21,18 @@ ChartJS.register(
     Tooltip,
     Legend,
     ChartDataLabels,
-    AnnotationPlugin
+    AnnotationPlugin,
 );
 
 
 
 const ColbyChart = () => {
     const context = useChartContext()
-    const { state: { options, data, chartType }, chartRef } = context
+    const { state: { options, data, chartType }, chartRef, annotationController } = context    
     return (
-        <ReactChart ref={chartRef} type={chartType} options={options} data={data} />
+        <ReactChart ref={chartRef} type={chartType} options={options} data={data}
+            plugins={[annotationController]}
+        />
     )
 }
 

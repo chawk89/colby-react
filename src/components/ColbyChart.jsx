@@ -29,7 +29,7 @@ ChartJS.register(
 const ColbyChart = () => {
     const context = useChartContext()
     const { state: { options, data, chartType }, chartRef, draggerPlugin } = context
-    console.log('[ColbyChart]', data)
+    
     return (
         <ReactChart ref={chartRef} type={chartType} options={options} data={{ ...data }}
             plugins={[draggerPlugin]}

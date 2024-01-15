@@ -221,7 +221,7 @@ const updateChartOptions = (oldOptions, forms) => {
     // updateGlobalStyles
     newOptions = updateGlobalStyles(newOptions, styles)
 
-    console.log('[newOptions]', newOptions)
+    // console.log('[newOptions]', newOptions)
 
     return newOptions
 }

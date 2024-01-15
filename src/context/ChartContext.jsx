@@ -1,7 +1,7 @@
 // ChartContext.js
 import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { AnnotationDragger } from '../utils/chart/AnnotationDragger';
-
+import { md5 } from 'js-md5';
 
 // Initial state
 const initialState = {
@@ -27,8 +27,8 @@ const initialState = {
             }
         },
         general: {
-            title: "asdfasdf",
-            xAxis: "January",
+            title: "",
+            xAxis: "",
             plotted: false,
             stacked: false,
             switchRowColumn: false,
@@ -47,6 +47,9 @@ const initialState = {
             fontName: "Lora",
             fontSize: "18",
             fontColor: "#3e1818"
+        },
+        axes: {
+            labels: [],
         }
     },
     options: {
@@ -115,6 +118,9 @@ const generalOptionUpdate = (oldOptions, general) => {
     newOptions.plugins.legend.display = showLegend
     // show datalabels
     newOptions.plugins.datalabels.display = showLabels
+    // switch RowColumn
+
+    newOptions.indexAxis = switchRowColumn ? 'y' : 'x'
     return newOptions
 }
 const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
@@ -148,10 +154,11 @@ const updateGlobalStyles = (oldOptions, styles) => {
     return newOptions
 }
 
-const updateAnnotation = (oldOptions, param) => {
+const updateAnnotation = (oldOptions, param, global) => {
     const newOptions = { ...oldOptions }
 
     const { line, box, label, arrow } = param
+    const { switchRowColumn } = global.general
     const annotation = {
         annotations: {},
 
@@ -179,11 +186,12 @@ const updateAnnotation = (oldOptions, param) => {
             };
         }
 
-        if (lineAxis == "y") {
+
+        if ((switchRowColumn && lineAxis == "x") || (!switchRowColumn && lineAxis == "y")) {
             lineAnnotation.yScaleID = "y"
             lineAnnotation.yMin = linePosition
             lineAnnotation.yMax = linePosition
-        } else if (lineAxis == "x") {
+        } else if ((switchRowColumn && lineAxis == "y") || (!switchRowColumn && lineAxis == "x")) {
             lineAnnotation.xScaleID = "x"
             lineAnnotation.xMin = linePosition
             lineAnnotation.xMax = linePosition
@@ -209,7 +217,7 @@ const updateChartOptions = (oldOptions, forms) => {
     newOptions = updateAxisRangeValue(newOptions, { xAxis, yAxis })
 
     // updateAnnotation
-    newOptions = updateAnnotation(newOptions, annotation)
+    newOptions = updateAnnotation(newOptions, annotation, forms)
 
     // updateGlobalStyles
     newOptions = updateGlobalStyles(newOptions, styles)
@@ -217,6 +225,9 @@ const updateChartOptions = (oldOptions, forms) => {
     console.log('[newOptions]', newOptions)
 
     return newOptions
+}
+const updateDatasets = (data, option) => {
+
 }
 
 // Reducer function
@@ -237,28 +248,80 @@ const reducer = (state, action) => {
 };
 export const ChartContext = createContext();
 
+const getChartDataObj = (labels, cols) => {
+    const result = {}
+    for (let i = 0; i < labels.length; i++) {
+        const { key } = labels[i]
+        result[key] = cols[i]
+    }
+    return result
+}
+const getInitialState = ({ state, info }) => {
+    // { ...initialState, chartType }
+    const { chartType, getDatasets } = info
+    const chartData = getDatasets()
+
+    const labels = chartData.header.map(h => ({ key: md5.base64(h), label: h }))
+    const datasets = getChartDataObj(labels, chartData.cols)
+
+    return {
+        ...state,
+        forms: {
+            ...state.forms,
+            general: {
+                ...state.forms.general,
+                xAxis: labels[0].id
+            },
+            axes: {
+                labels,
+                datasets
+            }
+        },
+        chartType
+    }
+}
+const getXAxisDatafield = (data) => {
+    const { forms: { general: { xAxis } } } = data
+    return xAxis
+}
+
+const getChartData = (data) => {
+    const { forms } = data
+    const { axes: { datasets: axesDatasets } } = forms
+    const xAxis = getXAxisDatafield(data)
+    const labels = axesDatasets[xAxis]
+    const datasets = Object.keys(axesDatasets).filter(k => (k != xAxis)).map(k => axesDatasets[k])
+    return {
+        labels,
+        datasets
+    }
+}
+
 export const ChartProvider = ({ children }) => {
     const ColbyChartInfo = window.ColbyChartInfo
     if (!ColbyChartInfo) {
         throw Error('ColbyChartInfo is missing')
     }
-    const { chartType, createDatasets, storageKey } = ColbyChartInfo
-    if (!chartType || !createDatasets || !storageKey) {
+    const { chartType, createDatasets, storageKey, getDatasets } = ColbyChartInfo
+    if (!chartType || !createDatasets || !storageKey || !getDatasets) {
         throw Error('ColbyChartInfo is insufficient')
     }
-    const annotationController = useMemo(() => new AnnotationDragger(), [])
+    const draggerPlugin = useMemo(() => new AnnotationDragger(), [])
 
-    // console.log('[ColbyChartInfo]', ColbyChartInfo)
-    const storedState = JSON.parse(localStorage.getItem(storageKey)) || { ...initialState, chartType, data: createDatasets() };
+    const storedState = JSON.parse(localStorage.getItem(storageKey)) || getInitialState({ state: initialState, info: ColbyChartInfo });
+    const data = getChartData(storedState);
+    const xAxis = getXAxisDatafield(storedState)
+
     storedState.options.plugins.annotation = {
         ...storedState.options.plugins.annotation,
-        enter: function (ctx) {
-            annotationController?.enter(ctx)
+        enter(ctx) {
+            draggerPlugin?.enter(ctx)
         },
-        leave: function () {
-            annotationController?.leave()
+        leave() {
+            draggerPlugin?.leave()
         }
     }
+    storedState.data = createDatasets(data)
 
     const [state, dispatch] = useReducer(reducer, storedState);
     const chartRef = useRef(null);
@@ -289,7 +352,7 @@ export const ChartProvider = ({ children }) => {
 
 
     return (
-        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart, annotationController }}>
+        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart, draggerPlugin }}>
             {children}
         </ChartContext.Provider>
     );

@@ -10,7 +10,57 @@
 
 <body>
   <script>
-    function createDatasets(colorArray) {
+    function getDatasets() {
+      const data = [['Date',
+        'Q1 FY2013',
+        'Q2 FY2013',
+        'Q3 FY2013',
+        'Q4 FY2013',
+        'Q1 FY2014',
+        'Q2 FY2014',
+        'Q3 FY2014',
+        'Q4 FY2014',
+        'Q1 FY2015',
+        'Q2 FY2015',
+        'Q3 FY2015',
+        'Q4 FY2015'],
+      ['Online Sales',
+        '237',
+        '492',
+        '625',
+        '1239',
+        '1686',
+        '1728',
+        '1716',
+        '1839',
+        '4543',
+        '4630',
+        '4890',
+        '7405'],
+      ['Offline Sales',
+        '5208',
+        '5094',
+        '5907',
+        '6063',
+        '5499',
+        '5670',
+        '5571',
+        '6165',
+        '6346',
+        '6382',
+        '5719',
+        '4442']
+      ]
+      const result = {
+        colCount: data.length,
+        header: data.map(r => r[0]),
+        cols: data.map(r => r.slice(1))
+      }
+      console.log(result)
+
+      return result
+    }
+    function createDatasets(data) {
       const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July']
 
       return {
@@ -33,6 +83,7 @@
     window.ColbyChartInfo = {
       chartType: 'bar',
       createDatasets,
+      getDatasets,
       storageKey: 'appState',
     }
   </script>

@@ -10,13 +10,15 @@ import { UDPATE_FORM } from '../context/ChartContext';
 
 const ColbyChartForm = () => {
 
-    const { state: { forms, data }, dispatch, onDownloadChart } = useChartContext()
-    const { labels } = data
-    // console.log('[ColbyChartForm]', labels)
-
+    const { state: { forms, data }, dispatch, onDownloadChart, } = useChartContext()
 
     const methods = useForm({ defaultValues: forms })
-    const { register, control } = methods
+
+    const { register, control, watch } = methods
+    const xAxis = watch('general.xAxis')
+    const { axes } = forms
+    console.log('[ColbyChartForm]', axes)
+    const { labels: axesLabels } = axes
 
     const onSubmit = (data) => {
         dispatch({ type: UDPATE_FORM, data })
@@ -38,7 +40,7 @@ const ColbyChartForm = () => {
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="generalXAxisSelect" value="X-Axis Dataset:" />
                                     <Select id="generalXAxisSelect" {...register('general.xAxis')}>
-                                        {labels.map(v => <option key={v}>{v}</option>)}
+                                        {axesLabels.map(({ key, label }) => <option key={key}>{label}</option>)}
                                     </Select>
                                 </div>
                             </div>

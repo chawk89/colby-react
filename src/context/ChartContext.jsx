@@ -238,8 +238,8 @@ const reducer = (state, action) => {
 
             const { data: forms } = payload
             const options = updateChartOptions(state.options, forms)
-            const newState = { ...state, options, forms, data: { ...state.data } };
-            onChartRefresh();
+            const newState = { ...state, options, forms};
+            updateChartDatasets(newState);
             return newState
         }
 
@@ -295,7 +295,7 @@ const getYAxisDatafield = (data) => {
     return yAxis
 }
 
-const getFilteredChartData = (data) => {
+const getFilteredDatasets = (data) => {
     const { forms } = data
     const { axes: { datasets: axesDatasets } } = forms
     const xAxis = getXAxisDatafield(data)
@@ -309,6 +309,13 @@ const getFilteredChartData = (data) => {
     return {
         labels,
         datasets
+    }
+}
+const updateChartDatasets = (state) => {
+    const data = getFilteredDatasets(state);
+    const result = createDatasets(data);
+    if (result) {
+        state.data = result
     }
 }
 
@@ -328,8 +335,6 @@ export const ChartProvider = ({ children }) => {
 
     storedState.onChartRefresh = () => {
         if (!chartRef || !chartRef.current) return;
-
-        // chartRef.current.update();
     }
 
 
@@ -345,12 +350,7 @@ export const ChartProvider = ({ children }) => {
 
     const xAxis = getXAxisDatafield(storedState)
     if (xAxis) {
-        const data = getFilteredChartData(storedState);
-        const result = createDatasets(data);
-        if (result) {
-            storedState.data = result
-            console.log('[getXAxisDatafield]', result)
-        }
+       updateChartDatasets(storedState)
     }
 
     const [state, dispatch] = useReducer(reducer, storedState);
@@ -378,9 +378,6 @@ export const ChartProvider = ({ children }) => {
     useEffect(() => {
         localStorage.setItem(storageKey, JSON.stringify(state));
     }, [state, storageKey]);
-
-    console.log('[onChartRefresh] -- step1', state)
-
 
     return (
         <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart, draggerPlugin }}>

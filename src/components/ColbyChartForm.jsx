@@ -10,17 +10,16 @@ import { UDPATE_FORM } from '../context/ChartContext';
 
 const ColbyChartForm = () => {
 
-    const { state: { forms, data }, dispatch, onDownloadChart } = useChartContext()
+    const { state: { forms, data }, dispatch, onDownloadChart, chartRef } = useChartContext()
 
     const methods = useForm({ defaultValues: forms })
 
     const { register, control, watch } = methods
     const xAxis = watch('general.xAxis')
-    const { axes } = forms
-    // console.log('[ColbyChartForm]', axes, forms)
+    const { axes } = forms    
     const { keyLabels } = axes
 
-    const onSubmit = (data) => {
+    const onSubmit = (data) => {        
         dispatch({ type: UDPATE_FORM, data })
     }
     return (

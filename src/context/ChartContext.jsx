@@ -49,7 +49,7 @@ const initialState = {
             fontColor: "#3e1818"
         },
         axes: {
-            labels: [],
+            keyLabels: [],
         }
     },
     options: {
@@ -200,7 +200,6 @@ const updateAnnotation = (oldOptions, param, global) => {
     }
 
     newOptions.plugins.annotation = { ...newOptions.plugins.annotation, ...annotation }
-    console.log('[newOptions.plugins.annotation]', newOptions.plugins.annotation)
 
     return newOptions
 }
@@ -235,13 +234,15 @@ const reducer = (state, action) => {
     const { type, ...payload } = action
     switch (type) {
         case UDPATE_FORM: {
+            const { onChartRefresh } = state
+
             const { data: forms } = payload
             const options = updateChartOptions(state.options, forms)
-            const newState = { ...state, options, forms };
+            const newState = { ...state, options, forms, data: { ...state.data } };
+            onChartRefresh();
             return newState
         }
-        case UPDATE_DATASETS:
-            return { ...state, datasets: payload };
+
         default:
             return state;
     }
@@ -251,8 +252,12 @@ export const ChartContext = createContext();
 const getChartDataObj = (labels, cols) => {
     const result = {}
     for (let i = 0; i < labels.length; i++) {
-        const { key } = labels[i]
-        result[key] = cols[i]
+        const { key, label } = labels[i]
+        result[key] = {
+            values: cols[i],
+            label,
+            key
+        }
     }
     return result
 }
@@ -261,19 +266,20 @@ const getInitialState = ({ state, info }) => {
     const { chartType, getDatasets } = info
     const chartData = getDatasets()
 
-    const labels = chartData.header.map(h => ({ key: md5.base64(h), label: h }))
-    const datasets = getChartDataObj(labels, chartData.cols)
-
+    const keyLabels = chartData.header.map(h => ({ key: md5.base64(h), label: h }))
+    const datasets = getChartDataObj(keyLabels, chartData.cols)
+    const yAxis = keyLabels.reduce((p, c) => ({ ...p, [c.key]: true }), {})
     return {
         ...state,
         forms: {
             ...state.forms,
             general: {
                 ...state.forms.general,
-                xAxis: labels[0].id
+                xAxis: keyLabels[0].key,
+                yAxis
             },
             axes: {
-                labels,
+                keyLabels,
                 datasets
             }
         },
@@ -284,13 +290,22 @@ const getXAxisDatafield = (data) => {
     const { forms: { general: { xAxis } } } = data
     return xAxis
 }
+const getYAxisDatafield = (data) => {
+    const { forms: { general: { yAxis } } } = data
+    return yAxis
+}
 
-const getChartData = (data) => {
+const getFilteredChartData = (data) => {
     const { forms } = data
     const { axes: { datasets: axesDatasets } } = forms
     const xAxis = getXAxisDatafield(data)
+    const yAxis = getYAxisDatafield(data)
+
+
+    if (!xAxis) return null;
     const labels = axesDatasets[xAxis]
-    const datasets = Object.keys(axesDatasets).filter(k => (k != xAxis)).map(k => axesDatasets[k])
+    const filteredKeys = Object.keys(axesDatasets).filter(k => (k != xAxis && yAxis[k]))
+    const datasets = filteredKeys.length > 0 ? filteredKeys.map(key => axesDatasets[key]) : []
     return {
         labels,
         datasets
@@ -306,11 +321,17 @@ export const ChartProvider = ({ children }) => {
     if (!chartType || !createDatasets || !storageKey || !getDatasets) {
         throw Error('ColbyChartInfo is insufficient')
     }
+    const chartRef = useRef(null);
     const draggerPlugin = useMemo(() => new AnnotationDragger(), [])
 
     const storedState = JSON.parse(localStorage.getItem(storageKey)) || getInitialState({ state: initialState, info: ColbyChartInfo });
-    const data = getChartData(storedState);
-    const xAxis = getXAxisDatafield(storedState)
+
+    storedState.onChartRefresh = () => {
+        if (!chartRef || !chartRef.current) return;
+
+        // chartRef.current.update();
+    }
+
 
     storedState.options.plugins.annotation = {
         ...storedState.options.plugins.annotation,
@@ -321,10 +342,18 @@ export const ChartProvider = ({ children }) => {
             draggerPlugin?.leave()
         }
     }
-    storedState.data = createDatasets(data)
+
+    const xAxis = getXAxisDatafield(storedState)
+    if (xAxis) {
+        const data = getFilteredChartData(storedState);
+        const result = createDatasets(data);
+        if (result) {
+            storedState.data = result
+            console.log('[getXAxisDatafield]', result)
+        }
+    }
 
     const [state, dispatch] = useReducer(reducer, storedState);
-    const chartRef = useRef(null);
 
     const onDownloadChart = () => {
         const canvas = chartRef.current.canvas;
@@ -342,13 +371,15 @@ export const ChartProvider = ({ children }) => {
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
-
         }
     }
+
 
     useEffect(() => {
         localStorage.setItem(storageKey, JSON.stringify(state));
     }, [state, storageKey]);
+
+    console.log('[onChartRefresh] -- step1', state)
 
 
     return (
@@ -357,3 +388,4 @@ export const ChartProvider = ({ children }) => {
         </ChartContext.Provider>
     );
 };
+

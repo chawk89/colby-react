@@ -10,15 +10,15 @@ import { UDPATE_FORM } from '../context/ChartContext';
 
 const ColbyChartForm = () => {
 
-    const { state: { forms, data }, dispatch, onDownloadChart, } = useChartContext()
+    const { state: { forms, data }, dispatch, onDownloadChart } = useChartContext()
 
     const methods = useForm({ defaultValues: forms })
 
     const { register, control, watch } = methods
     const xAxis = watch('general.xAxis')
     const { axes } = forms
-    console.log('[ColbyChartForm]', axes)
-    const { labels: axesLabels } = axes
+    // console.log('[ColbyChartForm]', axes, forms)
+    const { keyLabels } = axes
 
     const onSubmit = (data) => {
         dispatch({ type: UDPATE_FORM, data })
@@ -40,7 +40,7 @@ const ColbyChartForm = () => {
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="generalXAxisSelect" value="X-Axis Dataset:" />
                                     <Select id="generalXAxisSelect" {...register('general.xAxis')}>
-                                        {axesLabels.map(({ key, label }) => <option key={key}>{label}</option>)}
+                                        {keyLabels.map(({ key, label }) => <option key={key} value={key}>{label}</option>)}
                                     </Select>
                                 </div>
                             </div>
@@ -48,7 +48,7 @@ const ColbyChartForm = () => {
                                 <div className="flex items-center">
                                     <div className="flex items-center">
                                         <Label className="inline mr-2" htmlFor="plotted-datasets" value="Plotted Datasets:" />
-                                        <Checkbox id="plotted-datasets" {...register('general.plotted')} />
+                                        {keyLabels.map(({ key, label }) => key != xAxis && <div key={key}><Checkbox   {...register(`general.yAxis.${key}`)} /> <Label value={label} /> </div>)}
                                     </div>
                                 </div>
                             </div>

@@ -61,23 +61,21 @@
       return result
     }
     function createDatasets(data) {
-      const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July']
 
-      return {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [
-          {
-            label: 'Dataset 1',
-            data: [1, 2, 3, 4, 5, 6, 7],
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          },
-          {
-            label: 'Dataset 2',
-            data: [5, 6, 4, 7, 3, 1, 2],
-            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-          },
-        ]
+      const { labels, datasets } = data
+      if (!labels || !labels.key || !labels.values || labels.values.length == 0 || !datasets) return null;
+
+      const colorArray = ['rgba(255, 99, 132, 0.5)', 'rgba(53, 162, 235, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(53, 162, 235, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(53, 162, 235, 0.5)']
+      const result = {
+        labels: labels.values,
+        datasets: datasets.map(({ key, values, label }, index) => ({
+          data: values,
+          label,
+          backgroundColor: colorArray[index]
+        }))
       }
+
+      return result
 
     }
     window.ColbyChartInfo = {

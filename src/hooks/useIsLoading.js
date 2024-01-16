@@ -12,10 +12,10 @@ export const useIsLoading = () => {
         };
 
         window.addEventListener('resize', handleWindowVariableChange);
-
         return () => {
             window.removeEventListener('resize', handleWindowVariableChange);
         };
     }, []);
+    console.log('[useIsLoading]', ColbyChartInfo?.current?.isLoading)
     return ColbyChartInfo?.current?.isLoading ?? true
 }

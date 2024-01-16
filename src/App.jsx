@@ -4,15 +4,17 @@ import ColbyChart from './components/ColbyChart'
 import ColbyChartForm from './components/ColbyChartForm'
 import ColbyLoader from './components/ColbyLoader'
 import { ChartProvider } from './context/ChartContext'
-import { useIsLoading } from './hooks/useIsLoading'
+import { useIsLoaded } from './hooks/useIsLoaded'
 
 import './App.scss'
 
 function App() {
-  const isLoading = useIsLoading()
+  const isLoaded = useIsLoaded()
+  
+  if (!isLoaded) return <ColbyLoader />
 
   return (
-    isLoading ? <ColbyLoader /> : <ChartProvider>
+    <ChartProvider>
       <div className="max-w-7xl mx-auto">
         <div className="w-full flex ">
           <div className="w-full xl:w-8/12 px-2">

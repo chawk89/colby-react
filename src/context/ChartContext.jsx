@@ -296,6 +296,7 @@ const getYAxisDatafield = (data) => {
 }
 
 const getFilteredDatasets = (data) => {
+    console.log('[getFilteredDatasets]', data)
     const { forms } = data
     const { axes: { datasets: axesDatasets } } = forms
     const xAxis = getXAxisDatafield(data)

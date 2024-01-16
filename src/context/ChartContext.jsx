@@ -238,7 +238,7 @@ const reducer = (state, action) => {
 
             const { data: forms } = payload
             const options = updateChartOptions(state.options, forms)
-            const newState = { ...state, options, forms};
+            const newState = { ...state, options, forms };
             updateChartDatasets(newState);
             return newState
         }
@@ -333,6 +333,7 @@ export const ChartProvider = ({ children }) => {
     const draggerPlugin = useMemo(() => new AnnotationDragger(), [])
 
     const storedState = JSON.parse(localStorage.getItem(storageKey)) || getInitialState({ state: initialState, info: ColbyChartInfo });
+    storedState.chartType = chartType
 
     storedState.onChartRefresh = () => {
         if (!chartRef || !chartRef.current) return;
@@ -351,7 +352,7 @@ export const ChartProvider = ({ children }) => {
 
     const xAxis = getXAxisDatafield(storedState)
     if (xAxis) {
-       updateChartDatasets(storedState)
+        updateChartDatasets(storedState)
     }
 
     const [state, dispatch] = useReducer(reducer, storedState);

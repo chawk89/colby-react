@@ -96,6 +96,7 @@ const initialState = {
 // Action types
 export const UDPATE_FORM = 'UDPATE_FORM';
 export const UPDATE_DATASETS = 'UPDATE_DATASETS';
+export const RELOAD_FORM = 'RELOAD_FORM';
 
 
 const generalOptionUpdate = (oldOptions, general) => {
@@ -251,7 +252,11 @@ const reducer = (state, action) => {
             updateChartDatasets(newState);
             return newState
         }
-
+        case RELOAD_FORM: {
+            const { data } = payload
+            const newState = { ...state, ...data }
+            return newState
+        }
         default:
             return state;
     }
@@ -349,40 +354,44 @@ export const ChartProvider = ({ children }) => {
     const draggerPlugin = useMemo(() => new AnnotationDragger(), [])
 
     const storedState = JSON.parse(localStorage.getItem(storageKey)) || getInitialState({ state: initialState, info: ColbyChartInfo });
-    storedState.chartType = chartType
 
-    storedState.onChartRefresh = () => {
-        if (!chartRef || !chartRef.current) return;
-    }
+    const onAdditionalUpdates = (state) => {
+        state.chartType = chartType
 
-
-    storedState.options.plugins.annotation = {
-        ...storedState.options.plugins.annotation,
-        enter(ctx) {
-            draggerPlugin?.enter(ctx)
-        },
-        leave() {
-            draggerPlugin?.leave()
+        state.onChartRefresh = () => {
+            if (!chartRef || !chartRef.current) return;
         }
 
-    }
-    storedState.options.scales.x.ticks = {
-        ...storedState.options.scales.x.ticks,
 
-    }
-    storedState.options.scales.y.ticks = {
-        ...storedState.options.scales.y.ticks,
-        callback: function (value) {
-            // console.log(value)
-            // if (typeof value === 'number' && value == Math.floor(value)) return Math.floor(value)
-            return value
+        state.options.plugins.annotation = {
+            ...state.options.plugins.annotation,
+            enter(ctx) {
+                draggerPlugin?.enter(ctx)
+            },
+            leave() {
+                draggerPlugin?.leave()
+            }
+
+        }
+        state.options.scales.x.ticks = {
+            ...state.options.scales.x.ticks,
+
+        }
+        state.options.scales.y.ticks = {
+            ...state.options.scales.y.ticks,
+            callback: function (value) {
+                // console.log(value)
+                // if (typeof value === 'number' && value == Math.floor(value)) return Math.floor(value)
+                return value
+            }
+        }
+
+        const xAxis = getXAxisDatafield(state)
+        if (xAxis) {
+            updateChartDatasets(state)
         }
     }
-
-    const xAxis = getXAxisDatafield(storedState)
-    if (xAxis) {
-        updateChartDatasets(storedState)
-    }
+    onAdditionalUpdates(storedState)
 
     const [state, dispatch] = useReducer(reducer, storedState);
 
@@ -406,8 +415,10 @@ export const ChartProvider = ({ children }) => {
     }
     const onClearCache = () => {
         localStorage.removeItem(storageKey)
-        console.log('[initialState.forms]', initialState.forms)
-        // dispatch({ type: UDPATE_FORM, data: initialState.forms })
+        // console.log('[initialState.forms]', initialState.forms)
+        // const state = getInitialState({ state: initialState, info: ColbyChartInfo })
+        // onAdditionalUpdates(state)        
+        // dispatch({ type: RELOAD_FORM, data: state })
     }
 
 

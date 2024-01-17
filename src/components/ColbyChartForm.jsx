@@ -15,7 +15,7 @@ const ColbyChartForm = () => {
 
     const methods = useForm({ defaultValues: forms })
 
-    const { register, control, watch } = methods
+    const { register, control, watch, reset: resetForm } = methods
     const xAxis = watch('general.xAxis')
     const { axes } = forms
     const { keyLabels } = axes
@@ -23,6 +23,10 @@ const ColbyChartForm = () => {
     const handleUpdate = useCallback((data) => {
         dispatch({ type: UDPATE_FORM, data })
     }, [dispatch])
+    const handleClearCache = useCallback(() => {
+        resetForm()
+        // onClearCache()
+    }, [onClearCache])
 
     useFormValue(watch, handleUpdate)
 
@@ -195,7 +199,7 @@ const ColbyChartForm = () => {
                     </Tabs.Item>
                 </Tabs>
                 <div className="w-full flex justify-between mt-10">
-                    <Button color="blue" onClick={onClearCache}>Clear Cache</Button>
+                    <Button color="blue" onClick={handleClearCache}>Reset Form</Button>
                     {/* <Button color="blue" outline>Force Refresh</Button> */}
                     <Button color="success" onClick={onDownloadChart}>Download Chart</Button>
                 </div>

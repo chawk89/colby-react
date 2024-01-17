@@ -79,7 +79,7 @@ const initialState = {
                 stacked: false,
                 title: {
                     display: true,
-                    text: "Default X-Axis Label",
+                    text: "",
                 },
             },
             y: {
@@ -123,15 +123,25 @@ const generalOptionUpdate = (oldOptions, general) => {
     newOptions.indexAxis = switchRowColumn ? 'y' : 'x'
     return newOptions
 }
+const validateMinMaxValue = (v) => {
+    if (v == "" || v == undefined || v == null) return false
+    if (typeof v == "number") return true;
+    if (typeof v == "string" && +v == v) return true;
+    return false
+}
 const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
     const newOptions = { ...oldOptions }
 
-    if (xAxis.min) newOptions.scales.x.suggestedMin = xAxis.min;
-    if (xAxis.max) newOptions.scales.x.suggestedMax = xAxis.max;
-    if (xAxis.label) newOptions.scales.x.title.text = xAxis.label;
-    if (yAxis.min) newOptions.scales.y.suggestedMin = yAxis.min;
-    if (yAxis.max) newOptions.scales.y.suggestedMax = yAxis.max;
-    if (yAxis.label) newOptions.scales.y.title.text = yAxis.label;
+
+    newOptions.scales.x.min = validateMinMaxValue(xAxis.min) ? xAxis.min : undefined;
+    newOptions.scales.x.max = validateMinMaxValue(xAxis.max) ? xAxis.max : undefined;
+    newOptions.scales.x.title.text = xAxis.label ?? "";
+
+
+    newOptions.scales.y.min = validateMinMaxValue(yAxis.min) ? yAxis.min : undefined
+    newOptions.scales.y.max = validateMinMaxValue(yAxis.max) ? yAxis.max : undefined;
+    newOptions.scales.y.title.text = yAxis.label ?? "";
+
 
     return newOptions
 }
@@ -225,9 +235,6 @@ const updateChartOptions = (oldOptions, forms) => {
 
     return newOptions
 }
-const updateDatasets = (data, option) => {
-
-}
 
 
 // Reducer function
@@ -235,10 +242,8 @@ const reducer = (state, action) => {
     const { type, ...payload } = action
     switch (type) {
         case UDPATE_FORM: {
-            
+
             const { data: forms } = payload
-            console.log('[UDPATE_FORM]', forms, state.forms)
-            
 
             const options = updateChartOptions(state.options, forms)
             const newState = { ...state, options, forms };
@@ -273,7 +278,8 @@ const getInitialState = ({ state, info }) => {
     const keyLabels = chartData.header.map(h => ({ key: md5.base64(h), label: h }))
     const datasets = getChartDataObj(keyLabels, chartData.cols)
     const yAxis = keyLabels.reduce((p, c) => ({ ...p, [c.key]: true }), {})
-    return {
+
+    const newStates = {
         ...state,
         forms: {
             ...state.forms,
@@ -289,6 +295,8 @@ const getInitialState = ({ state, info }) => {
         },
         chartType
     }
+
+    return newStates
 }
 const getXAxisDatafield = (data) => {
     const { forms: { general: { xAxis } } } = data
@@ -313,14 +321,18 @@ const getFilteredDatasets = (data) => {
     const datasets = filteredKeys.length > 0 ? filteredKeys.map(key => axesDatasets[key]) : []
     return {
         labels,
-        datasets
+        datasets,
+        xAxisLabel: axesDatasets[xAxis].label
     }
 }
 const updateChartDatasets = (state) => {
-    const data = getFilteredDatasets(state);
+    const { xAxisLabel, ...data } = getFilteredDatasets(state);
     const result = createDatasets(data);
     if (result) {
         state.data = result
+        if (!state.options.scales.x.title.text) {
+            state.options.scales.x.title.text = xAxisLabel
+        }
     }
 }
 
@@ -352,6 +364,19 @@ export const ChartProvider = ({ children }) => {
         leave() {
             draggerPlugin?.leave()
         }
+
+    }
+    storedState.options.scales.x.ticks = {
+        ...storedState.options.scales.x.ticks,
+
+    }
+    storedState.options.scales.y.ticks = {
+        ...storedState.options.scales.y.ticks,
+        callback: function (value) {
+            // console.log(value)
+            // if (typeof value === 'number' && value == Math.floor(value)) return Math.floor(value)
+            return value
+        }
     }
 
     const xAxis = getXAxisDatafield(storedState)
@@ -379,6 +404,11 @@ export const ChartProvider = ({ children }) => {
             document.body.removeChild(downloadLink);
         }
     }
+    const onClearCache = () => {
+        localStorage.removeItem(storageKey)
+        console.log('[initialState.forms]', initialState.forms)
+        // dispatch({ type: UDPATE_FORM, data: initialState.forms })
+    }
 
 
     useEffect(() => {
@@ -386,7 +416,7 @@ export const ChartProvider = ({ children }) => {
     }, [state, storageKey]);
 
     return (
-        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart, draggerPlugin }}>
+        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart, draggerPlugin, onClearCache }}>
             {children}
         </ChartContext.Provider>
     );

@@ -44,7 +44,6 @@ const ColbyChart = () => {
     return (
         <ReactChart ref={chartRef} type={chartType} options={options} data={{ ...data }}
             plugins={[draggerPlugin]}
-            redraw={true}
         />
     )
 }

@@ -11,7 +11,7 @@ import useFormValue from '../hooks/useFormValue';
 
 const ColbyChartForm = () => {
 
-    const { state: { forms, data }, dispatch, onDownloadChart, chartRef } = useChartContext()
+    const { state: { forms, data }, dispatch, onDownloadChart, onClearCache } = useChartContext()
 
     const methods = useForm({ defaultValues: forms })
 
@@ -28,8 +28,8 @@ const ColbyChartForm = () => {
 
     const onSubmit = (data) => {
         // dispatch({ type: UDPATE_FORM, data })
-        dispatch({ type: UDPATE_FORM, data })
     }
+
     return (
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)} className='w-full'>
@@ -55,7 +55,7 @@ const ColbyChartForm = () => {
                                 <div className="flex items-center">
                                     <div className="flex items-center">
                                         <Label className="inline mr-2" htmlFor="plotted-datasets" value="Plotted Datasets:" />
-                                        <div className="flex gap-3">                                            
+                                        <div className="flex gap-3">
                                             {keyLabels.map(({ key, label }) => key != xAxis && <div key={key}><Checkbox   {...register(`general.yAxis.${key}`)} /> <Label value={label} /> </div>)}
                                         </div>
                                     </div>
@@ -164,37 +164,38 @@ const ColbyChartForm = () => {
                     {/* Annotations tab end */}
                     {/* Style tab start */}
                     <Tabs.Item title="Style" icon={HiAdjustments}>
-                        <div className="w-full min-h-32 grid grid-cols-3 gap-4">
-                            <div className="col-span-1">
-                                <div className="flex items-center">
-                                    <Label className="inline mr-2" htmlFor="style-titlefont" value="Title Font:" />
-                                    <TextInput id="style-titlefont" type="text" placeholder="Lora" {...register('styles.fontName')} />
+                        <div className="w-full min-h-32">
+                            <div className="w-full grid grid-cols-3 gap-4">
+                                <div className="col-span-1">
+                                    <div className="flex items-center">
+                                        <Label className="inline mr-2" htmlFor="style-titlefont" value="Title Font:" />
+                                        <TextInput id="style-titlefont" type="text" placeholder="Lora" {...register('styles.fontName')} />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="col-span-1">
-                                <div className="flex items-center h-full">
-                                    <Label className="inline mr-2" htmlFor="style-color" value="Title Color:" />
-                                    <Controller
-                                        name="styles.fontColor"
-                                        control={control}
-                                        render={({ field: { value, onChange } }) => {
-                                            return <PopoverPicker color={value} onChange={onChange} />;
-                                        }}
-                                    />
+                                <div className="col-span-1">
+                                    <div className="flex items-center h-full">
+                                        <Label className="inline mr-2" htmlFor="style-color" value="Title Color:" />
+                                        <Controller
+                                            name="styles.fontColor"
+                                            control={control}
+                                            render={({ field: { value, onChange } }) => {
+                                                return <PopoverPicker color={value} onChange={onChange} />;
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="col-span-1">
-                                <div className="flex items-center">
-                                    <Label className="inline mr-2" htmlFor="style-fontsize" value="Font Size:" />
-                                    <TextInput id="style-fontsize" type="text" placeholder="18" {...register('styles.fontSize')} />
+                                <div className="col-span-1">
+                                    <div className="flex items-center">
+                                        <Label className="inline mr-2" htmlFor="style-fontsize" value="Font Size:" />
+                                        <TextInput id="style-fontsize" type="text" placeholder="18" {...register('styles.fontSize')} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
                     </Tabs.Item>
                 </Tabs>
                 <div className="w-full flex justify-between mt-10">
-                    <Button type="submit" color="blue">Save</Button>
+                    <Button color="blue" onClick={onClearCache}>Clear Cache</Button>
                     {/* <Button color="blue" outline>Force Refresh</Button> */}
                     <Button color="success" onClick={onDownloadChart}>Download Chart</Button>
                 </div>

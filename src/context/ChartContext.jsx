@@ -229,16 +229,20 @@ const updateDatasets = (data, option) => {
 
 }
 
+
 // Reducer function
 const reducer = (state, action) => {
     const { type, ...payload } = action
     switch (type) {
         case UDPATE_FORM: {
-            const { onChartRefresh } = state
-
+            
             const { data: forms } = payload
+            console.log('[UDPATE_FORM]', forms, state.forms)
+            
+
             const options = updateChartOptions(state.options, forms)
             const newState = { ...state, options, forms };
+
             updateChartDatasets(newState);
             return newState
         }

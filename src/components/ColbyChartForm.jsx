@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Button, Checkbox, Label, Select, Tabs, TextInput, ToggleSwitch, Accordion } from 'flowbite-react';
 import { HiAdjustments, HiClipboardList, HiUserCircle } from 'react-icons/hi';
 import { MdDashboard } from 'react-icons/md';
@@ -7,6 +7,7 @@ import { useChartContext } from '../hooks/useChartContext';
 import { PopoverPicker } from './common/PopoverPicker'
 import { useForm, FormProvider, useFormContext, Controller } from "react-hook-form"
 import { UDPATE_FORM } from '../context/ChartContext';
+import useFormValue from '../hooks/useFormValue';
 
 const ColbyChartForm = () => {
 
@@ -16,19 +17,26 @@ const ColbyChartForm = () => {
 
     const { register, control, watch } = methods
     const xAxis = watch('general.xAxis')
-    const { axes } = forms    
+    const { axes } = forms
     const { keyLabels } = axes
 
-    const onSubmit = (data) => {        
+    const handleUpdate = useCallback((data) => {
+        dispatch({ type: UDPATE_FORM, data })
+    }, [dispatch])
+
+    useFormValue(watch, handleUpdate)
+
+    const onSubmit = (data) => {
+        // dispatch({ type: UDPATE_FORM, data })
         dispatch({ type: UDPATE_FORM, data })
     }
     return (
         <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(onSubmit)}>
+            <form onSubmit={methods.handleSubmit(onSubmit)} className='w-full'>
                 <Tabs style="fullWidth" className='w-full'>
                     {/* general tab start */}
                     <Tabs.Item active title="General" icon={MdDashboard}>
-                        <div className="w-full grid grid-cols-3 gap-4">
+                        <div className="w-full min-h-32 grid grid-cols-3 gap-4">
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="title" value="Title:" />
@@ -47,7 +55,9 @@ const ColbyChartForm = () => {
                                 <div className="flex items-center">
                                     <div className="flex items-center">
                                         <Label className="inline mr-2" htmlFor="plotted-datasets" value="Plotted Datasets:" />
-                                        {keyLabels.map(({ key, label }) => key != xAxis && <div key={key}><Checkbox   {...register(`general.yAxis.${key}`)} /> <Label value={label} /> </div>)}
+                                        <div className="flex gap-3">                                            
+                                            {keyLabels.map(({ key, label }) => key != xAxis && <div key={key}><Checkbox   {...register(`general.yAxis.${key}`)} /> <Label value={label} /> </div>)}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -101,7 +111,7 @@ const ColbyChartForm = () => {
                     {/* general tab end */}
                     {/* X Axis tab start */}
                     <Tabs.Item title="X-Axis" icon={MdDashboard}>
-                        <div className="w-full grid grid-cols-2 gap-4">
+                        <div className="w-full min-h-32 grid grid-cols-2 gap-4">
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="xMin" value="X-Min:" />
@@ -125,7 +135,7 @@ const ColbyChartForm = () => {
                     {/* X Axis tab end */}
                     {/* Y Axis tab start */}
                     <Tabs.Item title="Y-Axis" icon={HiAdjustments}>
-                        <div className="w-full grid grid-cols-2 gap-4">
+                        <div className="w-full min-h-32 grid grid-cols-2 gap-4">
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="yMin" value="Y-Min:" />
@@ -154,7 +164,7 @@ const ColbyChartForm = () => {
                     {/* Annotations tab end */}
                     {/* Style tab start */}
                     <Tabs.Item title="Style" icon={HiAdjustments}>
-                        <div className="w-full grid grid-cols-3 gap-4">
+                        <div className="w-full min-h-32 grid grid-cols-3 gap-4">
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="style-titlefont" value="Title Font:" />

@@ -50,7 +50,8 @@ const initialState = {
         },
         axes: {
             keyLabels: [],
-        }
+        },
+        dataRange: ''
     },
     options: {
         responsive: true,
@@ -97,6 +98,7 @@ const initialState = {
 export const UDPATE_FORM = 'UDPATE_FORM';
 export const UPDATE_DATASETS = 'UPDATE_DATASETS';
 export const RELOAD_FORM = 'RELOAD_FORM';
+export const UPDATE_DATA_RANGE = 'UPDATE_DATA_RANGE';
 
 
 const generalOptionUpdate = (oldOptions, general) => {
@@ -216,25 +218,10 @@ const updateAnnotation = (oldOptions, param, global) => {
 }
 
 
-const updateChartOptions = (oldOptions, forms) => {
-    console.log(oldOptions, forms)
-    // chart title
-    const { annotation, general, xAxis, yAxis, styles } = forms
-
-    // general options
-    let newOptions = generalOptionUpdate(oldOptions, general)
-    // axis options
-    newOptions = updateAxisRangeValue(newOptions, { xAxis, yAxis })
-
-    // updateAnnotation
-    newOptions = updateAnnotation(newOptions, annotation, forms)
-
-    // updateGlobalStyles
-    newOptions = updateGlobalStyles(newOptions, styles)
-
-    // console.log('[newOptions]', newOptions)
-
-    return newOptions
+const updateDataRange = (range) => {
+    if (window?.updateDataRange) {
+        window?.updateDataRange(range)
+    }
 }
 
 
@@ -256,6 +243,18 @@ const reducer = (state, action) => {
             const { data } = payload
             const newState = { ...state, ...data }
             return newState
+        }
+        case UPDATE_DATA_RANGE: {
+            const { data: newDataRange } = payload
+            const newState = {
+                ...state, forms: {
+                    ...state.forms,
+                    dataRange: newDataRange
+                }
+            };
+            updateDataRange(newDataRange);
+            return newState
+
         }
         default:
             return state;

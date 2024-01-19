@@ -1,15 +1,18 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback } from 'react'
 import { Button, Checkbox, Label, Select, Tabs, TextInput, ToggleSwitch, Accordion } from 'flowbite-react';
 import { HiAdjustments, HiClipboardList, HiUserCircle } from 'react-icons/hi';
 import { MdDashboard } from 'react-icons/md';
-import Annotation from './form/Annotation';
+import { useForm, FormProvider, Controller } from "react-hook-form"
+
 import { useChartContext } from '../hooks/useChartContext';
 import { PopoverPicker } from './common/PopoverPicker'
-import { useForm, FormProvider, useFormContext, Controller } from "react-hook-form"
 import { UDPATE_FORM } from '../context/ChartContext';
 import useFormValue from '../hooks/useFormValue';
-import PassiveTextInput from './form/PassiveTextInput';
-import ColbyTextInput from './form/ColbyTextInput';
+import AnnotationTab from './form/tabs/AnnotationTab';
+import ColbyTextInput from './form/elements/ColbyTextInput';
+import GeneralTab from './form/tabs/GeneralTab';
+
+const FormPropertyValues = ["annotation", "general", "xAxis", "yAxis", "styles", "axes" ]
 
 const ColbyChartForm = () => {
 
@@ -18,7 +21,7 @@ const ColbyChartForm = () => {
     const methods = useForm({ defaultValues: forms })
 
     const { register, control, watch, reset: resetForm } = methods
-    const xAxis = watch('general.xAxis')
+    
     const { axes } = forms
     const { keyLabels } = axes
 
@@ -29,8 +32,9 @@ const ColbyChartForm = () => {
         resetForm()
         // onClearCache()
     }, [onClearCache])
+    
 
-    useFormValue(watch, handleUpdate)
+    useFormValue(watch, handleUpdate, FormPropertyValues)
 
     const onSubmit = (data) => {
         // dispatch({ type: UDPATE_FORM, data })
@@ -42,7 +46,7 @@ const ColbyChartForm = () => {
                 <Tabs style="fullWidth" className='w-full'>
                     {/* general tab start */}
                     <Tabs.Item active title="General" icon={MdDashboard}>
-                        <div className="w-full min-h-32 grid grid-cols-3 gap-4">
+                        {/* <div className="w-full min-h-32 grid grid-cols-3 gap-4">
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="title" value="Title:" />
@@ -117,7 +121,8 @@ const ColbyChartForm = () => {
                                 </div>
                             </div>
 
-                        </div>
+                        </div> */}
+                        <GeneralTab keyLabels={keyLabels} />
                     </Tabs.Item>
                     {/* general tab end */}
                     {/* X Axis tab start */}
@@ -170,7 +175,7 @@ const ColbyChartForm = () => {
                     {/* Y Axis tab end */}
                     {/* Annotations tab start */}
                     <Tabs.Item title="Annotations" icon={HiClipboardList}>
-                        <Annotation />
+                        <AnnotationTab />
                     </Tabs.Item>
                     {/* Annotations tab end */}
                     {/* Style tab start */}

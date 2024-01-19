@@ -7,10 +7,7 @@ export const useIsLoaded = () => {
         const intervalId = setInterval(() => {
             const newChartInfo = window?.ColbyChartInfo;
             if (newChartInfo !== chartInfo) {
-                setChartInfo(newChartInfo);
-                console.log('ChartInfo changed:', newChartInfo);
-                // Perform any additional actions based on the change
-                clearInterval(intervalId);
+                setChartInfo(newChartInfo);                
             }
         }, 1000); // Adjust the interval duration as needed
 

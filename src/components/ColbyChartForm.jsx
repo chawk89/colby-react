@@ -8,6 +8,8 @@ import { PopoverPicker } from './common/PopoverPicker'
 import { useForm, FormProvider, useFormContext, Controller } from "react-hook-form"
 import { UDPATE_FORM } from '../context/ChartContext';
 import useFormValue from '../hooks/useFormValue';
+import PassiveTextInput from './form/PassiveTextInput';
+import ColbyTextInput from './form/ColbyTextInput';
 
 const ColbyChartForm = () => {
 
@@ -44,7 +46,12 @@ const ColbyChartForm = () => {
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="title" value="Title:" />
-                                    <TextInput id="title" type="text" placeholder="Default title" {...register('general.title')} />
+                                    <ColbyTextInput
+                                        type="text"
+                                        control={control}
+                                        name="general.title"
+                                        placeholder="Default title"
+                                    />
                                 </div>
                             </div>
                             <div className="col-span-1">
@@ -119,19 +126,19 @@ const ColbyChartForm = () => {
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="xMin" value="X-Min:" />
-                                    <TextInput id="xMin" type="number" placeholder="xMin" {...register('xAxis.min')} />
+                                    <ColbyTextInput id="xMin" type="number" placeholder="xMin" control={control} name='xAxis.min' />
                                 </div>
                             </div>
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="xMax" value="X-Max:" />
-                                    <TextInput id="xMax" type="number" placeholder="xMax" {...register('xAxis.max')} />
+                                    <ColbyTextInput id="xMax" type="number" placeholder="xMax" control={control} name='xAxis.max' />
                                 </div>
                             </div>
                             <div className="col-span-2">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="xLabel" value="Label:" />
-                                    <TextInput id="xLabel" type="text" placeholder="Default X Axis" {...register('xAxis.label')} />
+                                    <ColbyTextInput id="xLabel" type="text" placeholder="Default X Axis" control={control} name='xAxis.label' />
                                 </div>
                             </div>
                         </div>
@@ -143,19 +150,19 @@ const ColbyChartForm = () => {
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="yMin" value="Y-Min:" />
-                                    <TextInput id="yMin" type="number" placeholder="yMin" {...register('yAxis.min')} />
+                                    <ColbyTextInput id="yMin" type="number" placeholder="yMin" control={control} name='yAxis.min' />
                                 </div>
                             </div>
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="yMax" value="Y-Max:" />
-                                    <TextInput id="yMax" type="number" placeholder="yMax" {...register('yAxis.max')} />
+                                    <ColbyTextInput id="yMax" type="number" placeholder="yMax" control={control} name='yAxis.max' />
                                 </div>
                             </div>
                             <div className="col-span-2">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="yLabel" value="Label:" />
-                                    <TextInput id="yLabel" type="text" placeholder="Default Y Axis" {...register('yAxis.label')} />
+                                    <ColbyTextInput id="yLabel" type="text" placeholder="Default Y Axis" control={control} name='yAxis.label' />
                                 </div>
                             </div>
                         </div>
@@ -200,7 +207,6 @@ const ColbyChartForm = () => {
                 </Tabs>
                 <div className="w-full flex justify-between mt-10">
                     <Button color="blue" onClick={handleClearCache}>Reset Form</Button>
-                    {/* <Button color="blue" outline>Force Refresh</Button> */}
                     <Button color="success" onClick={onDownloadChart}>Download Chart</Button>
                 </div>
 

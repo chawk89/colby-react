@@ -219,8 +219,8 @@ const updateAnnotation = (oldOptions, param, global) => {
 
 
 const updateDataRange = (range) => {
+    console.log('[window?.updateDataRange]', window?.updateDataRange, range)
     if (window?.updateDataRange) {
-        console.log('[window?.updateDataRange]', window?.updateDataRange, range)
         window?.updateDataRange(range)
     }
 }

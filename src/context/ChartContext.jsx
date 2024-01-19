@@ -220,6 +220,7 @@ const updateAnnotation = (oldOptions, param, global) => {
 
 const updateDataRange = (range) => {
     if (window?.updateDataRange) {
+        console.log('[window?.updateDataRange]', window?.updateDataRange)
         window?.updateDataRange(range)
     }
 }
@@ -275,7 +276,7 @@ const getChartDataObj = (labels, cols) => {
     return result
 }
 const getInitialState = ({ state, info }) => {
-    // { ...initialState, chartType }
+    
     const { chartType, getDatasets } = info
     const chartData = getDatasets()
 

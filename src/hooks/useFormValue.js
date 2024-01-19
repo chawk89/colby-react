@@ -3,7 +3,7 @@ import { copySimpleObject, isEqualObject } from '../utils/utils';
 import useDebounceEffect from './useDebounceEffect';
 
 const checkValidateValueSame = (isEqual, propertyList, { preValues, curValues }) => {
-    return !propertyList.some(a => !isEqual(preValues[a], curValues[a]))
+    return propertyList.every(a => isEqual(preValues[a], curValues[a]))
 }
 const useFormValue = (watch, onChangeHandle, list) => {
 

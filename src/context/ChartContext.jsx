@@ -238,8 +238,7 @@ const updateChartOptions = (oldOptions, forms) => {
 }
 
 
-const fetchDataRange = async (range) => {
-    console.log('[window?.ColbyChartInfo?.fetchDataRange]', window?.ColbyChartInfo?.fetchDataRange, range)
+const fetchDataRange = async (range) => {    
     if (window?.ColbyChartInfo?.fetchDataRange) {
         const result = await window.ColbyChartInfo.fetchDataRange(range)
     }

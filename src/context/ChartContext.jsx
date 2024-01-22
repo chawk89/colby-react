@@ -360,6 +360,8 @@ const updateChartDatasets = (state) => {
 
 export const ChartProvider = ({ children }) => {
     const ColbyChartInfo = window.ColbyChartInfo
+    
+    if (!ColbyChartInfo) return <></>
 
     const { storageKey, fetchDataRange, loadingStatus } = ColbyChartInfo
 

@@ -72,7 +72,7 @@ async function init() {
     //  not yet
 
     window.ColbyChartInfo = {
-        ...window.ColbyChartInfo,
+        chartType: window?.ColbyChartType ?? 'line',
         createDatasets,
         fetchDataRange,
         loadingStatus: 'none',

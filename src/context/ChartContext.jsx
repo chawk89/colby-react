@@ -239,7 +239,7 @@ const updateChartOptions = (oldOptions, forms) => {
 
 
 const updateDataRange = (range) => {
-    console.log('[window?.updateDataRange]', window?.updateDataRange, range)
+    console.log('[window?.updateDataRange1]', window?.updateDataRange, range)
     if (window?.updateDataRange) {
         window?.updateDataRange(range)
     }

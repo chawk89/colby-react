@@ -216,6 +216,26 @@ const updateAnnotation = (oldOptions, param, global) => {
 
     return newOptions
 }
+const updateChartOptions = (oldOptions, forms) => {
+    console.log(oldOptions, forms)
+    // chart title
+    const { annotation, general, xAxis, yAxis, styles } = forms
+
+    // general options
+    let newOptions = generalOptionUpdate(oldOptions, general)
+    // axis options
+    newOptions = updateAxisRangeValue(newOptions, { xAxis, yAxis })
+
+    // updateAnnotation
+    newOptions = updateAnnotation(newOptions, annotation, forms)
+
+    // updateGlobalStyles
+    newOptions = updateGlobalStyles(newOptions, styles)
+
+    // console.log('[newOptions]', newOptions)
+
+    return newOptions
+}
 
 
 const updateDataRange = (range) => {

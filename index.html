@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vite + React</title>
+  <title> React </title>
 </head>
 
 <body>
@@ -36,7 +36,7 @@
       }
       await fetchData()
 
-      const data = [['Date',
+      const data = range ? [['Date',
         'Q1 FY2013',
         'Q2 FY2013',
         'Q3 FY2013',
@@ -75,7 +75,13 @@
         '6382',
         '5719',
         '4442']
-      ]
+      ] : [['Date',
+        'Q1 FY2013',
+        'Q2 FY2013'], ['Online Sales',
+        '237',
+        '492'], ['Offline Sales',
+        '5208',
+        '5094'],]
       const rawDatasets = {
         colCount: data.length,
         header: data.map(r => r[0]),
@@ -89,7 +95,7 @@
       }
     }
     async function init() {
-      const testKey = await (() => { console.log('init'); return 'test-key'})();
+      const testKey = await (() => { console.log('init'); return 'test-key' })();
       window.ColbyChartInfo = {
         chartType: 'bar',
         createDatasets,

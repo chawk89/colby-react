@@ -291,10 +291,9 @@ const getChartDataObj = (labels, cols) => {
     }
     return result
 }
-const getInitialState = ({ state, info }) => {
+const onInitializeState = ({ state, info }) => {
 
-    const { chartType, rawDatasets } = info
-    console.log('[rawDatasets]', info)
+    const { chartType, rawDatasets } = info    
     const chartData = rawDatasets
 
     const keyLabels = chartData.header.map(h => ({ key: md5.base64(h), label: h }))
@@ -360,13 +359,13 @@ const updateChartDatasets = (state) => {
 
 export const ChartProvider = ({ children }) => {
     const ColbyChartInfo = window.ColbyChartInfo
-    
+
     if (!ColbyChartInfo) return <></>
 
     const { storageKey, fetchDataRange, loadingStatus } = ColbyChartInfo
 
     if (!storageKey || !fetchDataRange || !loadingStatus) {
-        throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange--1`)
+        throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange--2`)
     }
 
     const storageValue = JSON.parse(localStorage.getItem(storageKey))
@@ -384,13 +383,14 @@ export const ChartProvider = ({ children }) => {
     }
 
     const { chartType, createDatasets, rawDatasets } = ColbyChartInfo
+
     if (!chartType || !createDatasets || !storageKey || !rawDatasets) {
         throw Error('ColbyChartInfo is insufficient')
     }
     const chartRef = useRef(null);
     const draggerPlugin = useMemo(() => new AnnotationDragger(), [])
 
-    const storedState = storageValue || getInitialState({ state: initialState, info: ColbyChartInfo });
+    const storedState = onInitializeState({ state: storageValue || initialState, info: ColbyChartInfo });
 
     const onAdditionalUpdates = (state) => {
         state.chartType = chartType

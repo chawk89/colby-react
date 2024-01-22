@@ -1,4 +1,4 @@
-const fetchUUID = () => {
+function fetchUUID() {
     return new Promise((res, rej) => {
         try {
             google.script.run
@@ -12,7 +12,7 @@ const fetchUUID = () => {
 
     })
 }
-const fetchData = (range) => {
+function fetchData(range) {
     return new Promise((res, rej) => {
         try {
             google.script.run
@@ -72,7 +72,7 @@ async function init() {
     //  not yet
 
     window.ColbyChartInfo = {
-        chartType: 'line',
+        ...window.ColbyChartInfo,
         createDatasets,
         fetchDataRange,
         loadingStatus: 'none',
@@ -87,16 +87,13 @@ const fetchDataRange = async (range) => {
     }
 
     try {
-
         const sheetData = await fetchData(range)
-        console.log('[fetchData] sheetData', sheetData)
 
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo,
             rawDatasets: rotateSheetData(sheetData),
             loadingStatus: 'loaded'
         }
-        console.log('[window.ColbyChartInfo] result', window.ColbyChartInfo)
     } catch (ex) {
         console.log(ex)
     }

@@ -250,12 +250,9 @@ const reducer = (state, action) => {
     const { type, ...payload } = action
     switch (type) {
         case UDPATE_FORM: {
-
             const { data: forms } = payload
-
             const options = updateChartOptions(state.options, forms)
             const newState = { ...state, options, forms };
-
             updateChartDatasets(newState);
             return newState
         }

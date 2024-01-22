@@ -29,7 +29,7 @@
       return new Promise(res => setTimeout(res, 3000))
     }
     async function fetchDataRange(range) {
-      console.log('[fetchDataRange]', range)
+      console.log('[fetchDataRange]', !!range)
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
         loadingStatus: 'loading'

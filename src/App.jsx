@@ -13,9 +13,9 @@ function App() {
 
   return (
     <>
-      {(loadingStatus != 'loaded') && <ColbyLoader />}
+      {loadingStatus != 'loaded' && <ColbyLoader />}
       <ChartProvider>
-        (<div className="max-w-7xl mx-auto mb-4">
+        <div className="max-w-7xl mx-auto mb-4">
           <div className="w-full flex ">
             <div className="w-full xl:w-8/12 px-2">
               <ColbyChart />
@@ -27,7 +27,7 @@ function App() {
           <div className="w-full flex mt-4">
             <ColbyChartForm />
           </div>
-        </div>)
+        </div>
       </ChartProvider>
     </>
   )

@@ -12,7 +12,7 @@ function App() {
   const loadingStatus = useLoadingStatus()
 
   return (
-    <>
+    window.ColbyChartInfo && <>
       {(loadingStatus == 'loading' || loadingStatus == 'none') && <ColbyLoader />}
       <ChartProvider>
         (<div className="max-w-7xl mx-auto mb-4">

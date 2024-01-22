@@ -4,7 +4,7 @@ import { Controller, useFormContext } from "react-hook-form"
 
 import ColbyTextInput from '../elements/ColbyTextInput';
 import { useChartContext } from '../../../hooks/useChartContext';
-import { UPDATE_DATA_RANGE } from '../../../context/ChartContext';
+import { FETCH_DATA_RANGE } from '../../../context/ChartContext';
 
 const GeneralTab = ({ keyLabels }) => {
     const { control, register, watch } = useFormContext()
@@ -20,7 +20,7 @@ const GeneralTab = ({ keyLabels }) => {
         if (pastDataRange == dataRange) return;
         if (dataRange.trim() == '' || dateRangePattern.test(dataRange)) {
             setPastDataRange(pastDataRange)
-            dispatch({ type: UPDATE_DATA_RANGE, data: dataRange })
+            dispatch({ type: FETCH_DATA_RANGE, data: dataRange })
         }
 
     }, [dataRange, dispatch])

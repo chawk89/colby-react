@@ -98,7 +98,7 @@ const initialState = {
 export const UDPATE_FORM = 'UDPATE_FORM';
 export const UPDATE_DATASETS = 'UPDATE_DATASETS';
 export const RELOAD_FORM = 'RELOAD_FORM';
-export const UPDATE_DATA_RANGE = 'UPDATE_DATA_RANGE';
+export const FETCH_DATA_RANGE = 'FETCH_DATA_RANGE';
 
 
 const generalOptionUpdate = (oldOptions, general) => {
@@ -238,10 +238,10 @@ const updateChartOptions = (oldOptions, forms) => {
 }
 
 
-const updateDataRange = (range) => {
-    console.log('[window?.ColbyChartInfo?.updateDataRange]', window?.ColbyChartInfo?.updateDataRange, range)
-    if (window?.ColbyChartInfo?.updateDataRange) {
-        window.ColbyChartInfo.updateDataRange(range)
+const fetchDataRange = async (range) => {
+    console.log('[window?.ColbyChartInfo?.fetchDataRange]', window?.ColbyChartInfo?.fetchDataRange, range)
+    if (window?.ColbyChartInfo?.fetchDataRange) {
+        const result = await window.ColbyChartInfo.fetchDataRange(range)
     }
 }
 
@@ -265,7 +265,7 @@ const reducer = (state, action) => {
             const newState = { ...state, ...data }
             return newState
         }
-        case UPDATE_DATA_RANGE: {
+        case FETCH_DATA_RANGE: {
             const { data: newDataRange } = payload
             const newState = {
                 ...state, forms: {
@@ -273,7 +273,7 @@ const reducer = (state, action) => {
                     dataRange: newDataRange
                 }
             };
-            updateDataRange(newDataRange);
+            fetchDataRange(newDataRange);
             return newState
 
         }
@@ -296,9 +296,10 @@ const getChartDataObj = (labels, cols) => {
     return result
 }
 const getInitialState = ({ state, info }) => {
-    
-    const { chartType, getDatasets } = info
-    const chartData = getDatasets()
+
+    const { chartType, rawDatasets } = info
+    console.log('[rawDatasets]', info)
+    const chartData = rawDatasets
 
     const keyLabels = chartData.header.map(h => ({ key: md5.base64(h), label: h }))
     const datasets = getChartDataObj(keyLabels, chartData.cols)
@@ -363,17 +364,35 @@ const updateChartDatasets = (state) => {
 
 export const ChartProvider = ({ children }) => {
     const ColbyChartInfo = window.ColbyChartInfo
+
+    const { storageKey, fetchDataRange, loadingStatus } = ColbyChartInfo
+
+    if (!storageKey || !fetchDataRange || !loadingStatus) {
+        throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange`)
+    }
+
+    const storageValue = JSON.parse(localStorage.getItem(storageKey))
+
+
     if (!ColbyChartInfo) {
         throw Error('ColbyChartInfo is missing')
     }
-    const { chartType, createDatasets, storageKey, getDatasets } = ColbyChartInfo
-    if (!chartType || !createDatasets || !storageKey || !getDatasets) {
+
+    console.log(`[loadingStatus]`, loadingStatus)
+
+    if (loadingStatus == 'none' || loadingStatus == 'loading') {
+        if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
+        return <></>
+    }
+
+    const { chartType, createDatasets, rawDatasets } = ColbyChartInfo
+    if (!chartType || !createDatasets || !storageKey || !rawDatasets) {
         throw Error('ColbyChartInfo is insufficient')
     }
     const chartRef = useRef(null);
     const draggerPlugin = useMemo(() => new AnnotationDragger(), [])
 
-    const storedState = JSON.parse(localStorage.getItem(storageKey)) || getInitialState({ state: initialState, info: ColbyChartInfo });
+    const storedState = storageValue || getInitialState({ state: initialState, info: ColbyChartInfo });
 
     const onAdditionalUpdates = (state) => {
         state.chartType = chartType

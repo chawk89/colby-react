@@ -88,15 +88,18 @@
         loadingStatus: 'loaded'
       }
     }
-
-    window.ColbyChartInfo = {
-      chartType: 'bar',
-      createDatasets,
-      // getDatasets,
-      storageKey: 'appState',
-      loadingStatus: 'none',
-      fetchDataRange
+    async function init() {
+      const testKey = await (() => { console.log('init'); return 'test-key'})();
+      window.ColbyChartInfo = {
+        chartType: 'bar',
+        createDatasets,
+        storageKey: `appState-${testKey}`,
+        loadingStatus: 'none',
+        fetchDataRange
+      }
     }
+    init();
+
   </script>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>

@@ -70,13 +70,14 @@ function createDatasets(data) {
 async function init() {
     const uuid = await fetchUUID()
     //  not yet
+    const chartType = window?.ColbyChartType ?? 'line'
 
     window.ColbyChartInfo = {
-        chartType: window?.ColbyChartType ?? 'line',
+        chartType,
         createDatasets,
         fetchDataRange,
         loadingStatus: 'none',
-        storageKey: `appState-${uuid}-line`,
+        storageKey: `appState-${uuid}-${chartType}`,
     }
 }
 

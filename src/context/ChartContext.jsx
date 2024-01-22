@@ -366,7 +366,7 @@ export const ChartProvider = ({ children }) => {
     const { storageKey, fetchDataRange, loadingStatus } = ColbyChartInfo
 
     if (!storageKey || !fetchDataRange || !loadingStatus) {
-        throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange`)
+        throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange--1`)
     }
 
     const storageValue = JSON.parse(localStorage.getItem(storageKey))

@@ -348,6 +348,8 @@ const getFilteredDatasets = (data) => {
 }
 const updateChartDatasets = (state) => {
     const { xAxisLabel, ...data } = getFilteredDatasets(state);
+    const createDatasets = window?.ColbyChartInfo?.createDatasets
+    if(!createDatasets) return ;
     const result = createDatasets(data);
     if (result) {
         state.data = result

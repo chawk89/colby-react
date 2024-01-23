@@ -12,7 +12,7 @@ import AnnotationTab from './form/tabs/AnnotationTab';
 import ColbyTextInput from './form/elements/ColbyTextInput';
 import GeneralTab from './form/tabs/GeneralTab';
 
-const FormPropertyValues = ["annotation", "general", "xAxis", "yAxis", "styles", "axes" ]
+const FormPropertyValues = ["annotationTemp", "general", "xAxis", "yAxis", "styles", "axes" ]
 
 const ColbyChartForm = () => {
 

@@ -2,11 +2,13 @@
 import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { AnnotationDragger } from '../utils/chart/AnnotationDragger';
 import { md5 } from 'js-md5';
+import { copySimpleObject } from '../utils/utils';
 
 // Initial state
 const initialState = {
     forms: {
-        annotation: {
+        annotation: [],
+        annotationTemp: {
             line: {
                 enabled: false,
                 axis: "x",
@@ -99,6 +101,7 @@ export const UDPATE_FORM = 'UDPATE_FORM';
 export const UPDATE_DATASETS = 'UPDATE_DATASETS';
 export const RELOAD_FORM = 'RELOAD_FORM';
 export const FETCH_DATA_RANGE = 'FETCH_DATA_RANGE';
+export const ADD_ANNOTATION_LINE = 'ADD_ANNOTATION_LINE';
 
 
 const generalOptionUpdate = (oldOptions, general) => {
@@ -198,11 +201,11 @@ const updateAnnotation = (oldOptions, param, global) => {
         }
 
 
-        if ( lineAxis == "x") {
+        if (lineAxis == "x") {
             lineAnnotation.yScaleID = "y"
             lineAnnotation.yMin = linePosition
             lineAnnotation.yMax = linePosition
-        } else if (switchRowColumn && lineAxis == "y") {
+        } else if (lineAxis == "y") {
             lineAnnotation.xScaleID = "x"
             lineAnnotation.xMin = linePosition
             lineAnnotation.xMax = linePosition
@@ -217,7 +220,7 @@ const updateAnnotation = (oldOptions, param, global) => {
 const updateChartOptions = (oldOptions, forms) => {
     console.log(oldOptions, forms)
     // chart title
-    const { annotation, general, xAxis, yAxis, styles } = forms
+    const { annotationTemp, general, xAxis, yAxis, styles } = forms
 
     // general options
     let newOptions = generalOptionUpdate(oldOptions, general)
@@ -225,7 +228,7 @@ const updateChartOptions = (oldOptions, forms) => {
     newOptions = updateAxisRangeValue(newOptions, { xAxis, yAxis })
 
     // updateAnnotation
-    newOptions = updateAnnotation(newOptions, annotation, forms)
+    newOptions = updateAnnotation(newOptions, annotationTemp, forms)
 
     // updateGlobalStyles
     newOptions = updateGlobalStyles(newOptions, styles)
@@ -271,6 +274,16 @@ const reducer = (state, action) => {
             return newState
 
         }
+        case ADD_ANNOTATION_LINE : {
+            const { data: newDataRange } = payload
+            const newState = {
+                ...state
+            };
+            const line = copySimpleObject(newState.forms.annotationTemp.line)
+
+            return newState
+
+        }
         default:
             return state;
     }
@@ -291,7 +304,7 @@ const getChartDataObj = (labels, cols) => {
 }
 const onInitializeState = ({ state, info }) => {
 
-    const { chartType, rawDatasets } = info    
+    const { chartType, rawDatasets } = info
     const chartData = rawDatasets
 
     const keyLabels = chartData.header.map(h => ({ key: md5.base64(h), label: h }))
@@ -347,7 +360,7 @@ const getFilteredDatasets = (data) => {
 const updateChartDatasets = (state) => {
     const { xAxisLabel, ...data } = getFilteredDatasets(state);
     const createDatasets = window?.ColbyChartInfo?.createDatasets
-    if(!createDatasets) return ;
+    if (!createDatasets) return;
     const result = createDatasets(data);
     if (result) {
         state.data = result
@@ -457,6 +470,10 @@ export const ChartProvider = ({ children }) => {
         // onAdditionalUpdates(state)        
         // dispatch({ type: RELOAD_FORM, data: state })
     }
+    const onAddAnnotation = (type) => {
+        console.log('[onAddAnnotation]', type)
+        dispatch('ADD_LINE_ITEM')
+    }
 
 
     useEffect(() => {
@@ -464,7 +481,7 @@ export const ChartProvider = ({ children }) => {
     }, [state, storageKey]);
 
     return (
-        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart, draggerPlugin, onClearCache }}>
+        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart, draggerPlugin, onClearCache, onAddAnnotation }}>
             {children}
         </ChartContext.Provider>
     );

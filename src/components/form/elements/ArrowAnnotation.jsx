@@ -9,7 +9,7 @@ const ArrowAnnotation = () => {
     return (
         <Card className="w-full">
             <Controller
-                name="annotation.arrow.enabled"
+                name="annotationTemp.arrow.enabled"
                 control={control}
                 render={({ field: { value, onChange } }) => {
                     return <ToggleSwitch label="Arrow Annotation" checked={value} onChange={onChange} />
@@ -20,7 +20,7 @@ const ArrowAnnotation = () => {
                 <div className="col-span-1">
                     <div className="flex items-center">
                         <Label className="inline mr-2" htmlFor="annotationAxisSelect" value="Axis:" />
-                        <Select id="annotationAxisSelect" {...register('annotation.arrow.axis')}>
+                        <Select id="annotationAxisSelect" {...register('annotationTemp.arrow.axis')}>
                             <option value="x">X</option>
                             <option value="y">Y</option>
                         </Select>
@@ -29,13 +29,13 @@ const ArrowAnnotation = () => {
                 <div className="col-span-1">
                     <div className="flex items-center">
                         <Label className="inline mr-2 shrink-0" htmlFor="axis-position" value="Axis Position:" />
-                        <TextInput id="axis-position" type="text" placeholder="10" {...register("annotation.arrow.position")} />
+                        <TextInput id="axis-position" type="text" placeholder="10" {...register("annotationTemp.arrow.position")} />
                     </div>
                 </div>
                 <div className="col-span-1">
                     <div className="flex items-center">
                         <Label className="inline mr-2 shrink-0" htmlFor="anno-linestyle" value="Line Style:" />
-                        <Select id="anno-linestyle" {...register("annotation.arrow.style")} >
+                        <Select id="anno-linestyle" {...register("annotationTemp.arrow.style")} >
                             <option value='none'>None</option>
                             <option value='dashed'>Dashed</option>
                             <option value='wave'>Wave</option>
@@ -45,14 +45,14 @@ const ArrowAnnotation = () => {
                 <div className="col-span-1">
                     <div className="flex items-center">
                         <Label className="inline mr-2 shrink-0" htmlFor="axis-label" value="Label:" />
-                        <TextInput id="axis-label" type="text" placeholder="Default Label" {...register("annotation.arrow.arrow")} />
+                        <TextInput id="axis-label" type="text" placeholder="Default Label" {...register("annotationTemp.arrow.arrow")} />
                     </div>
                 </div>
                 <div className="col-span-1">
                     <div className="flex items-center h-full">
                         <Label className="inline mr-2 shrink-0" htmlFor="anno-linecolor" value="Line Color:" />
                         <Controller
-                            name="annotation.arrow.color"
+                            name="annotationTemp.arrow.color"
                             control={control}
                             render={({ field: { value, onChange } }) => {
                                 return <PopoverPicker color={value} onChange={onChange} />;
@@ -63,7 +63,7 @@ const ArrowAnnotation = () => {
                 <div className="col-span-1">
                     <div className="flex items-center">
                         <Label className="inline mr-2 shrink-0" htmlFor="anno-line-thickness" value="Line Thickness:" />
-                        <TextInput id="anno-line-thickness" type="text" placeholder="10" {...register("annotation.arrow.thickness")} />
+                        <TextInput id="anno-line-thickness" type="text" placeholder="10" {...register("annotationTemp.arrow.thickness")} />
                     </div>
                 </div>
 

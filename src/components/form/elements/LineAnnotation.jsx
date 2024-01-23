@@ -6,20 +6,18 @@ import { useChartContext } from '../../../hooks/useChartContext';
 
 const LineAnnotation = () => {
 
-    const { state: { forms, data }, dispatch, onDownloadChart, onClearCache, onAddLineAnnotation } = useChartContext()
+    const { state: { forms, data }, dispatch, onDownloadChart, onClearCache, onAddAnnotation } = useChartContext()
     const { control, register, watch } = useFormContext()
-    const activeItem = watch('annotation.line.ativeItem')
-    const lineEnabled = watch('annotation.line.enabled')
-    const line = watch('annotation.line')
+    const lineEnabled = watch('annotationTemp.line.enabled')
 
     const handleAddClick = () => {
-        console.log('[handleAddClick]', line)
+        onAddAnnotation('line')
     }
 
     return (
         <Card className="w-full">
             <Controller
-                name="annotation.line.enabled"
+                name="annotationTemp.line.enabled"
                 control={control}
                 render={({ field: { value, onChange } }) => {
                     return <ToggleSwitch label="Line Annotation" checked={value} onChange={onChange} />
@@ -32,7 +30,7 @@ const LineAnnotation = () => {
                 <div className="col-span-1">
                     <div className="flex items-center">
                         <Label className="inline mr-2" htmlFor="annotationAxisSelect" value="Axis:" />
-                        <Select id="annotationAxisSelect" {...register('annotation.line.axis')}>
+                        <Select id="annotationAxisSelect" {...register('annotationTemp.line.axis')}>
                             <option value="x">X</option>
                             <option value="y">Y</option>
                         </Select>
@@ -41,13 +39,13 @@ const LineAnnotation = () => {
                 <div className="col-span-1">
                     <div className="flex items-center">
                         <Label className="inline mr-2 shrink-0" htmlFor="axis-position" value="Axis Position:" />
-                        <TextInput id="axis-position" type="text" placeholder="10" {...register("annotation.line.position")} />
+                        <TextInput id="axis-position" type="text" placeholder="10" {...register("annotationTemp.line.position")} />
                     </div>
                 </div>
                 <div className="col-span-1">
                     <div className="flex items-center">
                         <Label className="inline mr-2 shrink-0" htmlFor="anno-linestyle" value="Line Style:" />
-                        <Select id="anno-linestyle" {...register("annotation.line.style")} >
+                        <Select id="anno-linestyle" {...register("annotationTemp.line.style")} >
                             <option value='none'>None</option>
                             <option value='dashed'>Dashed</option>
                             <option value='wave'>Wave</option>
@@ -57,14 +55,14 @@ const LineAnnotation = () => {
                 <div className="col-span-1">
                     <div className="flex items-center">
                         <Label className="inline mr-2 shrink-0" htmlFor="axis-label" value="Label:" />
-                        <TextInput id="axis-label" type="text" placeholder="Default Label" {...register("annotation.line.label")} />
+                        <TextInput id="axis-label" type="text" placeholder="Default Label" {...register("annotationTemp.line.label")} />
                     </div>
                 </div>
                 <div className="col-span-1">
                     <div className="flex items-center h-full">
                         <Label className="inline mr-2 shrink-0" htmlFor="anno-linecolor" value="Line Color:" />
                         <Controller
-                            name="annotation.line.color"
+                            name="annotationTemp.line.color"
                             control={control}
                             render={({ field: { value, onChange } }) => {
                                 return <PopoverPicker color={value} onChange={onChange} />;
@@ -75,7 +73,7 @@ const LineAnnotation = () => {
                 <div className="col-span-1">
                     <div className="flex items-center">
                         <Label className="inline mr-2 shrink-0" htmlFor="anno-line-thickness" value="Line Thickness:" />
-                        <TextInput id="anno-line-thickness" type="text" placeholder="10" {...register("annotation.line.thickness")} />
+                        <TextInput id="anno-line-thickness" type="text" placeholder="10" {...register("annotationTemp.line.thickness")} />
                     </div>
                 </div>
                 {

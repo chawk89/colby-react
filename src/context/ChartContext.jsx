@@ -9,11 +9,11 @@ const initialState = {
         annotation: {
             line: {
                 enabled: false,
-                axis: "X",
-                position: "",
-                style: "None",
+                axis: "x",
+                position: 0,
+                style: "dashed",
                 thickness: "1",
-                color: "#180a0a",
+                color: "#8F0000",
                 label: "",
             },
             box: {
@@ -105,8 +105,6 @@ const generalOptionUpdate = (oldOptions, general) => {
     const newOptions = { ...oldOptions }
     const {
         title,
-        xAxis,
-        plotted,
         stacked,
         switchRowColumn,
         showLabels,
@@ -122,8 +120,8 @@ const generalOptionUpdate = (oldOptions, general) => {
     // show datalabels
     newOptions.plugins.datalabels.display = showLabels
     // switch RowColumn
+    // newOptions.indexAxis = switchRowColumn ? 'y' : 'x'
 
-    newOptions.indexAxis = switchRowColumn ? 'y' : 'x'
     return newOptions
 }
 const validateMinMaxValue = (v) => {
@@ -200,11 +198,11 @@ const updateAnnotation = (oldOptions, param, global) => {
         }
 
 
-        if ((switchRowColumn && lineAxis == "x") || (!switchRowColumn && lineAxis == "y")) {
+        if ( lineAxis == "x") {
             lineAnnotation.yScaleID = "y"
             lineAnnotation.yMin = linePosition
             lineAnnotation.yMax = linePosition
-        } else if ((switchRowColumn && lineAxis == "y") || (!switchRowColumn && lineAxis == "x")) {
+        } else if (switchRowColumn && lineAxis == "y") {
             lineAnnotation.xScaleID = "x"
             lineAnnotation.xMin = linePosition
             lineAnnotation.xMax = linePosition

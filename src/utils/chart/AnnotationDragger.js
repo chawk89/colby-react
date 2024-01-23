@@ -33,24 +33,25 @@ export class AnnotationDragger {
             const chart = this.chart
             const activePoints = chart.getElementsAtEventForMode(event, 'point', chart.options);
             console.log('[activePoints]', activePoints, this.chart)
+
+            // Check if there is at least one active point
+            if (activePoints.length > 0) {
+                // Get the first active point
+                // var firstPoint = activePoints[0];
+
+                // // Perform custom actions here
+                // // You can access the dataset and index of the clicked point
+                // var datasetIndex = firstPoint.datasetIndex;
+                // var index = firstPoint.index;
+
+                // Example: Log the dataset and index of the clicked point
+                console.log('Dataset Index:', datasetIndex);
+                console.log('Point Index:', index);
+            } else {
+
+            }
         }
 
-        // Check if there is at least one active point
-        if (activePoints.length > 0) {
-            // Get the first active point
-            // var firstPoint = activePoints[0];
-
-            // // Perform custom actions here
-            // // You can access the dataset and index of the clicked point
-            // var datasetIndex = firstPoint.datasetIndex;
-            // var index = firstPoint.index;
-
-            // Example: Log the dataset and index of the clicked point
-            console.log('Dataset Index:', datasetIndex);
-            console.log('Point Index:', index);
-        } else {
-
-        }
         event.preventDefault()
     }
     drawOnExternalTooltip(context) {

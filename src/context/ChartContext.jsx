@@ -2,12 +2,12 @@
 import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { AnnotationDragger } from '../utils/chart/AnnotationDragger';
 import { md5 } from 'js-md5';
-import { copySimpleObject } from '../utils/utils';
+import { copySimpleObject, getNewId } from '../utils/utils';
 
 // Initial state
 const initialState = {
     forms: {
-        annotation: [],
+        annotationSelected: {},
         annotationTemp: {
             line: {
                 enabled: false,
@@ -55,6 +55,7 @@ const initialState = {
         },
         dataRange: ''
     },
+    annotation: {},
     options: {
         responsive: true,
         events: ["mousedown", "mouseup", "mousemove", "mouseout", "mouseleave"],
@@ -101,7 +102,7 @@ export const UDPATE_FORM = 'UDPATE_FORM';
 export const UPDATE_DATASETS = 'UPDATE_DATASETS';
 export const RELOAD_FORM = 'RELOAD_FORM';
 export const FETCH_DATA_RANGE = 'FETCH_DATA_RANGE';
-export const ADD_ANNOTATION_LINE = 'ADD_ANNOTATION_LINE';
+export const ADD_ANNOTATION_ITEM = 'ADD_ANNOTATION_ITEM';
 
 
 const generalOptionUpdate = (oldOptions, general) => {
@@ -167,57 +168,85 @@ const updateGlobalStyles = (oldOptions, styles) => {
     newOptions.plugins.title.font = font
     return newOptions
 }
+const getLineAnnotation = (line) => {
+    if (!line.enabled && !line.id) return null
+    const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel } = line
+    const lineAnnotation = {
+        type: "line",
+        id: "lineAnnotation",
+        borderColor: lineColor,
+        borderWidth: lineThickness,
+    };
 
-const updateAnnotation = (oldOptions, param, global) => {
+    if (lineStyle == "dashed") {
+        lineAnnotation.borderDash = [5, 5];
+    } else if (lineStyle == "wave") {
+        lineAnnotation.borderDash = [10, 5, 5];
+    }
+
+    if (lineLabel) {
+        lineAnnotation.label = {
+            content: [lineLabel],
+            display: true,
+            textAlign: 'center',
+        };
+    }
+
+
+    if (lineAxis == "x") {
+        lineAnnotation.yScaleID = "y"
+        lineAnnotation.yMin = linePosition
+        lineAnnotation.yMax = linePosition
+    } else if (lineAxis == "y") {
+        lineAnnotation.xScaleID = "x"
+        lineAnnotation.xMin = linePosition
+        lineAnnotation.xMax = linePosition
+    }
+    return lineAnnotation
+}
+
+const updateAnnotation = (oldOptions, param, global, state) => {
     const newOptions = { ...oldOptions }
 
     const { line, box, label, arrow } = param
-    const { switchRowColumn } = global.general
+    // const { switchRowColumn } = global.general
     const annotation = {
         annotations: {},
-
     }
-    if (line.enabled) {
-        const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel } = line
-        const lineAnnotation = {
-            type: "line",
-            id: "lineAnnotation",
-            borderColor: lineColor,
-            borderWidth: lineThickness,
-        };
 
-        if (lineStyle == "dashed") {
-            lineAnnotation.borderDash = [5, 5];
-        } else if (lineStyle == "wave") {
-            lineAnnotation.borderDash = [10, 5, 5];
+    const { annotation: stateAnnotation } = state
+    console.log('[stateAnnotation]', stateAnnotation)
+    for (let annoKey in stateAnnotation) {
+        const anno = stateAnnotation[annoKey]
+        if (anno.type == 'line') {
+            const item = getLineAnnotation(anno)
+            if (item) {
+                annotation.annotations = {
+                    ...annotation.annotations,
+                    [annoKey]: item
+                }
+            }
         }
+    }
 
-        if (lineLabel) {
-            lineAnnotation.label = {
-                content: [lineLabel],
-                display: true,
-                textAlign: 'center',
-            };
+
+
+
+
+
+    const lineTemp = getLineAnnotation(line)
+    if (lineTemp) {
+        annotation.annotations = {
+            ...annotation.annotations,
+            lineTemp
         }
-
-
-        if (lineAxis == "x") {
-            lineAnnotation.yScaleID = "y"
-            lineAnnotation.yMin = linePosition
-            lineAnnotation.yMax = linePosition
-        } else if (lineAxis == "y") {
-            lineAnnotation.xScaleID = "x"
-            lineAnnotation.xMin = linePosition
-            lineAnnotation.xMax = linePosition
-        }
-        annotation.annotations.lineAnnotation = lineAnnotation
     }
 
     newOptions.plugins.annotation = { ...newOptions.plugins.annotation, ...annotation }
 
     return newOptions
 }
-const updateChartOptions = (oldOptions, forms) => {
+const updateChartOptions = (oldOptions, forms, state) => {
     console.log(oldOptions, forms)
     // chart title
     const { annotationTemp, general, xAxis, yAxis, styles } = forms
@@ -228,7 +257,7 @@ const updateChartOptions = (oldOptions, forms) => {
     newOptions = updateAxisRangeValue(newOptions, { xAxis, yAxis })
 
     // updateAnnotation
-    newOptions = updateAnnotation(newOptions, annotationTemp, forms)
+    newOptions = updateAnnotation(newOptions, annotationTemp, forms, state)
 
     // updateGlobalStyles
     newOptions = updateGlobalStyles(newOptions, styles)
@@ -252,8 +281,8 @@ const reducer = (state, action) => {
     switch (type) {
         case UDPATE_FORM: {
             const { data: forms } = payload
-            const options = updateChartOptions(state.options, forms)
-            const newState = { ...state, options, forms };
+            const options = updateChartOptions(state.options, forms, state)
+            const newState = { ...state, options, forms: { ...state.forms, ...forms } };
             updateChartDatasets(newState);
             return newState
         }
@@ -274,15 +303,45 @@ const reducer = (state, action) => {
             return newState
 
         }
-        case ADD_ANNOTATION_LINE : {
-            const { data: newDataRange } = payload
-            const newState = {
-                ...state
-            };
-            const line = copySimpleObject(newState.forms.annotationTemp.line)
+        case ADD_ANNOTATION_ITEM: {
+            const { type: annotationType, id } = payload.data
+            console.log('[ADD_ANNOTATION_ITEM]', payload.data)
+
+            let newState = {
+                ...state,
+            }
+            const annoTemp = newState.forms.annotationTemp[annotationType]
+            const annoInit = initialState.forms.annotationTemp[annotationType]
+
+            if (annoTemp.enabled) {
+                const initValue = copySimpleObject(annoInit)
+
+                const newAnnotation = copySimpleObject({
+                    ...annoTemp,
+                    id,
+                    type: annotationType
+                })
+
+                // Get the current timestamp in milliseconds          
+                newState.forms = {
+                    ...newState.forms,
+                    // annotationSelected: newAnnotation,
+                    annotationTemp: {
+                        ...newState.forms.annotationTemp,
+                        [annotationType]: initValue
+                    }
+                }
+                newState.annotation = {
+                    ...newState.annotation,
+                    [id]: newAnnotation
+                }
+
+                // const options = updateChartOptions(state.options, newState.forms, newState)
+                // newState = { ...newState, options };
+                // updateChartDatasets(newState);
+            }
 
             return newState
-
         }
         default:
             return state;
@@ -311,7 +370,8 @@ const onInitializeState = ({ state, info }) => {
     const datasets = getChartDataObj(keyLabels, chartData.cols)
     const yAxis = keyLabels.reduce((p, c) => ({ ...p, [c.key]: true }), {})
 
-    const newStates = {
+
+    let newState = {
         ...state,
         forms: {
             ...state.forms,
@@ -327,8 +387,11 @@ const onInitializeState = ({ state, info }) => {
         },
         chartType
     }
+    const options = updateChartOptions(state.options, state.forms, state)
+    newState = { ...state, options };
+    updateChartDatasets(newState);
 
-    return newStates
+    return newState
 }
 const getXAxisDatafield = (data) => {
     const { forms: { general: { xAxis } } } = data
@@ -470,9 +533,12 @@ export const ChartProvider = ({ children }) => {
         // onAdditionalUpdates(state)        
         // dispatch({ type: RELOAD_FORM, data: state })
     }
-    const onAddAnnotation = (type) => {
-        console.log('[onAddAnnotation]', type)
-        dispatch('ADD_LINE_ITEM')
+    const onAddAnnotation = (data) => {
+        // type is line, box, arrow, label
+        dispatch({
+            type: ADD_ANNOTATION_ITEM,
+            data
+        })
     }
 
 

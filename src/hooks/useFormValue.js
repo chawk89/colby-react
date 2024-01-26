@@ -10,7 +10,6 @@ const useFormValue = (watch, onChangeHandle, list) => {
     const formValues = watch();
     const [preValues, setPrevValues] = useState(formValues)
 
-    console.log('[formValues]', formValues)
     useDebounceEffect(() => {
         if (checkValidateValueSame(isEqualObject, list, { preValues, curValues: formValues })) return;
         setPrevValues(copySimpleObject(formValues))

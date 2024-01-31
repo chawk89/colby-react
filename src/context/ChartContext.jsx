@@ -247,14 +247,13 @@ const getAnnotation = (item) => {
 const updateAnnotation = (oldOptions, param, global, state) => {
     const newOptions = { ...oldOptions }
 
-    // const { line, box, label, arrow } = param
-    // const { switchRowColumn } = global.general
+    const { line, box, label, arrow } = param
     const annotation = {
         annotations: {},
     }
 
     const { annotation: stateAnnotation } = state
-    for (let annoKey in {...stateAnnotation, ...param}) {
+    for (let annoKey in stateAnnotation) {
         const anno = stateAnnotation[annoKey]
         const item = getAnnotation(anno)
         if (item) {

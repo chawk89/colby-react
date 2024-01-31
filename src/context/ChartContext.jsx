@@ -19,7 +19,12 @@ const initialState = {
                 label: "",
             },
             box: {
-                enabled: false
+                enabled: false,
+                label: "",
+                xMax: "",
+                xMin: "",
+                yMax: "",
+                yMin: ""
             },
             label: {
                 enabled: false
@@ -173,7 +178,7 @@ const getLineAnnotation = (line) => {
     const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel } = line
     const lineAnnotation = {
         type: "line",
-        id: "lineAnnotation",
+        id: line.id,
         borderColor: lineColor,
         borderWidth: lineThickness,
     };
@@ -192,7 +197,6 @@ const getLineAnnotation = (line) => {
         };
     }
 
-
     if (lineAxis == "x") {
         lineAnnotation.yScaleID = "y"
         lineAnnotation.yMin = linePosition
@@ -204,41 +208,75 @@ const getLineAnnotation = (line) => {
     }
     return lineAnnotation
 }
+const getBoxAnnotation = (box) => {
+    if (!box.enabled && !box.id) return null
+    const { xMin, xMax, yMin, yMax, label } = box
+    const boxAnnotation = {
+        type: "box",
+        id: box.id,
+        xMin,
+        xMax,
+        yMin,
+        yMax
+    };
+   
 
+    if (label) {
+        boxAnnotation.label = {
+            content: [label],
+            display: true,
+            textAlign: 'center',
+        };
+    }
+
+    return boxAnnotation
+}
+const getAnnotation = (item) => {
+    // Line Annotation
+    if (item.type == 'line') {
+        return getLineAnnotation(item)
+    }
+
+    if (item.type == 'box') {
+        return getBoxAnnotation(item)
+    }
+
+    return null;
+
+}
 const updateAnnotation = (oldOptions, param, global, state) => {
     const newOptions = { ...oldOptions }
 
-    const { line, box, label, arrow } = param
+    // const { line, box, label, arrow } = param
     // const { switchRowColumn } = global.general
     const annotation = {
         annotations: {},
     }
 
     const { annotation: stateAnnotation } = state
-    console.log('[stateAnnotation]', stateAnnotation)
-    for (let annoKey in stateAnnotation) {
+    for (let annoKey in {...stateAnnotation, ...param}) {
         const anno = stateAnnotation[annoKey]
-        if (anno.type == 'line') {
-            const item = getLineAnnotation(anno)
-            if (item) {
-                annotation.annotations = {
-                    ...annotation.annotations,
-                    [annoKey]: item
-                }
+        const item = getAnnotation(anno)
+        if (item) {
+            annotation.annotations = {
+                ...annotation.annotations,
+                [annoKey]: item
             }
         }
     }
-
-
-
-
-
 
     const lineTemp = getLineAnnotation(line)
     if (lineTemp) {
         annotation.annotations = {
             ...annotation.annotations,
             lineTemp
+        }
+    }
+    const boxTemp = getBoxAnnotation(box)
+    if (boxTemp) {
+        annotation.annotations = {
+            ...annotation.annotations,
+            boxTemp
         }
     }
 

@@ -1,12 +1,18 @@
 import React, { useState } from 'react'
-import { Card, Label, Select, TextInput, ToggleSwitch } from 'flowbite-react'
+import { Button, Card, Label, Select, TextInput, ToggleSwitch } from 'flowbite-react'
 import { Controller, useFormContext } from 'react-hook-form';
-import { PopoverPicker } from '../../common/PopoverPicker';
+import { getNewId } from '../../../utils/utils';
 
 const BoxAnnotation = () => {
     const { control, register, watch } = useFormContext()
-    const lineEnabled = watch('annotationTemp.box.enabled')
-
+    const boxEnabled = watch('annotationTemp.box.enabled')
+    const handleAddClick = () => {
+        setTriggerFlag(true)
+        const type = 'box'
+        onAddAnnotation({
+            type, id: `${type}-${getNewId()}`
+        })
+    }
     return (
         <Card className="w-full">
             <Controller
@@ -17,58 +23,45 @@ const BoxAnnotation = () => {
                 }}
             />
 
-            <div className="w-full grid grid-cols-3 gap-3 my-4 p-2">
-                <div className="col-span-1">
+            {boxEnabled && <div className="w-full grid grid-cols-4 gap-3 my-4 p-2">
+                <div className="col-span-4">
                     <div className="flex items-center">
-                        <Label className="inline mr-2" htmlFor="annotationAxisSelect" value="Axis:" />
-                        <Select id="annotationAxisSelect" {...register('annotationTemp.box.axis')}>
-                            <option value="x">X</option>
-                            <option value="y">Y</option>
-                        </Select>
+                        <Label className="inline mr-2" htmlFor="annotationBoxLabel" value="Label:" />
+                        <TextInput id="annotationBoxLabel" type="text" placeholder="10" {...register('annotationTemp.box.label')} />
                     </div>
                 </div>
                 <div className="col-span-1">
                     <div className="flex items-center">
-                        <Label className="inline mr-2 shrink-0" htmlFor="axis-position" value="Axis Position:" />
-                        <TextInput id="axis-position" type="text" placeholder="10" {...register("annotationTemp.box.position")} />
+                        <Label className="inline mr-2" htmlFor="annotationBoxXMin" value="X Min:" />
+                        <TextInput id="annotationBoxXMin" type="text" placeholder="10" {...register('annotationTemp.box.xMin')} />
                     </div>
                 </div>
                 <div className="col-span-1">
                     <div className="flex items-center">
-                        <Label className="inline mr-2 shrink-0" htmlFor="anno-linestyle" value="Line Style:" />
-                        <Select id="anno-linestyle" {...register("annotationTemp.box.style")} >
-                            <option value='none'>None</option>
-                            <option value='dashed'>Dashed</option>
-                            <option value='wave'>Wave</option>
-                        </Select>
+                        <Label className="inline mr-2" htmlFor="annotationBoxXMax" value="X Max:" />
+                        <TextInput id="annotationBoxXMax" type="text" placeholder="10" {...register('annotationTemp.box.xMax')} />
                     </div>
                 </div>
                 <div className="col-span-1">
                     <div className="flex items-center">
-                        <Label className="inline mr-2 shrink-0" htmlFor="axis-label" value="Label:" />
-                        <TextInput id="axis-label" type="text" placeholder="Default Label" {...register("annotationTemp.box.label")} />
-                    </div>
-                </div>
-                <div className="col-span-1">
-                    <div className="flex items-center h-full">
-                        <Label className="inline mr-2 shrink-0" htmlFor="anno-linecolor" value="Line Color:" />
-                        <Controller
-                            name="annotationTemp.box.color"
-                            control={control}
-                            render={({ field: { value, onChange } }) => {
-                                return <PopoverPicker color={value} onChange={onChange} />;
-                            }}
-                        />
+                        <Label className="inline mr-2" htmlFor="annotationBoxXMin" value="Y Min:" />
+                        <TextInput id="annotationBoxYMin" type="text" placeholder="10" {...register('annotationTemp.box.yMin')} />
                     </div>
                 </div>
                 <div className="col-span-1">
                     <div className="flex items-center">
-                        <Label className="inline mr-2 shrink-0" htmlFor="anno-line-thickness" value="Line Thickness:" />
-                        <TextInput id="anno-line-thickness" type="text" placeholder="10" {...register("annotationTemp.box.thickness")} />
+                        <Label className="inline mr-2" htmlFor="annotationBoxXMin" value="Y Max:" />
+                        <TextInput id="annotationBoxYMax" type="text" placeholder="10" {...register('annotationTemp.box.yMax')} />
                     </div>
                 </div>
 
-            </div>
+                <div className="col-span-1">
+                    <div className="flex items-center">
+                        <Button onClick={handleAddClick}> Add </Button>
+                    </div>
+                </div>
+
+            </div>}
         </Card>
     );
 

@@ -387,9 +387,10 @@ const onInitializeState = ({ state, info }) => {
         },
         chartType
     }
-    const options = updateChartOptions(state.options, state.forms, state)
-    newState = { ...state, options };
-    updateChartDatasets(newState);
+    // const options = updateChartOptions(state.options, state.forms, state)
+    // newState = { ...state, options };
+    // console.log('[onInitializeState]', newState)
+    // updateChartDatasets(newState);
 
     return newState
 }
@@ -410,7 +411,12 @@ const getFilteredDatasets = (data) => {
     const yAxis = getYAxisDatafield(data)
 
 
-    if (!xAxis) return null;
+    if (!xAxis) return {
+        labels: [],
+        datasets: [],
+        xAxisLabel: 'test'
+    };
+
     const labels = axesDatasets[xAxis]
     const filteredKeys = Object.keys(axesDatasets).filter(k => (k != xAxis && yAxis[k]))
     const datasets = filteredKeys.length > 0 ? filteredKeys.map(key => axesDatasets[key]) : []
@@ -421,9 +427,13 @@ const getFilteredDatasets = (data) => {
     }
 }
 const updateChartDatasets = (state) => {
-    const { xAxisLabel, ...data } = getFilteredDatasets(state);
+    const filteredDatasets = getFilteredDatasets(state);
+
+    if (!filteredDatasets) return;
+
+    const { xAxisLabel, ...data } = filteredDatasets
     const createDatasets = window?.ColbyChartInfo?.createDatasets
-    if (!createDatasets) return;
+    if (!createDatasets || !xAxisLabel) return;
     const result = createDatasets(data);
     if (result) {
         state.data = result

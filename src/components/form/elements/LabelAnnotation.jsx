@@ -20,38 +20,25 @@ const LabelAnnotation = () => {
                 <div className="w-full grid grid-cols-3 gap-3 my-4 p-2">
                     <div className="col-span-1">
                         <div className="flex items-center">
-                            <Label className="inline mr-2" htmlFor="annotationAxisSelect" value="Axis:" />
-                            <Select id="annotationAxisSelect" {...register('annotationTemp.label.axis')}>
-                                <option value="x">X</option>
-                                <option value="y">Y</option>
-                            </Select>
+                            <Label className="inline mr-2 shrink-0" htmlFor="index-of-dimension" value="Index of dimension:" />
+                            <TextInput id="index-of-dimension" type="text" placeholder="10" {...register("annotationTemp.label.nindex")} />
                         </div>
                     </div>
                     <div className="col-span-1">
                         <div className="flex items-center">
-                            <Label className="inline mr-2 shrink-0" htmlFor="axis-position" value="Axis Position:" />
-                            <TextInput id="axis-position" type="text" placeholder="10" {...register("annotationTemp.label.position")} />
+                            <Label className="inline mr-2 shrink-0" htmlFor="series-name" value="Series Name:" />
+                            <TextInput id="series-name" type="text" placeholder="10" {...register("annotationTemp.label.name")} />
                         </div>
                     </div>
                     <div className="col-span-1">
                         <div className="flex items-center">
-                            <Label className="inline mr-2 shrink-0" htmlFor="anno-linestyle" value="Line Style:" />
-                            <Select id="anno-linestyle" {...register("annotationTemp.label.style")} >
-                                <option value='none'>None</option>
-                                <option value='dashed'>Dashed</option>
-                                <option value='wave'>Wave</option>
-                            </Select>
+                            <Label className="inline mr-2 shrink-0" htmlFor="series-name" value="Caption:" />
+                            <TextInput id="series-name" type="text" placeholder="10" {...register("annotationTemp.label.caption")} />
                         </div>
                     </div>
                     <div className="col-span-1">
                         <div className="flex items-center">
-                            <Label className="inline mr-2 shrink-0" htmlFor="axis-label" value="Label:" />
-                            <TextInput id="axis-label" type="text" placeholder="Default Label" {...register("annotationTemp.label.label")} />
-                        </div>
-                    </div>
-                    <div className="col-span-1">
-                        <div className="flex items-center h-full">
-                            <Label className="inline mr-2 shrink-0" htmlFor="anno-linecolor" value="Line Color:" />
+                            <Label className="inline mr-2" htmlFor="style-color" value="Color:" />
                             <Controller
                                 name="annotationTemp.label.color"
                                 control={control}
@@ -63,10 +50,26 @@ const LabelAnnotation = () => {
                     </div>
                     <div className="col-span-1">
                         <div className="flex items-center">
-                            <Label className="inline mr-2 shrink-0" htmlFor="anno-line-thickness" value="Line Thickness:" />
-                            <TextInput id="anno-line-thickness" type="text" placeholder="10" {...register("annotationTemp.label.thickness")} />
+                            <Label className="inline mr-2" htmlFor="annotation-label-fontName" value="Font Name:" />
+                            <TextInput id="annotation-label-fontName" type="text" placeholder="Lora" {...register('annotationTemp.label.fontName')} />
                         </div>
                     </div>
+                    <div className="col-span-1">
+                        <div className="flex items-center">
+                            <Label className="inline mr-2" htmlFor="annotation-label-fontSize" value="Font Size:" />
+                            <TextInput id="annotation-label-fontSize" type="number" placeholder="10" {...register('annotationTemp.label.fontSize')} />
+                        </div>
+                    </div>
+                    <div className="col-span-1">
+                        <div className="flex items-center">
+                            <Label className="inline mr-2" htmlFor="annotation-label-anchor" value="Anchor:" />
+                            <Select id="annotation-label-anchor" {...register('annotationTemp.label.anchor')}>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </Select>
+                        </div>
+                    </div>
+
 
                 </div>
             }

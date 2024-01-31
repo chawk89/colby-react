@@ -1,11 +1,16 @@
-import React, { useState } from 'react'
-import { Button, Card, Label, Select, TextInput, ToggleSwitch } from 'flowbite-react'
+import React, { useEffect, useState } from 'react'
+import { Button, Card, Label, TextInput, ToggleSwitch } from 'flowbite-react'
 import { Controller, useFormContext } from 'react-hook-form';
 import { getNewId } from '../../../utils/utils';
+import { useChartContext } from '../../../hooks/useChartContext';
 
 const BoxAnnotation = () => {
-    const { control, register, watch } = useFormContext()
+
+    const { state, onAddAnnotation } = useChartContext()
+    const { control, register, watch, setValue } = useFormContext()
     const boxEnabled = watch('annotationTemp.box.enabled')
+    const [triggerFlag, setTriggerFlag] = useState(false)
+
     const handleAddClick = () => {
         setTriggerFlag(true)
         const type = 'box'
@@ -13,6 +18,17 @@ const BoxAnnotation = () => {
             type, id: `${type}-${getNewId()}`
         })
     }
+
+    useEffect(() => {
+        if (triggerFlag) {
+            setValue('annotationTemp.box', state.forms.annotationTemp.box)
+            setTriggerFlag(false)
+        }
+    }, [
+        state.forms.annotationTemp.box,
+        triggerFlag
+    ])
+
     return (
         <Card className="w-full">
             <Controller

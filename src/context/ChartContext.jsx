@@ -43,7 +43,8 @@ const initialState = {
                 yMin: "",
                 yMax: "",
                 doubleArrow: "1",
-                label: ""
+                label: "",
+                color: "#000000"
             }
         },
         general: {

@@ -37,7 +37,13 @@ const initialState = {
                 color: "#000000"
             },
             arrow: {
-                enabled: false
+                enabled: false,
+                xMin: "",
+                xMax: "",
+                yMin: "",
+                yMax: "",
+                doubleArrow: "1",
+                label: ""
             }
         },
         general: {
@@ -140,12 +146,14 @@ const generalOptionUpdate = (oldOptions, general) => {
 
     return newOptions
 }
+
 const validateMinMaxValue = (v) => {
     if (v == "" || v == undefined || v == null) return false
     if (typeof v == "number") return true;
     if (typeof v == "string" && +v == v) return true;
     return false
 }
+
 const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
     const newOptions = { ...oldOptions }
 
@@ -161,6 +169,42 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
 
 
     return newOptions
+}
+
+function findYValueForX(data, xIndex, nameOrIndex, isStacked) {
+
+    if (xIndex < 0 || xIndex > data.datasets.length - 1) {
+        console.log("xIndex out of range:", xIndex);
+        return null;
+    }
+
+    let datasetIndex;
+    if (typeof nameOrIndex === "string") {
+        datasetIndex = data.labels.indexOf(nameOrIndex);
+        if (datasetIndex === -1) {
+            console.log("Column header not found:", nameOrIndex);
+            return null;
+        }
+    } else {
+        datasetIndex = nameOrIndex;
+    }
+
+
+    if (datasetIndex < 0 || datasetIndex >= data.labels.length) {
+        console.log("datasetIndex out of range:", datasetIndex);
+        return null;
+    }
+
+    if (isStacked) {
+        let sum = 0;
+        for (let i = 1; i <= datasetIndex; i++) {
+            sum += data[xIndex + 1][i];
+        }
+        return sum;
+    }
+
+
+    return data.datasets[xIndex][datasetIndex];
 }
 
 const updateGlobalStyles = (oldOptions, styles) => {
@@ -215,6 +259,7 @@ const getLineAnnotation = (line) => {
     }
     return lineAnnotation
 }
+
 const getBoxAnnotation = (box) => {
     if (!box.enabled && !box.id) return null
     const { xMin, xMax, yMin, yMax, label } = box
@@ -236,45 +281,54 @@ const getBoxAnnotation = (box) => {
             textAlign: 'center',
         };
     }
-
     return boxAnnotation
 }
-function findYValueForX(data, xIndex, nameOrIndex, isStacked) {
 
-    if (xIndex < 0 || xIndex > data.datasets.length - 1) {
-        console.log("xIndex out of range:", xIndex);
-        return null;
-    }
-    
-    let datasetIndex;
-    if (typeof nameOrIndex === "string") {
-        datasetIndex = data.labels.indexOf(nameOrIndex);
-        if (datasetIndex === -1) {
-            console.log("Column header not found:", nameOrIndex);
-            return null;
+const getArrowAnnotation = (arrow) => {
+    if (!arrow.enabled && !arrow.id) return null
+
+    const { xMin: arrowXMin, xMax: arrowXMax, yMin: arrowYMin, yMax: arrowYMax, doubleArrow, label: arrowLabel, color: arrowColor } = arrow
+
+    const arrowAnnotation = {
+        type: "line",
+        borderColor: arrowColor,
+        borderWidth: 2,
+        curve: true,
+        label: {
+            display: false,
+        },
+        arrowHeads: {
+            start: {
+                display: doubleArrow == "1",
+                borderColor: arrowColor,
+            },
+            end: {
+                display: true,
+                borderColor: arrowColor,
+            },
+        },
+        xMin: parseFloat(arrowXMin),
+        xMax: parseFloat(arrowXMax),
+        yMin: parseFloat(arrowYMin),
+        yMax: parseFloat(arrowYMax),
+        xScaleID: "x",
+        yScaleID: "y",
+        draggable: true,
+    };
+
+    if (arrowLabel) {
+        arrowAnnotation.label = {
+            display: true,
+            backgroundColor: "rgb(211,211,211)",
+            borderRadius: 0,
+            color: "rgb(169,169,169)",
+            content: [arrowLabel],
         }
-    } else {
-        datasetIndex = nameOrIndex;
+
     }
-
-
-    if (datasetIndex < 0 || datasetIndex >= data.labels.length) {
-        console.log("datasetIndex out of range:", datasetIndex);
-        return null;
-    }
-
-    if (isStacked) {
-        let sum = 0;
-        for (let i = 1; i <= datasetIndex; i++) {
-            sum += data[xIndex + 1][i];
-        }
-        return sum;
-    }
-
-
-    return data.datasets[xIndex][datasetIndex];
+    console.log('[arrowAnnotation]', arrowAnnotation)
+    return arrowAnnotation;
 }
-
 
 const getLabelAnnotation = (label, state) => {
     if (!label.enabled && !label.id) return null
@@ -359,6 +413,10 @@ const getAnnotation = (item, state) => {
         return getLabelAnnotation(item, state)
     }
 
+    if (item.type == 'arrow') {
+        return getArrowAnnotation(item, state)
+    }
+
     return null;
 
 }
@@ -403,6 +461,14 @@ const updateAnnotation = (oldOptions, param, global, state) => {
         annotation.annotations = {
             ...annotation.annotations,
             labelTemp
+        }
+    }
+
+    const arrowTemp = getArrowAnnotation(arrow, state)
+    if (arrowTemp) {
+        annotation.annotations = {
+            ...annotation.annotations,
+            arrowTemp
         }
     }
 

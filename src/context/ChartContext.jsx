@@ -2,7 +2,7 @@
 import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { AnnotationDragger } from '../utils/chart/AnnotationDragger';
 import { md5 } from 'js-md5';
-import { copySimpleObject, getNewId } from '../utils/utils';
+import { copySimpleObject } from '../utils/utils';
 
 // Initial state
 const initialState = {
@@ -27,7 +27,14 @@ const initialState = {
                 yMin: ""
             },
             label: {
-                enabled: false
+                enabled: false,
+                nindex: "",
+                name: "",
+                caption: "",
+                fontName: "",
+                fontSize: "",
+                anchor: "",
+                color: "#000000"
             },
             arrow: {
                 enabled: false
@@ -217,9 +224,10 @@ const getBoxAnnotation = (box) => {
         xMin,
         xMax,
         yMin,
-        yMax
+        yMax,
+        backgroundColor: 'rgba(255, 99, 132, 0.25)'
     };
-   
+
 
     if (label) {
         boxAnnotation.label = {
@@ -231,7 +239,113 @@ const getBoxAnnotation = (box) => {
 
     return boxAnnotation
 }
-const getAnnotation = (item) => {
+function findYValueForX(data, xIndex, nameOrIndex, isStacked) {
+
+    if (xIndex < 0 || xIndex > data.datasets.length - 1) {
+        console.log("xIndex out of range:", xIndex);
+        return null;
+    }
+    
+    let datasetIndex;
+    if (typeof nameOrIndex === "string") {
+        datasetIndex = data.labels.indexOf(nameOrIndex);
+        if (datasetIndex === -1) {
+            console.log("Column header not found:", nameOrIndex);
+            return null;
+        }
+    } else {
+        datasetIndex = nameOrIndex;
+    }
+
+
+    if (datasetIndex < 0 || datasetIndex >= data.labels.length) {
+        console.log("datasetIndex out of range:", datasetIndex);
+        return null;
+    }
+
+    if (isStacked) {
+        let sum = 0;
+        for (let i = 1; i <= datasetIndex; i++) {
+            sum += data[xIndex + 1][i];
+        }
+        return sum;
+    }
+
+
+    return data.datasets[xIndex][datasetIndex];
+}
+
+
+const getLabelAnnotation = (label, state) => {
+    if (!label.enabled && !label.id) return null
+    const { nindex, name, caption: labelText, fontName: labelFont, fontSize, anchor: labelAnchor, color: labelColor } = label
+
+    if (nindex == "" || name == "") return null
+    const labelX = parseFloat(nindex)
+    const labelY = parseFloat(name)
+    const labelSize = parseFloat(fontSize)
+
+
+    let adjustValueX = 0;
+    let adjustValueY = 0;
+
+    if (labelAnchor == true) {
+        if (labelX == 0) {
+            adjustValueX = 50;
+            adjustValueY = -30;
+        }
+
+        if (
+            labelY >= 0.9 * state.options.scales.y.suggestedMax
+        ) {
+            adjustValueX = 0;
+            adjustValueY = 20;
+        } else {
+            adjustValueX = -30;
+            adjustValueY = -30;
+        }
+    }
+
+
+    let isStacked = state.forms.general.stacked;
+
+    let correspondingYValue = findYValueForX(
+        state.data,
+        labelX,
+        labelY,
+        isStacked
+    );
+
+
+
+    const labelAnnotation = {
+        type: "label",
+        xValue: labelX,
+        yValue: correspondingYValue ? correspondingYValue : labelY,
+        backgroundColor: labelColor,
+        borderRadius: 6,
+        borderWidth: 1,
+        content: [labelText],
+        callout: {
+            display: true,
+            position: "bottom",
+            margin: 0,
+        },
+        font: {
+            family: labelFont,
+            size: parseFloat(labelSize),
+        },
+        xAdjust: adjustValueX,
+        yAdjust: adjustValueY,
+    };
+
+    console.log('[getLabelAnnotation]', label, labelAnnotation)
+
+    return labelAnnotation;
+    return null;
+}
+
+const getAnnotation = (item, state) => {
     // Line Annotation
     if (item.type == 'line') {
         return getLineAnnotation(item)
@@ -239,6 +353,10 @@ const getAnnotation = (item) => {
 
     if (item.type == 'box') {
         return getBoxAnnotation(item)
+    }
+
+    if (item.type == 'label') {
+        return getLabelAnnotation(item, state)
     }
 
     return null;
@@ -255,7 +373,8 @@ const updateAnnotation = (oldOptions, param, global, state) => {
     const { annotation: stateAnnotation } = state
     for (let annoKey in stateAnnotation) {
         const anno = stateAnnotation[annoKey]
-        const item = getAnnotation(anno)
+        const item = getAnnotation(anno, state)
+
         if (item) {
             annotation.annotations = {
                 ...annotation.annotations,
@@ -276,6 +395,14 @@ const updateAnnotation = (oldOptions, param, global, state) => {
         annotation.annotations = {
             ...annotation.annotations,
             boxTemp
+        }
+    }
+
+    const labelTemp = getLabelAnnotation(label, state)
+    if (labelTemp) {
+        annotation.annotations = {
+            ...annotation.annotations,
+            labelTemp
         }
     }
 

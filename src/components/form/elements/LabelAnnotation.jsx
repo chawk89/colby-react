@@ -1,11 +1,35 @@
-import React, { useState } from 'react'
-import { Card, Label, Select, TextInput, ToggleSwitch } from 'flowbite-react'
+import React, { useEffect, useState } from 'react'
+import { Button, Card, Label, Select, TextInput, ToggleSwitch } from 'flowbite-react'
 import { Controller, useFormContext } from 'react-hook-form';
 import { PopoverPicker } from '../../common/PopoverPicker';
+import { useChartContext } from '../../../hooks/useChartContext';
+import { getNewId } from '../../../utils/utils';
 
 const LabelAnnotation = () => {
-    const { control, register, watch } = useFormContext()
+
+    const { state, onAddAnnotation } = useChartContext()
+    const { control, register, watch, setValue } = useFormContext()
     const labelEnabled = watch('annotationTemp.label.enabled')
+    const [triggerFlag, setTriggerFlag] = useState(false)
+
+    const handleAddClick = () => {
+        setTriggerFlag(true)
+        const type = 'label'
+        onAddAnnotation({
+            type, id: `${type}-${getNewId()}`
+        })
+    }
+
+    useEffect(() => {
+        if (triggerFlag) {
+            setValue('annotationTemp.label', state.forms.annotationTemp.label)
+            setTriggerFlag(false)
+        }
+    }, [
+        state.forms.annotationTemp.label,
+        triggerFlag
+    ])
+    console.log('[labelEnabled]', labelEnabled)
 
     return (
         <Card className="w-full">
@@ -64,13 +88,16 @@ const LabelAnnotation = () => {
                         <div className="flex items-center">
                             <Label className="inline mr-2" htmlFor="annotation-label-anchor" value="Anchor:" />
                             <Select id="annotation-label-anchor" {...register('annotationTemp.label.anchor')}>
-                                <option value="true">true</option>
-                                <option value="false">false</option>
+                                <option value={1}>true</option>
+                                <option value={0}>false</option>
                             </Select>
                         </div>
                     </div>
-
-
+                    <div className="col-span-1">
+                        <div className="flex items-center">
+                            <Button onClick={handleAddClick}> Add </Button>
+                        </div>
+                    </div>
                 </div>
             }
         </Card>

@@ -1,5 +1,5 @@
 // ChartContext.js
-import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { AnnotationDragger } from '../utils/chart/AnnotationDragger';
 import { md5 } from 'js-md5';
 import { copySimpleObject } from '../utils/utils';
@@ -122,6 +122,7 @@ export const UPDATE_DATASETS = 'UPDATE_DATASETS';
 export const RELOAD_FORM = 'RELOAD_FORM';
 export const FETCH_DATA_RANGE = 'FETCH_DATA_RANGE';
 export const ADD_ANNOTATION_ITEM = 'ADD_ANNOTATION_ITEM';
+export const ACTIVE_ANNOTATION_ITEM = 'ACTIVE_ANNOTATION_ITEM';
 
 
 const generalOptionUpdate = (oldOptions, general) => {
@@ -673,6 +674,42 @@ const updateChartDatasets = (state) => {
         }
     }
 }
+const onAdditionalUpdates = (state, { chartType, chartRef, draggerPlugin }) => {
+    state.chartType = chartType
+
+    state.onChartRefresh = () => {
+        if (!chartRef || !chartRef.current) return;
+    }
+
+
+    state.options.plugins.annotation = {
+        ...state.options.plugins.annotation,
+        enter(ctx) {
+            draggerPlugin?.enter(ctx)
+        },
+        leave() {
+            draggerPlugin?.leave()
+        }
+
+    }
+    state.options.scales.x.ticks = {
+        ...state.options.scales.x.ticks,
+
+    }
+    state.options.scales.y.ticks = {
+        ...state.options.scales.y.ticks,
+        callback: function (value) {
+            // console.log(value)
+            // if (typeof value === 'number' && value == Math.floor(value)) return Math.floor(value)
+            return value
+        }
+    }
+
+    const xAxis = getXAxisDatafield(state)
+    if (xAxis) {
+        updateChartDatasets(state)
+    }
+}
 
 export const ChartProvider = ({ children }) => {
     const ColbyChartInfo = window.ColbyChartInfo
@@ -704,50 +741,19 @@ export const ChartProvider = ({ children }) => {
     if (!chartType || !createDatasets || !storageKey || !rawDatasets) {
         throw Error('ColbyChartInfo is insufficient')
     }
+
     const chartRef = useRef(null);
+    const storedState = onInitializeState({ state: storageValue || initialState, info: ColbyChartInfo });
     const draggerPlugin = useMemo(() => new AnnotationDragger(), [])
 
-    const storedState = onInitializeState({ state: storageValue || initialState, info: ColbyChartInfo });
-
-    const onAdditionalUpdates = (state) => {
-        state.chartType = chartType
-
-        state.onChartRefresh = () => {
-            if (!chartRef || !chartRef.current) return;
-        }
-
-
-        state.options.plugins.annotation = {
-            ...state.options.plugins.annotation,
-            enter(ctx) {
-                draggerPlugin?.enter(ctx)
-            },
-            leave() {
-                draggerPlugin?.leave()
-            }
-
-        }
-        state.options.scales.x.ticks = {
-            ...state.options.scales.x.ticks,
-
-        }
-        state.options.scales.y.ticks = {
-            ...state.options.scales.y.ticks,
-            callback: function (value) {
-                // console.log(value)
-                // if (typeof value === 'number' && value == Math.floor(value)) return Math.floor(value)
-                return value
-            }
-        }
-
-        const xAxis = getXAxisDatafield(state)
-        if (xAxis) {
-            updateChartDatasets(state)
-        }
-    }
-    onAdditionalUpdates(storedState)
+    onAdditionalUpdates(storedState, { chartRef, chartType, draggerPlugin })
 
     const [state, dispatch] = useReducer(reducer, storedState);
+
+    draggerPlugin.initPlugin(dispatch)
+
+
+
 
     const onDownloadChart = () => {
         const canvas = chartRef.current.canvas;

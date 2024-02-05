@@ -2,6 +2,8 @@
  * Chart JS Plugin
  */
 
+import { copySimpleObject } from "../utils";
+
 
 export class AnnotationDragger {
     constructor() {
@@ -9,6 +11,13 @@ export class AnnotationDragger {
         // Initialize the instance
         this.element = null;
         this.lastEvent = null;
+        this.dispatch = null;
+    }
+    initPlugin(dispatch) {
+        if(!dispatch) {
+            throw Error('Dispach is null')
+        }
+        this.dispatch = dispatch;        
     }
     beforeEvent(chart, args, options) {
         if (this.handleDrag(args.event)) {
@@ -27,22 +36,78 @@ export class AnnotationDragger {
         // Add event listener to the canvas element
         chart.canvas.addEventListener('dblclick', (event) => this.handlDoubleClick(event));
     }
+    isInClickThreshold(dx) {
+        const clickThreshold = 5
+        return Math.abs(dx) < clickThreshold
+    }
+    getFirstActiveObject({ eventX, eventY }, annotations, chart) {
+        const keys = Object.keys(annotations)
+        // console.log('[handleAnnotation]', keys, annotations)
+
+        for (const key of keys) {
+            const annotation = annotations[key]
+            const { type } = annotation
+            switch (type) {
+                case 'line': {
+                    const { xScaleID, xMin, yScaleID, yMin, borderWidth } = annotation
+                    if (xScaleID && xScaleID == 'X') {
+                        const annotationX = chart.scales.x.getPixelForValue(+xMin + borderWidth / 2);
+                        if (this.isInClickThreshold(annotationX - eventX)) {
+                            return annotation
+                        }
+                    }
+                    if (yScaleID && yScaleID == 'y') {
+                        const annotationY = chart.scales.y.getPixelForValue(+yMin + borderWidth / 2);
+                        if (this.isInClickThreshold(annotationY - eventY)) {
+                            return annotation
+                        }
+                    }
+
+                }
+            }
+        }
+        return null;
+    }
+    handleAnnotation(event, chart) {
+        console.log('[handleAnnotation]', this.dispatch);
+        // const eventX = event.x + window.scrollX
+        // const eventY = event.y + window.scrollY
+        // // const yValue = chart.scales.y.getValueForPixel(event.y);
+        // const annotations = chart.options.plugins.annotation.annotations
+        // const selectedAnnotation = this.getFirstActiveObject({ eventX, eventY }, annotations, chart)
+        // // console.log('[handleAnnotation]', Object.entries(selectedAnnotation))
+        // let active = {};
+        // if (selectedAnnotation) {
+        //     selectedAnnotation.display = false
+        //     active = copySimpleObject(selectedAnnotation)
+        //     active.borderColor = 'blue';
+        //     active.borderWidth = 3;
+        //     active.borderDash = [];
+        //     active.shadowColor = 'rgba(0, 0, 255, 0.5)';            
+
+        // }
+        // chart.options.plugins.annotation.annotations = {       
+        //     ...annotations,
+        //     active
+        // }
+
+    }
     handlDoubleClick(event) {
         // Get the clicked point
         if (this.chart) {
             const chart = this.chart
             const activePoints = chart.getElementsAtEventForMode(event, 'point', chart.options);
             console.log('[activePoints]', activePoints, this.chart)
-
+            this.handleAnnotation(event, chart)
             // Check if there is at least one active point
             if (activePoints.length > 0) {
                 // Get the first active point
-                // var firstPoint = activePoints[0];
+                var firstPoint = activePoints[0];
 
                 // // Perform custom actions here
                 // // You can access the dataset and index of the clicked point
-                // var datasetIndex = firstPoint.datasetIndex;
-                // var index = firstPoint.index;
+                var datasetIndex = firstPoint.datasetIndex;
+                var index = firstPoint.index;
 
                 // Example: Log the dataset and index of the clicked point
                 console.log('Dataset Index:', datasetIndex);
@@ -135,6 +200,9 @@ export class AnnotationDragger {
     }
     handleDrag(event) {
         if (this.element) {
+            if (event.type in ["mousemove", "mouseout", "mouseup", "mousedown"]) {
+                console.log('[handleDrag]', event.type, event)
+            }
             switch (event.type) {
                 case "mousemove":
                     return this.handleElementDragging(event);

@@ -14,10 +14,10 @@ export class AnnotationDragger {
         this.dispatch = null;
     }
     initPlugin(dispatch) {
-        if(!dispatch) {
+        if (!dispatch) {
             throw Error('Dispach is null')
         }
-        this.dispatch = dispatch;        
+        this.dispatch = dispatch;
     }
     beforeEvent(chart, args, options) {
         if (this.handleDrag(args.event)) {
@@ -42,7 +42,6 @@ export class AnnotationDragger {
     }
     getFirstActiveObject({ eventX, eventY }, annotations, chart) {
         const keys = Object.keys(annotations)
-        // console.log('[handleAnnotation]', keys, annotations)
 
         for (const key of keys) {
             const annotation = annotations[key]
@@ -69,55 +68,47 @@ export class AnnotationDragger {
         return null;
     }
     handleAnnotation(event, chart) {
-        console.log('[handleAnnotation]', this.dispatch);
-        // const eventX = event.x + window.scrollX
-        // const eventY = event.y + window.scrollY
-        // // const yValue = chart.scales.y.getValueForPixel(event.y);
-        // const annotations = chart.options.plugins.annotation.annotations
-        // const selectedAnnotation = this.getFirstActiveObject({ eventX, eventY }, annotations, chart)
-        // // console.log('[handleAnnotation]', Object.entries(selectedAnnotation))
-        // let active = {};
-        // if (selectedAnnotation) {
-        //     selectedAnnotation.display = false
-        //     active = copySimpleObject(selectedAnnotation)
-        //     active.borderColor = 'blue';
-        //     active.borderWidth = 3;
-        //     active.borderDash = [];
-        //     active.shadowColor = 'rgba(0, 0, 255, 0.5)';            
-
-        // }
-        // chart.options.plugins.annotation.annotations = {       
-        //     ...annotations,
-        //     active
-        // }
-
+        const dispatch = this.dispatch
+        if (!dispatch) {
+            throw Error('Needs to be initialized')
+        }
+        const eventX = event.x + window.scrollX
+        const eventY = event.y + window.scrollY
+        // const yValue = chart.scales.y.getValueForPixel(event.y);
+        const annotations = chart.options.plugins.annotation.annotations
+        const selectedAnnotation = this.getFirstActiveObject({ eventX, eventY }, annotations, chart)
+        dispatch({ type: 'ACTIVE_ANNOTATION_ITEM', id: selectedAnnotation?.id ?? '' })
     }
     handlDoubleClick(event) {
         // Get the clicked point
-        if (this.chart) {
-            const chart = this.chart
-            const activePoints = chart.getElementsAtEventForMode(event, 'point', chart.options);
-            console.log('[activePoints]', activePoints, this.chart)
-            this.handleAnnotation(event, chart)
-            // Check if there is at least one active point
-            if (activePoints.length > 0) {
-                // Get the first active point
-                var firstPoint = activePoints[0];
-
-                // // Perform custom actions here
-                // // You can access the dataset and index of the clicked point
-                var datasetIndex = firstPoint.datasetIndex;
-                var index = firstPoint.index;
-
-                // Example: Log the dataset and index of the clicked point
-                console.log('Dataset Index:', datasetIndex);
-                console.log('Point Index:', index);
-            } else {
-
-            }
-        }
-
         event.preventDefault()
+        
+        if (!this.chart || !this.dispatch) {
+            throw Error('chart is null or dispatch')
+        }
+        
+        const chart = this.chart
+        const activePoints = chart.getElementsAtEventForMode(event, 'point', chart.options);
+        this.handleAnnotation(event, chart)
+        console.log('[activePoints]', activePoints)
+        // Check if there is at least one active point
+        // if (activePoints.length > 0) {
+        //     // Get the first active point
+        //     var firstPoint = activePoints[0];
+
+        //     // // Perform custom actions here
+        //     // // You can access the dataset and index of the clicked point
+        //     var datasetIndex = firstPoint.datasetIndex;
+        //     var index = firstPoint.index;
+
+        //     // Example: Log the dataset and index of the clicked point
+        //     console.log('Dataset Index:', datasetIndex);
+        //     console.log('Point Index:', index);
+        // } else {
+
+        // }
+
+
     }
     drawOnExternalTooltip(context) {
         // Tooltip Element

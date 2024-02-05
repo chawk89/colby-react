@@ -7,7 +7,7 @@ import { copySimpleObject } from '../utils/utils';
 // Initial state
 const initialState = {
     forms: {
-        annotationSelected: {},
+        annotationSelected: '',
         annotationTemp: {
             line: {
                 enabled: false,
@@ -574,6 +574,12 @@ const reducer = (state, action) => {
             }
 
             return newState
+        }
+        case ACTIVE_ANNOTATION_ITEM: {
+            console.log('[ACTIVE_ANNOTATION_ITEM]', payload)
+            const { id: annotationId } = payload
+            const newState = { ...state, options, forms: { ...state.forms, annotationSelected: annotationId } };
+            return newState;
         }
         default:
             return state;

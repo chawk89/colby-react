@@ -7,7 +7,6 @@ import { copySimpleObject } from '../utils/utils';
 // Initial state
 const initialState = {
     forms: {
-        annotationSelected: '',
         annotationTemp: {
             line: {
                 enabled: false,
@@ -75,6 +74,7 @@ const initialState = {
         dataRange: ''
     },
     annotation: {},
+    annotationSelected: '',
     options: {
         responsive: true,
         events: ["mousedown", "mouseup", "mousemove", "mouseout", "mouseleave"],
@@ -123,6 +123,8 @@ export const RELOAD_FORM = 'RELOAD_FORM';
 export const FETCH_DATA_RANGE = 'FETCH_DATA_RANGE';
 export const ADD_ANNOTATION_ITEM = 'ADD_ANNOTATION_ITEM';
 export const ACTIVE_ANNOTATION_ITEM = 'ACTIVE_ANNOTATION_ITEM';
+
+export const SELECTED_COLOR = '#0000FFFF'
 
 
 const generalOptionUpdate = (oldOptions, general) => {
@@ -226,21 +228,28 @@ const updateGlobalStyles = (oldOptions, styles) => {
     newOptions.plugins.title.font = font
     return newOptions
 }
-const getLineAnnotation = (line) => {
+const getLineAnnotation = (line, state) => {
     if (!line.enabled && !line.id) return null
     const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel } = line
+
+    const { annotationSelected } = state
+
     const lineAnnotation = {
         type: "line",
         id: line.id,
-        borderColor: lineColor,
-        borderWidth: lineThickness,
+        borderColor: annotationSelected == line.id ? SELECTED_COLOR : lineColor,
+        borderWidth: annotationSelected == line.id ? +lineThickness + 2 : lineThickness,
     };
-
-    if (lineStyle == "dashed") {
+    if (annotationSelected == line.id) {
         lineAnnotation.borderDash = [5, 5];
-    } else if (lineStyle == "wave") {
-        lineAnnotation.borderDash = [10, 5, 5];
+    } else {
+        if (lineStyle == "dashed") {
+            lineAnnotation.borderDash = [5, 5];
+        } else if (lineStyle == "wave") {
+            lineAnnotation.borderDash = [10, 5, 5];
+        }
     }
+
 
     if (lineLabel) {
         lineAnnotation.label = {
@@ -262,19 +271,22 @@ const getLineAnnotation = (line) => {
     return lineAnnotation
 }
 
-const getBoxAnnotation = (box) => {
+const getBoxAnnotation = (box, state) => {
     if (!box.enabled && !box.id) return null
+    const active = box.id && state.annotationSelected == box.id
+
     const { xMin, xMax, yMin, yMax, label } = box
     const boxAnnotation = {
         type: "box",
-        id: box.id,
+        id: box.id ?? 'boxTemp',
         xMin,
         xMax,
         yMin,
         yMax,
-        backgroundColor: 'rgba(255, 99, 132, 0.25)'
+        backgroundColor: active ? SELECTED_COLOR : 'rgba(255, 99, 132, 0.25)'
     };
 
+    
 
     if (label) {
         boxAnnotation.label = {
@@ -404,11 +416,11 @@ const getLabelAnnotation = (label, state) => {
 const getAnnotation = (item, state) => {
     // Line Annotation
     if (item.type == 'line') {
-        return getLineAnnotation(item)
+        return getLineAnnotation(item, state)
     }
 
     if (item.type == 'box') {
-        return getBoxAnnotation(item)
+        return getBoxAnnotation(item, state)
     }
 
     if (item.type == 'label') {
@@ -431,6 +443,7 @@ const updateAnnotation = (oldOptions, param, global, state) => {
     }
 
     const { annotation: stateAnnotation } = state
+
     for (let annoKey in stateAnnotation) {
         const anno = stateAnnotation[annoKey]
         const item = getAnnotation(anno, state)
@@ -443,14 +456,14 @@ const updateAnnotation = (oldOptions, param, global, state) => {
         }
     }
 
-    const lineTemp = getLineAnnotation(line)
+    const lineTemp = getLineAnnotation(line, state)
     if (lineTemp) {
         annotation.annotations = {
             ...annotation.annotations,
             lineTemp
         }
     }
-    const boxTemp = getBoxAnnotation(box)
+    const boxTemp = getBoxAnnotation(box, state)
     if (boxTemp) {
         annotation.annotations = {
             ...annotation.annotations,
@@ -557,7 +570,6 @@ const reducer = (state, action) => {
                 // Get the current timestamp in milliseconds          
                 newState.forms = {
                     ...newState.forms,
-                    // annotationSelected: newAnnotation,
                     annotationTemp: {
                         ...newState.forms.annotationTemp,
                         [annotationType]: initValue
@@ -578,7 +590,10 @@ const reducer = (state, action) => {
         case ACTIVE_ANNOTATION_ITEM: {
             console.log('[ACTIVE_ANNOTATION_ITEM]', payload)
             const { id: annotationId } = payload
-            const newState = { ...state, options, forms: { ...state.forms, annotationSelected: annotationId } };
+            let newState = { ...state, annotationSelected: annotationId };
+            const options = updateChartOptions(state.options, newState.forms, newState)
+            newState = { ...newState, options };
+            updateChartDatasets(newState);
             return newState;
         }
         default:

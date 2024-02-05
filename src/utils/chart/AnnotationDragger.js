@@ -61,7 +61,20 @@ export class AnnotationDragger {
                             return annotation
                         }
                     }
-
+                    continue
+                }
+                case 'box': {
+                    const { xMin, xMax, yMin, yMax } = annotation
+                    const xMinPixel = chart.scales.x.getPixelForValue(xMin);
+                    const xMaxPixel = chart.scales.x.getPixelForValue(xMax);
+                    const yMinPixel = chart.scales.y.getPixelForValue(yMin);
+                    const yMaxPixel = chart.scales.y.getPixelForValue(yMax);
+                    if (xMinPixel <= eventX && eventX <= xMaxPixel
+                        && ((yMinPixel <= eventY && eventY <= yMaxPixel) || (yMaxPixel <= eventY && eventY <= yMinPixel))) {
+                            return annotation
+                    }
+                    continue
+                    // console.log('[getFirstActiveObject]', xMinPixel, xMaxPixel, yMinPixel, yMaxPixel)
                 }
             }
         }
@@ -82,11 +95,11 @@ export class AnnotationDragger {
     handlDoubleClick(event) {
         // Get the clicked point
         event.preventDefault()
-        
+
         if (!this.chart || !this.dispatch) {
             throw Error('chart is null or dispatch')
         }
-        
+
         const chart = this.chart
         const activePoints = chart.getElementsAtEventForMode(event, 'point', chart.options);
         this.handleAnnotation(event, chart)

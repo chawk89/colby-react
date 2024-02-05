@@ -2,8 +2,6 @@
  * Chart JS Plugin
  */
 
-import { copySimpleObject } from "../utils";
-
 
 export class AnnotationDragger {
     constructor() {
@@ -11,6 +9,7 @@ export class AnnotationDragger {
         // Initialize the instance
         this.element = null;
         this.lastEvent = null;
+        this.lastPoint = null
         this.dispatch = null;
     }
     initPlugin(dispatch) {
@@ -35,6 +34,7 @@ export class AnnotationDragger {
     afterInit(chart, args) {
         // Add event listener to the canvas element
         chart.canvas.addEventListener('dblclick', (event) => this.handlDoubleClick(event));
+        chart.canvas.addEventListener('click', (event) => this.handleClick(event));
     }
     isInClickThreshold(dx) {
         const clickThreshold = 5
@@ -71,10 +71,9 @@ export class AnnotationDragger {
                     const yMaxPixel = chart.scales.y.getPixelForValue(yMax);
                     if (xMinPixel <= eventX && eventX <= xMaxPixel
                         && ((yMinPixel <= eventY && eventY <= yMaxPixel) || (yMaxPixel <= eventY && eventY <= yMinPixel))) {
-                            return annotation
+                        return annotation
                     }
                     continue
-                    // console.log('[getFirstActiveObject]', xMinPixel, xMaxPixel, yMinPixel, yMaxPixel)
                 }
             }
         }
@@ -90,7 +89,14 @@ export class AnnotationDragger {
         // const yValue = chart.scales.y.getValueForPixel(event.y);
         const annotations = chart.options.plugins.annotation.annotations
         const selectedAnnotation = this.getFirstActiveObject({ eventX, eventY }, annotations, chart)
-        dispatch({ type: 'ACTIVE_ANNOTATION_ITEM', id: selectedAnnotation?.id ?? '' })
+        this.selectedAnnotation = {
+            id: selectedAnnotation?.id ?? '',
+            x: eventX,
+            y: eventY,
+            obj: selectedAnnotation?.id ? selectedAnnotation : {}
+        }
+
+        dispatch({ type: 'ACTIVE_ANNOTATION_ITEM', id: this.selectedAnnotation.id })
     }
     handlDoubleClick(event) {
         // Get the clicked point
@@ -101,27 +107,39 @@ export class AnnotationDragger {
         }
 
         const chart = this.chart
-        const activePoints = chart.getElementsAtEventForMode(event, 'point', chart.options);
         this.handleAnnotation(event, chart)
         console.log('[activePoints]', activePoints)
-        // Check if there is at least one active point
-        // if (activePoints.length > 0) {
-        //     // Get the first active point
-        //     var firstPoint = activePoints[0];
+    }
+    handleClick(event) {
+        // Get the clicked point
+        event.preventDefault()
 
-        //     // // Perform custom actions here
-        //     // // You can access the dataset and index of the clicked point
-        //     var datasetIndex = firstPoint.datasetIndex;
-        //     var index = firstPoint.index;
+        if (!this.chart || !this.dispatch) {
+            throw Error('chart is null or dispatch')
+        }
 
-        //     // Example: Log the dataset and index of the clicked point
-        //     console.log('Dataset Index:', datasetIndex);
-        //     console.log('Point Index:', index);
-        // } else {
+        if (!this.selectedAnnotation || !this.selectedAnnotation.id) {
+            console.info('[there is no selected Annotation]')
+            return;
+        }
+        const chart = this.chart
+        const eventX = event.x + window.scrollX
+        const eventY = event.y + window.scrollY
+        const { x: lastX, y: lastY } = this.selectedAnnotation
+        const dx = chart.scales.x.getPixelForValue(eventX - lastX) * (eventX > lastX ? 1 : -1)
+        const dy = chart.scales.y.getPixelForValue(eventY - lastY) * (eventY > lastY ? -1 : 1)
+        console.log('[handleClick]', eventX - lastX, eventY - lastY)
+        this.selectedAnnotation = {
+            ...this.selectedAnnotation,
+            x: eventX,
+            y: eventY,
+        }
 
-        // }
-
-
+        this.dispatch({
+            type: 'UPDATE_ANNOTATION_POSITION',
+            id: this.selectedAnnotation.id,
+            dx, dy
+        })
     }
     drawOnExternalTooltip(context) {
         // Tooltip Element

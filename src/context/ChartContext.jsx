@@ -123,6 +123,7 @@ export const RELOAD_FORM = 'RELOAD_FORM';
 export const FETCH_DATA_RANGE = 'FETCH_DATA_RANGE';
 export const ADD_ANNOTATION_ITEM = 'ADD_ANNOTATION_ITEM';
 export const ACTIVE_ANNOTATION_ITEM = 'ACTIVE_ANNOTATION_ITEM';
+export const UPDATE_ANNOTATION_POSITION = 'UPDATE_ANNOTATION_POSITION';
 
 export const SELECTED_COLOR = '#0000FFFF'
 
@@ -286,7 +287,7 @@ const getBoxAnnotation = (box, state) => {
         backgroundColor: active ? SELECTED_COLOR : 'rgba(255, 99, 132, 0.25)'
     };
 
-    
+
 
     if (label) {
         boxAnnotation.label = {
@@ -511,6 +512,28 @@ const updateChartOptions = (oldOptions, forms, state) => {
 
     return newOptions
 }
+const onMoveAnnotation = (data, state) => {
+    const { id, dx, dy } = data
+    const { annotation } = state
+    const selected = annotation[id]
+    console.log('[onMoveAnnotation]', selected)
+    const { type, ...rest } = selected
+    switch (type) {
+        case 'line': {
+            const { axis } = rest
+            if (axis == "x") {
+                selected.position = +selected.position + dy
+            } else if (axis == "y") {
+                selected.position = +selected.position + dx
+            }
+            return selected;
+        }
+        case 'box': {
+
+        }
+    }
+
+}
 
 
 const fetchDataRange = (range) => {
@@ -594,6 +617,18 @@ const reducer = (state, action) => {
             const options = updateChartOptions(state.options, newState.forms, newState)
             newState = { ...newState, options };
             updateChartDatasets(newState);
+            return newState;
+        }
+        case UPDATE_ANNOTATION_POSITION: {
+            console.log('[UPDATE_ANNOTATION_POSITION]', payload)
+            const { id: annotationId } = payload
+            let newState = { ...state };
+            if (annotationId) {
+                onMoveAnnotation(payload, state)
+                const options = updateChartOptions(state.options, newState.forms, newState)
+                newState = { ...newState, options };
+            }
+            // updateChartDatasets(newState);
             return newState;
         }
         default:

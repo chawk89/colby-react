@@ -2,6 +2,8 @@
  * Chart JS Plugin
  */
 
+import { getNewId } from "../utils";
+
 
 export class AnnotationDragger {
     constructor() {
@@ -110,6 +112,14 @@ export class AnnotationDragger {
         this.handleAnnotation(event, chart)
         console.log('[activePoints]', activePoints)
     }
+    getAnnotationById(id) {
+        if (!this.chart) {
+            throw Error('chart is null')
+        }
+        const chart = this.chart
+        const annotations = chart.options.plugins.annotation.annotations
+        return annotations[id]
+    }
     handleClick(event) {
         // Get the clicked point
         event.preventDefault()
@@ -125,20 +135,28 @@ export class AnnotationDragger {
         const chart = this.chart
         const eventX = event.x + window.scrollX
         const eventY = event.y + window.scrollY
-        const { x: lastX, y: lastY } = this.selectedAnnotation
-        const dx = chart.scales.x.getPixelForValue(eventX - lastX) * (eventX > lastX ? 1 : -1)
-        const dy = chart.scales.y.getPixelForValue(eventY - lastY) * (eventY > lastY ? -1 : 1)
-        console.log('[handleClick]', eventX - lastX, eventY - lastY)
+        const annotation = this.getAnnotationById(this.selectedAnnotation.id)
+        // console.log('[handleClick]', Object.entries(annotation))
+        const { yMin, xMin } = annotation
+
+        const posX = chart.scales.x.getValueForPixel(eventX)
+        const posY = chart.scales.y.getValueForPixel(eventY)
+
+        const dx = xMin ? +posX - xMin : 0
+        const dy = yMin ? +posY - yMin : 0
+
         this.selectedAnnotation = {
-            ...this.selectedAnnotation,
-            x: eventX,
-            y: eventY,
+            ...this.selectedAnnotation        
         }
 
         this.dispatch({
             type: 'UPDATE_ANNOTATION_POSITION',
             id: this.selectedAnnotation.id,
-            dx, dy
+            dx, 
+            dy,
+            posX,
+            posY,
+            eventId: `event-${getNewId()}`
         })
     }
     drawOnExternalTooltip(context) {

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chart.js with Interactive Annotation</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.2"></script>
+</head>
+
+<body>
+
+    <canvas id="myChart" width="400" height="400"></canvas>
+
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var annotationClicked = false;
+
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 10,
+                                yMax: 10,
+                                borderColor: 'black',
+                                borderWidth: 2,
+                                borderDash: [6, 6]
+                            }
+                        }
+                    }
+                }
+            },
+            plugins: [{
+                id: 'clickPlugin',
+                beforeEvent(chart, args, options) {
+                    const event = args.event;
+                    if (event.type === 'click') {
+                        const yValue = chart.scales.y.getValueForPixel(event.y);
+                        const annotation = chart.options.plugins.annotation.annotations.line1;
+
+                        // Check if the annotation was clicked
+                        const clickThreshold = 5; // pixels
+                        const annotationY = chart.scales.y.getPixelForValue(annotation.yMin);
+                        if (Math.abs(event.y - annotationY) < clickThreshold && !annotationClicked) {
+                            annotationClicked = true;
+                            annotation.borderColor = 'blue';
+                            annotation.borderWidth = 3;
+                            annotation.borderDash = [];
+                            annotation.shadowColor = 'rgba(0, 0, 255, 0.5)';
+                            annotation.shadowBlur = 10;
+                            annotation.shadowOffsetX = 3;
+                            annotation.shadowOffsetY = 3;
+                            chart.update();
+                            return;
+                        }
+
+                        // Move the annotation if it was previously clicked
+                        if (annotationClicked) {
+                            const nearestValue = findNearestDataPoint(chart, chart.scales.y.getValueForPixel(event.y));
+                            annotation.yMin = nearestValue;
+                            annotation.yMax = nearestValue;
+                            annotationClicked = false;
+                            annotation.borderColor = 'black';
+                            annotation.borderWidth = 2;
+                            annotation.borderDash = [6, 6];
+                            annotation.shadowColor = 'rgba(0, 0, 0, 0)';
+                            annotation.shadowBlur = 0;
+                            annotation.shadowOffsetX = 0;
+                            annotation.shadowOffsetY = 0;
+                            chart.update();
+                        }
+                    }
+                }
+            }]
+        });
+
+        function findNearestDataPoint(chart, yValue) {
+            let minDiff = Number.MAX_VALUE;
+            let nearestValue = yValue;
+
+            chart.data.datasets.forEach(dataset => {
+                dataset.data.forEach(dataPoint => {
+                    const diff = Math.abs(dataPoint - yValue);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        nearestValue = dataPoint;
+                    }
+                });
+            });
+
+            return nearestValue;
+        }
+    </script>
+
+</body>
+
+</html>

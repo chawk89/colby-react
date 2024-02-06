@@ -16,6 +16,8 @@ const initialState = {
                 thickness: "1",
                 color: "#8F0000",
                 label: "",
+                type: 'line',
+                id: 'lineTemp',
             },
             box: {
                 enabled: false,
@@ -23,7 +25,9 @@ const initialState = {
                 xMax: "",
                 xMin: "",
                 yMax: "",
-                yMin: ""
+                yMin: "",
+                type: 'box',
+                id: 'boxTemp'
             },
             label: {
                 enabled: false,
@@ -33,7 +37,9 @@ const initialState = {
                 fontName: "",
                 fontSize: "",
                 anchor: "",
-                color: "#000000"
+                color: "#000000",
+                type: 'label',
+                id: 'labelTemp'
             },
             arrow: {
                 enabled: false,
@@ -43,7 +49,9 @@ const initialState = {
                 yMax: "",
                 doubleArrow: "1",
                 label: "",
-                color: "#000000"
+                color: "#000000",
+                type: 'arrow',
+                id: 'arrowTemp'
             }
         },
         general: {
@@ -113,7 +121,8 @@ const initialState = {
                 },
             }
         }
-    }
+    },
+    eventId: ''
 };
 
 // Action types
@@ -230,7 +239,9 @@ const updateGlobalStyles = (oldOptions, styles) => {
     return newOptions
 }
 const getLineAnnotation = (line, state) => {
-    if (!line.enabled && !line.id) return null
+    if (!line.id) return null
+    if (line.id == 'lineTemp' && !line.enabled) return null
+
     const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel } = line
 
     const { annotationSelected } = state
@@ -273,7 +284,8 @@ const getLineAnnotation = (line, state) => {
 }
 
 const getBoxAnnotation = (box, state) => {
-    if (!box.enabled && !box.id) return null
+    if (!box.id) return null
+    if (box.id == 'boxTemp' && !box.enabled) return null
     const active = box.id && state.annotationSelected == box.id
 
     const { xMin, xMax, yMin, yMax, label } = box
@@ -300,12 +312,13 @@ const getBoxAnnotation = (box, state) => {
 }
 
 const getArrowAnnotation = (arrow) => {
-    if (!arrow.enabled && !arrow.id) return null
+    if (!arrow.id) return null
+    if (arrow.id == 'arrowTemp' && !arrow.enabled) return null
 
     const { xMin: arrowXMin, xMax: arrowXMax, yMin: arrowYMin, yMax: arrowYMax, doubleArrow, label: arrowLabel, color: arrowColor } = arrow
 
     const arrowAnnotation = {
-        type: "line",
+        type: "arrow",
         borderColor: arrowColor,
         borderWidth: 2,
         curve: true,
@@ -346,7 +359,9 @@ const getArrowAnnotation = (arrow) => {
 }
 
 const getLabelAnnotation = (label, state) => {
-    if (!label.enabled && !label.id) return null
+    if (!label.id) return null
+    if (label.id == 'labelTemp' && !label.enabled) return null
+
     const { nindex, name, caption: labelText, fontName: labelFont, fontSize, anchor: labelAnchor, color: labelColor } = label
 
     if (nindex == "" || name == "") return null
@@ -411,7 +426,6 @@ const getLabelAnnotation = (label, state) => {
     console.log('[getLabelAnnotation]', label, labelAnnotation)
 
     return labelAnnotation;
-    return null;
 }
 
 const getAnnotation = (item, state) => {
@@ -513,14 +527,42 @@ const updateChartOptions = (oldOptions, forms, state) => {
     return newOptions
 }
 const onMoveAnnotation = (data, state) => {
-    const { id, dx, dy } = data
-    const { annotation } = state
-    const selected = annotation[id]
-    console.log('[onMoveAnnotation]', selected)
+    const { id } = data
+    const { annotation, forms: { annotationTemp } } = state
+    let selected = null;
+
+    switch (id) {
+        case 'lineTemp':
+        case 'line': {
+            selected = annotationTemp['line'];
+            break;
+        }
+        case 'boxTemp':
+        case 'box': {
+            selected = annotationTemp['box'];
+            break;
+        }
+        case 'labelTemp':
+        case 'label': {
+            selected = annotationTemp['label'];
+            break;
+        }
+        case 'arrowTemp':
+        case 'arrow': {
+            selected = annotationTemp['arrow'];
+            break;
+        }
+        default:
+            selected = annotation[id];
+
+    }
+    if (!selected) return;
+
     const { type, ...rest } = selected
     switch (type) {
         case 'line': {
             const { axis } = rest
+            const { posX, posY, dx, dy } = data
             if (axis == "x") {
                 selected.position = +selected.position + dy
             } else if (axis == "y") {
@@ -621,14 +663,20 @@ const reducer = (state, action) => {
         }
         case UPDATE_ANNOTATION_POSITION: {
             console.log('[UPDATE_ANNOTATION_POSITION]', payload)
-            const { id: annotationId } = payload
-            let newState = { ...state };
+            const { id: annotationId, eventId } = payload
+
+            if (eventId == state.eventId) return state;
+
+            let newState = { ...state, eventId };
             if (annotationId) {
-                onMoveAnnotation(payload, state)
+                const annotation = onMoveAnnotation(payload, state)
+                newState.annotation = {
+                    ...newState.annotation,
+                    [annotationId]: { ...annotation }
+                }
                 const options = updateChartOptions(state.options, newState.forms, newState)
                 newState = { ...newState, options };
             }
-            // updateChartDatasets(newState);
             return newState;
         }
         default:

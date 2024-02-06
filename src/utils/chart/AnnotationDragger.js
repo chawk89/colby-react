@@ -54,7 +54,11 @@ export class AnnotationDragger {
                     if (xScaleID && xScaleID == 'X') {
                         const annotationX = chart.scales.x.getPixelForValue(+xMin + borderWidth / 2);
                         if (this.isInClickThreshold(annotationX - eventX)) {
-                            return annotation
+                            return {
+                                annotation,
+                                dxRate: 0,
+                                dyRate: 0
+                            }
                         }
                     }
                     if (yScaleID && yScaleID == 'y') {
@@ -71,9 +75,18 @@ export class AnnotationDragger {
                     const xMaxPixel = chart.scales.x.getPixelForValue(xMax);
                     const yMinPixel = chart.scales.y.getPixelForValue(yMin);
                     const yMaxPixel = chart.scales.y.getPixelForValue(yMax);
+
                     if (xMinPixel <= eventX && eventX <= xMaxPixel
                         && ((yMinPixel <= eventY && eventY <= yMaxPixel) || (yMaxPixel <= eventY && eventY <= yMinPixel))) {
-                        return annotation
+                        const width = (xMax - xMin)
+                        const height = (xMax - xMin)
+                        const dxRate = width ? (eventX - xMin) / width : 0
+                        const dyRate = height ? (eventY - yMin) / height : 0
+                        return {
+                            annotation,
+                            dxRate,
+                            dyRate,
+                        }
                     }
                     continue
                 }
@@ -90,13 +103,21 @@ export class AnnotationDragger {
         const eventY = event.y + window.scrollY
         // const yValue = chart.scales.y.getValueForPixel(event.y);
         const annotations = chart.options.plugins.annotation.annotations
-        const selectedAnnotation = this.getFirstActiveObject({ eventX, eventY }, annotations, chart)
-        this.selectedAnnotation = {
-            id: selectedAnnotation?.id ?? '',
-            x: eventX,
-            y: eventY,
-            obj: selectedAnnotation?.id ? selectedAnnotation : {}
+        const { annotation: selectedAnnotation, dxRate, dyRate } = this.getFirstActiveObject({ eventX, eventY }, annotations, chart)
+
+        if (selectedAnnotation && selectedAnnotation?.id == this.selectedAnnotation?.id) {
+            this.selectedAnnotation = {
+                id: ''
+            }
+        } else {
+            this.selectedAnnotation = {
+                id: selectedAnnotation?.id ?? '',
+                x: eventX,
+                y: eventY,
+                obj: selectedAnnotation?.id ? selectedAnnotation : {}
+            }
         }
+
 
         dispatch({ type: 'ACTIVE_ANNOTATION_ITEM', id: this.selectedAnnotation.id })
     }
@@ -110,7 +131,6 @@ export class AnnotationDragger {
 
         const chart = this.chart
         this.handleAnnotation(event, chart)
-        console.log('[activePoints]', activePoints)
     }
     getAnnotationById(id) {
         if (!this.chart) {
@@ -120,14 +140,7 @@ export class AnnotationDragger {
         const annotations = chart.options.plugins.annotation.annotations
         return annotations[id]
     }
-    handleClick(event) {
-        // Get the clicked point
-        event.preventDefault()
-
-        if (!this.chart || !this.dispatch) {
-            throw Error('chart is null or dispatch')
-        }
-
+    moveAnnotation(event) {
         if (!this.selectedAnnotation || !this.selectedAnnotation.id) {
             console.info('[there is no selected Annotation]')
             return;
@@ -146,18 +159,27 @@ export class AnnotationDragger {
         const dy = yMin ? +posY - yMin : 0
 
         this.selectedAnnotation = {
-            ...this.selectedAnnotation        
+            ...this.selectedAnnotation
         }
 
         this.dispatch({
             type: 'UPDATE_ANNOTATION_POSITION',
             id: this.selectedAnnotation.id,
-            dx, 
+            dx,
             dy,
             posX,
-            posY,
-            eventId: `event-${getNewId()}`
+            posY
         })
+    }
+    handleClick(event) {
+        // Get the clicked point
+        event.preventDefault()
+
+        if (!this.chart || !this.dispatch) {
+            throw Error('chart is null or dispatch')
+        }
+        this.moveAnnotation(event)
+
     }
     drawOnExternalTooltip(context) {
         // Tooltip Element

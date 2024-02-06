@@ -507,7 +507,6 @@ const updateAnnotation = (oldOptions, param, global, state) => {
     return newOptions
 }
 const updateChartOptions = (oldOptions, forms, state) => {
-    console.log(oldOptions, forms)
     // chart title
     const { annotationTemp, general, xAxis, yAxis, styles } = forms
 
@@ -571,7 +570,20 @@ const onMoveAnnotation = (data, state) => {
             return selected;
         }
         case 'box': {
+            const { dx, dy } = data
+            if (dx) {
+                selected.xMin = +selected.xMin + dx
+                selected.xMax = +selected.xMax + dx
+            }
+            if (dy) {
+                selected.yMin = +selected.yMin + dy
+                selected.yMax = +selected.yMax + dy
+            }
 
+            return selected;
+        }
+        default: {
+            return selected;
         }
     }
 
@@ -653,7 +665,6 @@ const reducer = (state, action) => {
             return newState
         }
         case ACTIVE_ANNOTATION_ITEM: {
-            console.log('[ACTIVE_ANNOTATION_ITEM]', payload)
             const { id: annotationId } = payload
             let newState = { ...state, annotationSelected: annotationId };
             const options = updateChartOptions(state.options, newState.forms, newState)
@@ -662,12 +673,9 @@ const reducer = (state, action) => {
             return newState;
         }
         case UPDATE_ANNOTATION_POSITION: {
-            console.log('[UPDATE_ANNOTATION_POSITION]', payload)
-            const { id: annotationId, eventId } = payload
+            const { id: annotationId } = payload
 
-            if (eventId == state.eventId) return state;
-
-            let newState = { ...state, eventId };
+            let newState = { ...state };
             if (annotationId) {
                 const annotation = onMoveAnnotation(payload, state)
                 newState.annotation = {

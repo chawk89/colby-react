@@ -570,14 +570,17 @@ const onMoveAnnotation = (data, state) => {
             return selected;
         }
         case 'box': {
-            const { dx, dy } = data
+            const { dx, dy, dxRate, dyRate } = data
+            
             if (dx) {
-                selected.xMin = +selected.xMin + dx
-                selected.xMax = +selected.xMax + dx
+                const width = +selected.xMax - selected.xMin
+                selected.xMin = +selected.xMin + dx + dxRate * width
+                selected.xMax = +selected.xMax + dx + dxRate * width
             }
             if (dy) {
-                selected.yMin = +selected.yMin + dy
-                selected.yMax = +selected.yMax + dy
+                const height = +selected.yMax - selected.yMin
+                selected.yMin = +selected.yMin + dy + dyRate * height
+                selected.yMax = +selected.yMax + dy + dyRate * height                
             }
 
             return selected;

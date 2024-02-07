@@ -64,7 +64,10 @@ export class AnnotationDragger {
                     if (yScaleID && yScaleID == 'y') {
                         const annotationY = chart.scales.y.getPixelForValue(+yMin + borderWidth / 2);
                         if (this.isInClickThreshold(annotationY - eventY)) {
-                            return annotation
+                            return {
+                                annotation, dxRate: 0,
+                                dyRate: 0
+                            }
                         }
                     }
                     continue
@@ -78,10 +81,10 @@ export class AnnotationDragger {
 
                     if (xMinPixel <= eventX && eventX <= xMaxPixel
                         && ((yMinPixel <= eventY && eventY <= yMaxPixel) || (yMaxPixel <= eventY && eventY <= yMinPixel))) {
-                        const width = (xMax - xMin)
-                        const height = (xMax - xMin)
-                        const dxRate = width ? (eventX - xMin) / width : 0
-                        const dyRate = height ? (eventY - yMin) / height : 0
+                        const width = (xMinPixel - xMaxPixel)
+                        const height = (yMinPixel - yMaxPixel)
+                        const dxRate = width ? (eventX - xMinPixel) / width : 0
+                        const dyRate = height ? (eventY - yMinPixel) / height : 0
                         return {
                             annotation,
                             dxRate,
@@ -89,6 +92,8 @@ export class AnnotationDragger {
                         }
                     }
                     continue
+                }
+                case 'box': {
                 }
             }
         }
@@ -114,6 +119,8 @@ export class AnnotationDragger {
                 id: selectedAnnotation?.id ?? '',
                 x: eventX,
                 y: eventY,
+                dxRate,
+                dyRate,
                 obj: selectedAnnotation?.id ? selectedAnnotation : {}
             }
         }
@@ -154,6 +161,8 @@ export class AnnotationDragger {
 
         const posX = chart.scales.x.getValueForPixel(eventX)
         const posY = chart.scales.y.getValueForPixel(eventY)
+        const { dxRate, dyRate } = this.selectedAnnotation
+
 
         const dx = xMin ? +posX - xMin : 0
         const dy = yMin ? +posY - yMin : 0
@@ -168,7 +177,9 @@ export class AnnotationDragger {
             dx,
             dy,
             posX,
-            posY
+            posY,
+            dxRate,
+            dyRate
         })
     }
     handleClick(event) {

@@ -2,7 +2,7 @@
  * Chart JS Plugin
  */
 
-import { getNewId } from "../utils";
+
 
 
 export class AnnotationDragger {
@@ -13,6 +13,7 @@ export class AnnotationDragger {
         this.lastEvent = null;
         this.lastPoint = null
         this.dispatch = null;
+        this.selected = []
     }
     initPlugin(dispatch) {
         if (!dispatch) {
@@ -35,8 +36,8 @@ export class AnnotationDragger {
     }
     afterInit(chart, args) {
         // Add event listener to the canvas element
-        chart.canvas.addEventListener('dblclick', (event) => this.handlDoubleClick(event));
-        chart.canvas.addEventListener('click', (event) => this.handleClick(event));
+        // chart.canvas.addEventListener('dblclick', (event) => this.handlDoubleClick(event));
+        // chart.canvas.addEventListener('click', (event) => this.handleClick(event));
     }
     isInClickThreshold(dx) {
         const clickThreshold = 5
@@ -93,11 +94,16 @@ export class AnnotationDragger {
                     }
                     continue
                 }
-                case 'box': {
+                case 'label': {
+                    console.log('[annotation]', Object.entries(annotation))
                 }
             }
         }
-        return null;
+        return {
+            annotation: null,
+            dxRate: 0,
+            dyRate: 0,
+        };
     }
     handleAnnotation(event, chart) {
         const dispatch = this.dispatch
@@ -261,8 +267,38 @@ export class AnnotationDragger {
         tooltipEl.style.padding = tooltipModel.padding + 'px ' + tooltipModel.padding + 'px';
         tooltipEl.style.pointerEvents = 'none';
     }
+    selectElement(element, selectedColor, unselectedColor) {
+        console.log(element.label.options.content + ' selected');
+        if (this.selected.includes(element)) {
+            this.selected.splice(this.selected.indexOf(element), 1);
+            element.options.backgroundColor = unselectedColor;
+            element.label.options.font.size = 12;
+        } else {
+            this.selected.push(element);
+            element.options.backgroundColor = selectedColor;
+            element.label.options.font.size = 14;
+        }
+        return true;
+    }
 
-
+    onAnnoationClick(ctx) {
+        console.log('[onClick]', ctx)
+        const { id, element } = ctx
+        if (!this.dispatch) {
+            throw Error('Dispatch is null')
+        }
+        
+        if(!this.selectedAnnotation) {
+            this.selectedAnnotation = {
+                id: ''
+            }
+        }
+        const newId = this.selectedAnnotation?.id == id ? '' : id
+        this.selectedAnnotation = {
+            id: newId
+        }
+        this.dispatch({ type: 'ACTIVE_ANNOTATION_ITEM', id: newId })
+    }
     enter(ctx) {
         this.element = ctx.element;
     }

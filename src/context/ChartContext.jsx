@@ -85,7 +85,7 @@ const initialState = {
     annotationSelected: '',
     options: {
         responsive: true,
-        events: ["mousedown", "mouseup", "mousemove", "mouseout", "mouseleave"],
+        events: ["mousedown", "mouseup", "mousemove", "mouseout", "mouseleave", "click"],
         aspectRatio: 1,
         plugins: {
             legend: {
@@ -367,7 +367,7 @@ const getLabelAnnotation = (label, state) => {
     if (nindex == "" || name == "") return null
     const labelX = parseFloat(nindex)
     const labelY = parseFloat(name)
-    const labelSize = parseFloat(fontSize)
+    const labelSize = parseFloat(fontSize || 10)
 
 
     let adjustValueX = 0;
@@ -406,7 +406,7 @@ const getLabelAnnotation = (label, state) => {
         type: "label",
         xValue: labelX,
         yValue: correspondingYValue ? correspondingYValue : labelY,
-        backgroundColor: labelColor,
+        backgroundColor: 'rgba(245,245,245)',
         borderRadius: 6,
         borderWidth: 1,
         content: [labelText],
@@ -417,7 +417,7 @@ const getLabelAnnotation = (label, state) => {
         },
         font: {
             family: labelFont,
-            size: parseFloat(labelSize),
+            size: labelSize,
         },
         xAdjust: adjustValueX,
         yAdjust: adjustValueY,
@@ -502,7 +502,9 @@ const updateAnnotation = (oldOptions, param, global, state) => {
         }
     }
 
-    newOptions.plugins.annotation = { ...newOptions.plugins.annotation, ...annotation }
+    newOptions.plugins.annotation = {
+        ...newOptions.plugins.annotation, ...annotation
+    }
 
     return newOptions
 }
@@ -571,7 +573,7 @@ const onMoveAnnotation = (data, state) => {
         }
         case 'box': {
             const { dx, dy, dxRate, dyRate } = data
-            
+
             if (dx) {
                 const width = +selected.xMax - selected.xMin
                 selected.xMin = +selected.xMin + dx + dxRate * width
@@ -580,7 +582,7 @@ const onMoveAnnotation = (data, state) => {
             if (dy) {
                 const height = +selected.yMax - selected.yMin
                 selected.yMin = +selected.yMin + dy + dyRate * height
-                selected.yMax = +selected.yMax + dy + dyRate * height                
+                selected.yMax = +selected.yMax + dy + dyRate * height
             }
 
             return selected;
@@ -734,6 +736,7 @@ const onInitializeState = ({ state, info }) => {
         },
         chartType
     }
+    // newState.options
     // const options = updateChartOptions(state.options, state.forms, state)
     // newState = { ...state, options };
     // console.log('[onInitializeState]', newState)
@@ -799,12 +802,16 @@ const onAdditionalUpdates = (state, { chartType, chartRef, draggerPlugin }) => {
 
     state.options.plugins.annotation = {
         ...state.options.plugins.annotation,
+        click(ctx) {
+            draggerPlugin?.onAnnoationClick(ctx)
+        },        
         enter(ctx) {
             draggerPlugin?.enter(ctx)
         },
         leave() {
             draggerPlugin?.leave()
-        }
+        },
+     
 
     }
     state.options.scales.x.ticks = {

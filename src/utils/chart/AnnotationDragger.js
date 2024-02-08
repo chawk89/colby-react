@@ -22,14 +22,13 @@ export class AnnotationDragger {
         this.dispatch = dispatch;
     }
     beforeEvent(chart, args, options) {
+        this.chart = chart
+
         if (this.handleDrag(args.event)) {
-            // args.changed = true;
+            args.changed = true;
+            return;
         }
 
-        if (args.event.type == 'mousedown') {
-            this.chart = chart
-            this.args = args
-        }
     }
     afterEvent(chart, args, options) {
         // console.log('[afterEvent]', args.event.type)
@@ -132,7 +131,7 @@ export class AnnotationDragger {
         }
 
 
-        dispatch({ type: 'ACTIVE_ANNOTATION_ITEM', id: this.selectedAnnotation.id })
+        // dispatch({ type: 'ACTIVE_ANNOTATION_ITEM', id: this.selectedAnnotation.id })
     }
     handlDoubleClick(event) {
         // Get the clicked point
@@ -161,8 +160,7 @@ export class AnnotationDragger {
         const chart = this.chart
         const eventX = event.x + window.scrollX
         const eventY = event.y + window.scrollY
-        const annotation = this.getAnnotationById(this.selectedAnnotation.id)
-        // console.log('[handleClick]', Object.entries(annotation))
+        const annotation = this.getAnnotationById(this.selectedAnnotation.id)        
         const { yMin, xMin } = annotation
 
         const posX = chart.scales.x.getValueForPixel(eventX)
@@ -182,10 +180,7 @@ export class AnnotationDragger {
             id: this.selectedAnnotation.id,
             dx,
             dy,
-            posX,
-            posY,
-            dxRate,
-            dyRate
+           
         })
     }
     handleClick(event) {
@@ -281,14 +276,14 @@ export class AnnotationDragger {
         return true;
     }
 
-    onAnnoationClick(ctx) {
+    onElementClick(ctx) {
         console.log('[onClick]', ctx)
         const { id, element } = ctx
         if (!this.dispatch) {
             throw Error('Dispatch is null')
         }
-        
-        if(!this.selectedAnnotation) {
+
+        if (!this.selectedAnnotation) {
             this.selectedAnnotation = {
                 id: ''
             }
@@ -297,35 +292,33 @@ export class AnnotationDragger {
         this.selectedAnnotation = {
             id: newId
         }
-        this.dispatch({ type: 'ACTIVE_ANNOTATION_ITEM', id: newId })
+        // this.dispatch({ type: 'ACTIVE_ANNOTATION_ITEM', id: newId })
     }
-    enter(ctx) {
+    onElementEnter(ctx) {
         this.element = ctx.element;
+        this.ctx = ctx;
     }
-    leave() {
-        // console.log('[leave]')
-        // this.element = undefined;
-        // this.lastEvent = undefined;
+    onElementLeave() {
+        this.element = undefined;
+        this.lastEvent = undefined;
     }
     handleDrag(event) {
-        if (this.element) {
-            if (event.type in ["mousemove", "mouseout", "mouseup", "mousedown"]) {
-                console.log('[handleDrag]', event.type, event)
-            }
-            switch (event.type) {
-                case "mousemove":
-                    return this.handleElementDragging(event);
-                case "mouseout":
-                case "mouseup":
-                    this.lastEvent = undefined;
-                    this.element = undefined;
-                    break;
-                case "mousedown":
-                    this.lastEvent = event;
-                    break;
-                default: {
-                    console.log('[handleDrag]', event)
-                }
+        if (!this.element) {
+            return false
+        }
+
+        switch (event.type) {
+            case "mousemove":
+                return this.handleElementDragging(event);
+            case "mouseout":
+            case "mouseup":
+                this.lastEvent = undefined;
+                break;
+            case "mousedown":
+                this.lastEvent = event;
+                break;
+            default: {
+                console.log('[handleDrag]', event)
             }
         }
 
@@ -336,12 +329,35 @@ export class AnnotationDragger {
         if (!this.lastEvent || !this.element) {
             return;
         }
-        const moveX = event.x - this.lastEvent.x;
-        const moveY = event.y - this.lastEvent.y;
+        if (!this.chart) {
+            throw Error('chart is null')
+        }
+        const chart = this.chart
+        const eventX = event.x + window.scrollX
+        const eventY = event.y + window.scrollY
+        const moveX = eventX - this.lastEvent.x;
+        const moveY = eventY - this.lastEvent.y;
+        const dx = chart.scales.x.getValueForPixel(moveX) ?? 0
+        const dy = chart.scales.y.getValueForPixel(moveY) ?? 0
+
         this.onDrag(moveX, moveY);
+        this.updateAnnotation({ dx, dy })
         this.lastEvent = event;
         return true;
     }
+
+    updateAnnotation({ dx, dy }) {
+        if (!this.element || !this.dispatch || !this.ctx) {
+            throw Error('element, ctx or dispatch is null')
+        }
+        this.dispatch({
+            type: 'UPDATE_ANNOTATION_POSITION',
+            id: this.ctx.id,
+            dx, dy
+        })
+
+    }
+
     onDrag(moveX, moveY) {
         this.element.x += moveX;
         this.element.y += moveY;

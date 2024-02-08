@@ -81,7 +81,53 @@ const initialState = {
         },
         dataRange: ''
     },
-    annotation: {},
+    annotation: {
+        "line-1707320896272": {
+            enabled: true,
+            axis: "x",
+            position: "500",
+            style: "dashed",
+            thickness: "1",
+            color: "#8F0000",
+            label: "Test",
+            type: "line",
+            id: "line-1707320896272"
+        },
+        "box-1707320977735": {
+            enabled: true,
+            label: "",
+            xMax: "Q2 FY2013",
+            xMin: "Q1 FY2013",
+            yMax: "1500",
+            yMin: "500",
+            type: "box",
+            id: "box-1707320977735"
+        },
+        "arrow-1707348807973": {
+            enabled: true,
+            xMin: "",
+            xMax: "",
+            yMin: "",
+            yMax: "",
+            doubleArrow: "1",
+            label: "",
+            color: "#000000",
+            type: "arrow",
+            id: "arrow-1707348807973"
+        },
+        "label-1707349710912": {
+            enabled: true,
+            nindex: "0",
+            name: "0",
+            caption: "Test",
+            fontName: "",
+            fontSize: "",
+            anchor: "1",
+            color: "#000000",
+            type: "label",
+            id: "label-1707349710912"
+        }
+    },
     annotationSelected: '',
     options: {
         responsive: true,
@@ -563,7 +609,8 @@ const onMoveAnnotation = (data, state) => {
     switch (type) {
         case 'line': {
             const { axis } = rest
-            const { posX, posY, dx, dy } = data
+            const { dx, dy } = data
+            console.log('[onMoveAnnotation]', data, selected)
             if (axis == "x") {
                 selected.position = +selected.position + dy
             } else if (axis == "y") {
@@ -572,19 +619,18 @@ const onMoveAnnotation = (data, state) => {
             return selected;
         }
         case 'box': {
-            const { dx, dy, dxRate, dyRate } = data
-
+            const { dx, dy} = data
             if (dx) {
-                const width = +selected.xMax - selected.xMin
-                selected.xMin = +selected.xMin + dx + dxRate * width
-                selected.xMax = +selected.xMax + dx + dxRate * width
+                // const width = +selected.xMax - selected.xMin
+                // selected.xMin = +selected.xMin + dx + dxRate * width
+                // selected.xMax = +selected.xMax + dx + dxRate * width                
+                selected.xMin = +selected.xMin + dx
+                selected.xMax = +selected.xMax + dx
             }
-            if (dy) {
-                const height = +selected.yMax - selected.yMin
-                selected.yMin = +selected.yMin + dy + dyRate * height
-                selected.yMax = +selected.yMax + dy + dyRate * height
+            if (dy) {                
+                selected.yMin = +selected.yMin + dy
+                selected.yMax = +selected.yMax + dy
             }
-
             return selected;
         }
         default: {
@@ -687,8 +733,8 @@ const reducer = (state, action) => {
                     ...newState.annotation,
                     [annotationId]: { ...annotation }
                 }
-                const options = updateChartOptions(state.options, newState.forms, newState)
-                newState = { ...newState, options };
+                // const options = updateChartOptions(state.options, newState.forms, newState)
+                // newState = { ...newState, options };
             }
             return newState;
         }
@@ -803,16 +849,14 @@ const onAdditionalUpdates = (state, { chartType, chartRef, draggerPlugin }) => {
     state.options.plugins.annotation = {
         ...state.options.plugins.annotation,
         click(ctx) {
-            draggerPlugin?.onAnnoationClick(ctx)
-        },        
+            draggerPlugin?.onElementClick(ctx)
+        },
         enter(ctx) {
-            draggerPlugin?.enter(ctx)
+            draggerPlugin?.onElementEnter(ctx)
         },
         leave() {
-            draggerPlugin?.leave()
+            draggerPlugin?.onElementLeave()
         },
-     
-
     }
     state.options.scales.x.ticks = {
         ...state.options.scales.x.ticks,

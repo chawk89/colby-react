@@ -175,13 +175,13 @@ export class AnnotationDragger {
             ...this.selectedAnnotation
         }
 
-        this.dispatch({
-            type: 'UPDATE_ANNOTATION_POSITION',
-            id: this.selectedAnnotation.id,
-            dx,
-            dy,
+        // this.dispatch({
+        //     type: 'UPDATE_ANNOTATION_POSITION',
+        //     id: this.selectedAnnotation.id,
+        //     dx,
+        //     dy,
            
-        })
+        // })
     }
     handleClick(event) {
         // Get the clicked point
@@ -350,11 +350,11 @@ export class AnnotationDragger {
         if (!this.element || !this.dispatch || !this.ctx) {
             throw Error('element, ctx or dispatch is null')
         }
-        this.dispatch({
-            type: 'UPDATE_ANNOTATION_POSITION',
-            id: this.ctx.id,
-            dx, dy
-        })
+        // this.dispatch({
+        //     type: 'UPDATE_ANNOTATION_POSITION',
+        //     id: this.ctx.id,
+        //     dx, dy
+        // })
 
     }
 

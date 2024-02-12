@@ -13,6 +13,7 @@ export const CLICK_TIMEOUT = 250
 export const SELECTED_COLOR = '#0000FF'
 
 export const onDrag = function (element, moveX, moveY) {
+
     element.x += moveX;
     element.y += moveY;
     element.x2 += moveX;
@@ -78,8 +79,7 @@ export const markColbyChartOptions = (options) => ({
                 window.colbyAnnotation.element = ctx.element
             },
             leave() {
-                window.colbyAnnotation.element = null
-                window.colbyAnnotation.lastEvent = null
+
             },
             click(ctx, { chart }) {
                 // window.colbyAnnotation.element = null
@@ -125,8 +125,18 @@ const useAnnotationDragger = () => {
         if (!lastEvent || !element) {
             return;
         }
-        const moveX = event.x - lastEvent.x;
-        const moveY = event.y - lastEvent.y;
+        let moveX = event.x - lastEvent.x;
+        let moveY = event.y - lastEvent.y;
+        if (element.options.type == 'line') {
+            if (!element.options.xScaleID) {
+                moveX = 0;
+            }
+            if (!element.options.yScaleID) {
+                moveY = 0;
+            }
+
+        }
+
         onDrag(element, moveX, moveY);
         window.colbyAnnotation.lastEvent = event
 
@@ -140,9 +150,11 @@ const useAnnotationDragger = () => {
                     return handleElementDragging(event);
                 case 'mouseout':
                 case 'mouseup':
+                    window.colbyAnnotation.element = null
                     window.colbyAnnotation.lastEvent = null
                     break;
                 case 'mousedown':
+
                     window.colbyAnnotation.lastEvent = event
                     break;
                 default:

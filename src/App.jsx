@@ -20,7 +20,7 @@ function App() {
             <div className="w-full xl:w-8/12 px-2">
               <ColbyChart />
             </div>
-            <div className="w-full xl:w-4/12 px-2">
+            <div className="w-full xl:w-4/12 px-2 hidden">
               <NarrativeMessage />
             </div>
           </div>

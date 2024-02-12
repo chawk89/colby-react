@@ -1,9 +1,7 @@
 // ChartContext.js
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
-import { AnnotationDragger } from '../utils/chart/AnnotationDragger';
 import { md5 } from 'js-md5';
 import { copySimpleObject } from '../utils/utils';
-
 // Initial state
 const initialState = {
     forms: {
@@ -91,7 +89,8 @@ const initialState = {
             color: "#8F0000",
             label: "Test",
             type: "line",
-            id: "line-1707320896272"
+            id: "line-1707320896272",
+            
         },
         "box-1707320977735": {
             enabled: true,
@@ -148,7 +147,26 @@ const initialState = {
                 formatter: (value) => value,
             },
             annotation: {
-                annotations: {}
+                annotations: {
+                    dragger: {
+                        id: 'dragger',
+                        type: 'box',
+                        display: false,
+                        xMin: 0,
+                        xMax: 1,
+                        yMin: 100,
+                        yMax: 300,
+
+                        backgroundColor: 'gray',
+                        label: {
+                            display: true,
+                            width: 20,
+                            height: 30,
+                            position: 'center',
+                            content: ['DragMe']
+                        }
+                    }
+                }
             }
         },
         scales: {
@@ -290,23 +308,20 @@ const getLineAnnotation = (line, state) => {
 
     const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel } = line
 
-    const { annotationSelected } = state
-
     const lineAnnotation = {
         type: "line",
         id: line.id,
-        borderColor: annotationSelected == line.id ? SELECTED_COLOR : lineColor,
-        borderWidth: annotationSelected == line.id ? +lineThickness + 2 : lineThickness,
+        borderColor: lineColor,
+        borderWidth: lineThickness,
+        draggable: true,
     };
-    if (annotationSelected == line.id) {
+
+    if (lineStyle == "dashed") {
         lineAnnotation.borderDash = [5, 5];
-    } else {
-        if (lineStyle == "dashed") {
-            lineAnnotation.borderDash = [5, 5];
-        } else if (lineStyle == "wave") {
-            lineAnnotation.borderDash = [10, 5, 5];
-        }
+    } else if (lineStyle == "wave") {
+        lineAnnotation.borderDash = [10, 5, 5];
     }
+
 
 
     if (lineLabel) {
@@ -314,7 +329,8 @@ const getLineAnnotation = (line, state) => {
             content: [lineLabel],
             display: true,
             textAlign: 'center',
-        };
+            drawTime: 'afterDatasetsDraw',
+        }
     }
 
     if (lineAxis == "x") {
@@ -400,7 +416,6 @@ const getArrowAnnotation = (arrow) => {
         }
 
     }
-    console.log('[arrowAnnotation]', arrowAnnotation)
     return arrowAnnotation;
 }
 
@@ -419,22 +434,22 @@ const getLabelAnnotation = (label, state) => {
     let adjustValueX = 0;
     let adjustValueY = 0;
 
-    if (labelAnchor == true) {
-        if (labelX == 0) {
-            adjustValueX = 50;
-            adjustValueY = -30;
-        }
 
-        if (
-            labelY >= 0.9 * state.options.scales.y.suggestedMax
-        ) {
-            adjustValueX = 0;
-            adjustValueY = 20;
-        } else {
-            adjustValueX = -30;
-            adjustValueY = -30;
-        }
+    if (labelX == 0) {
+        adjustValueX = 50;
+        adjustValueY = -30;
     }
+
+    if (
+        labelY >= 0.9 * state.options.scales.y.suggestedMax
+    ) {
+        adjustValueX = 0;
+        adjustValueY = 20;
+    } else {
+        adjustValueX = -30;
+        adjustValueY = -30;
+    }
+
 
 
     let isStacked = state.forms.general.stacked;
@@ -469,8 +484,6 @@ const getLabelAnnotation = (label, state) => {
         yAdjust: adjustValueY,
     };
 
-    console.log('[getLabelAnnotation]', label, labelAnnotation)
-
     return labelAnnotation;
 }
 
@@ -500,7 +513,9 @@ const updateAnnotation = (oldOptions, param, global, state) => {
 
     const { line, box, label, arrow } = param
     const annotation = {
-        annotations: {},
+        annotations: {
+
+        },
     }
 
     const { annotation: stateAnnotation } = state
@@ -547,6 +562,7 @@ const updateAnnotation = (oldOptions, param, global, state) => {
             arrowTemp
         }
     }
+
 
     newOptions.plugins.annotation = {
         ...newOptions.plugins.annotation, ...annotation
@@ -619,7 +635,7 @@ const onMoveAnnotation = (data, state) => {
             return selected;
         }
         case 'box': {
-            const { dx, dy} = data
+            const { dx, dy } = data
             if (dx) {
                 // const width = +selected.xMax - selected.xMin
                 // selected.xMin = +selected.xMin + dx + dxRate * width
@@ -627,7 +643,7 @@ const onMoveAnnotation = (data, state) => {
                 selected.xMin = +selected.xMin + dx
                 selected.xMax = +selected.xMax + dx
             }
-            if (dy) {                
+            if (dy) {
                 selected.yMin = +selected.yMin + dy
                 selected.yMax = +selected.yMax + dy
             }
@@ -707,10 +723,6 @@ const reducer = (state, action) => {
                     ...newState.annotation,
                     [id]: newAnnotation
                 }
-
-                // const options = updateChartOptions(state.options, newState.forms, newState)
-                // newState = { ...newState, options };
-                // updateChartDatasets(newState);
             }
 
             return newState
@@ -733,8 +745,6 @@ const reducer = (state, action) => {
                     ...newState.annotation,
                     [annotationId]: { ...annotation }
                 }
-                // const options = updateChartOptions(state.options, newState.forms, newState)
-                // newState = { ...newState, options };
             }
             return newState;
         }
@@ -765,8 +775,7 @@ const onInitializeState = ({ state, info }) => {
     const datasets = getChartDataObj(keyLabels, chartData.cols)
     const yAxis = keyLabels.reduce((p, c) => ({ ...p, [c.key]: true }), {})
 
-
-    let newState = {
+    return {
         ...state,
         forms: {
             ...state.forms,
@@ -782,13 +791,6 @@ const onInitializeState = ({ state, info }) => {
         },
         chartType
     }
-    // newState.options
-    // const options = updateChartOptions(state.options, state.forms, state)
-    // newState = { ...state, options };
-    // console.log('[onInitializeState]', newState)
-    // updateChartDatasets(newState);
-
-    return newState
 }
 const getXAxisDatafield = (data) => {
     const { forms: { general: { xAxis } } } = data
@@ -838,7 +840,7 @@ const updateChartDatasets = (state) => {
         }
     }
 }
-const onAdditionalUpdates = (state, { chartType, chartRef, draggerPlugin }) => {
+const onAdditionalUpdates = (state, { chartType, chartRef }) => {
     state.chartType = chartType
 
     state.onChartRefresh = () => {
@@ -848,15 +850,6 @@ const onAdditionalUpdates = (state, { chartType, chartRef, draggerPlugin }) => {
 
     state.options.plugins.annotation = {
         ...state.options.plugins.annotation,
-        click(ctx) {
-            draggerPlugin?.onElementClick(ctx)
-        },
-        enter(ctx) {
-            draggerPlugin?.onElementEnter(ctx)
-        },
-        leave() {
-            draggerPlugin?.onElementLeave()
-        },
     }
     state.options.scales.x.ticks = {
         ...state.options.scales.x.ticks,
@@ -908,18 +901,13 @@ export const ChartProvider = ({ children }) => {
         throw Error('ColbyChartInfo is insufficient')
     }
 
+
     const chartRef = useRef(null);
     const storedState = onInitializeState({ state: storageValue || initialState, info: ColbyChartInfo });
-    const draggerPlugin = useMemo(() => new AnnotationDragger(), [])
 
-    onAdditionalUpdates(storedState, { chartRef, chartType, draggerPlugin })
+    onAdditionalUpdates(storedState, { chartRef, chartType })
 
     const [state, dispatch] = useReducer(reducer, storedState);
-
-    draggerPlugin.initPlugin(dispatch)
-
-
-
 
     const onDownloadChart = () => {
         const canvas = chartRef.current.canvas;
@@ -960,7 +948,7 @@ export const ChartProvider = ({ children }) => {
     }, [state, storageKey]);
 
     return (
-        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart, draggerPlugin, onClearCache, onAddAnnotation }}>
+        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart, onClearCache, onAddAnnotation }}>
             {children}
         </ChartContext.Provider>
     );

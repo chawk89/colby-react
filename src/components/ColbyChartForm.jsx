@@ -24,6 +24,7 @@ const ColbyChartForm = () => {
     
     const { axes } = forms
     const { keyLabels } = axes
+    console.log('[axes]', axes)
 
     const handleUpdate = useCallback((data) => {
         dispatch({ type: UDPATE_FORM, data })

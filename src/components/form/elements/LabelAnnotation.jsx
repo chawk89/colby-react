@@ -4,6 +4,8 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { PopoverPicker } from '../../common/PopoverPicker';
 import { useChartContext } from '../../../hooks/useChartContext';
 import { getNewId } from '../../../utils/utils';
+import useChartDatasetKeys from '../../../hooks/useChartDatasetKeys';
+import useChartDatasets from '../../../hooks/useChartDatasets';
 
 
 
@@ -14,6 +16,11 @@ const LabelAnnotation = () => {
     const { control, register, watch, setValue } = useFormContext()
     const labelEnabled = watch('annotationTemp.label.enabled')
     const [triggerFlag, setTriggerFlag] = useState(false)
+
+    const xAxis = watch('general.xAxis')
+    const datasetKey = watch('annotationTemp.label.datasetKey')
+    const dataset = useChartDatasets(state, datasetKey)
+    const keyLabels = useChartDatasetKeys(state, xAxis)
 
     const handleAddClick = () => {
         setTriggerFlag(true)
@@ -47,14 +54,19 @@ const LabelAnnotation = () => {
                 <div className="w-full grid grid-cols-3 gap-3 my-4 p-2">
                     <div className="col-span-1">
                         <div className="flex items-center">
-                            <Label className="inline mr-2 shrink-0" htmlFor="index-of-dimension" value="Index of dimension:" />
-                            <TextInput id="index-of-dimension" type="text" placeholder="10" {...register("annotationTemp.label.nindex")} />
+                            <Label className="inline mr-2 shrink-0" htmlFor="index-of-dimension" value="Index of Datasets:" />
+                            {/* <TextInput id="index-of-dimension" type="text" placeholder="10" {...register("annotationTemp.label.datasetKey")} /> */}
+                            <Select id="annotation-label-anchor" {...register('annotationTemp.label.datasetKey')}>
+                                {keyLabels.map(({ key, label }) => <option value={key} key={key}>{label}</option>)}
+                            </Select>
                         </div>
                     </div>
                     <div className="col-span-1">
                         <div className="flex items-center">
                             <Label className="inline mr-2 shrink-0" htmlFor="series-name" value="Series Name:" />
-                            <TextInput id="series-name" type="text" placeholder="10" {...register("annotationTemp.label.name")} />
+                            <Select id="annotation-label-anchor" {...register('annotationTemp.label.dataIndex')}>
+                                {dataset.map((value, idx) => <option value={idx} key={idx}>{value}</option>)}
+                            </Select>
                         </div>
                     </div>
                     <div className="col-span-1">
@@ -87,7 +99,7 @@ const LabelAnnotation = () => {
                             <TextInput id="annotation-label-fontSize" type="number" placeholder="10" {...register('annotationTemp.label.fontSize')} />
                         </div>
                     </div>
-                    <div className="col-span-1">
+                    {/* <div className="col-span-1">
                         <div className="flex items-center">
                             <Label className="inline mr-2" htmlFor="annotation-label-anchor" value="Anchor:" />
                             <Select id="annotation-label-anchor" {...register('annotationTemp.label.anchor')}>
@@ -95,7 +107,7 @@ const LabelAnnotation = () => {
                                 <option value={0}>false</option>
                             </Select>
                         </div>
-                    </div>
+                    </div> */}
                     <div className="col-span-1">
                         <div className="flex items-center">
                             <Button onClick={handleAddClick}> Add </Button>

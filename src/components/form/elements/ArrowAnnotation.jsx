@@ -4,6 +4,8 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { useChartContext } from '../../../hooks/useChartContext';
 import { PopoverPicker } from '../../common/PopoverPicker';
 import { getNewId } from '../../../utils/utils';
+import useChartDatasetKeys from '../../../hooks/useChartDatasetKeys';
+import useChartDatasets from '../../../hooks/useChartDatasets';
 
 
 const ArrowAnnotation = () => {
@@ -11,6 +13,14 @@ const ArrowAnnotation = () => {
     const { control, register, watch, setValue } = useFormContext()
     const arrowEnabled = watch('annotationTemp.arrow.enabled')
     const [triggerFlag, setTriggerFlag] = useState(false)
+
+    const xAxis = watch('general.xAxis')
+    const startDatasetKey = watch('annotationTemp.arrow.startDatasetKey')
+    const endDatasetKey = watch('annotationTemp.arrow.endDatasetKey')
+    const keyLabels = useChartDatasetKeys(state, xAxis)
+
+    const startDataset = useChartDatasets(state, startDatasetKey)
+    const endDataset = useChartDatasets(state, endDatasetKey)
 
     const handleAddClick = () => {
         setTriggerFlag(true)
@@ -43,26 +53,35 @@ const ArrowAnnotation = () => {
             {arrowEnabled && <div className="w-full grid grid-cols-3 gap-3 my-4 p-2">
                 <div className="col-span-1">
                     <div className="flex items-center">
-                        <Label className="inline mr-2 shrink-0" htmlFor="arrow-xMin" value="X Min:" />
-                        <TextInput id="arrow-xMin" type="text" placeholder="10" {...register("annotationTemp.arrow.xMin")} />
+                        <Label className="inline mr-2 shrink-0" htmlFor="arrow-start-datasetIndex" value="Start Dataset Index:" />
+                        <Select id="arrow-start-datasetIndex" {...register('annotationTemp.arrow.startDatasetKey')}>
+                            {keyLabels.map(({ key, label }) => <option value={key} key={key}>{label}</option>)}
+                        </Select>
                     </div>
                 </div>
                 <div className="col-span-2">
                     <div className="flex items-center">
-                        <Label className="inline mr-2 shrink-0" htmlFor="arrow-XMax" value="X Max:" />
-                        <TextInput id="arrow-XMax" type="text" placeholder="10" {...register("annotationTemp.arrow.xMax")} />
+                        <Label className="inline mr-2 shrink-0" htmlFor="arrow-start-data" value="Start Data Index:" />
+                        <Select id="arrow-start-dataindex" {...register('annotationTemp.arrow.startDataIndex')}>
+                            {startDataset.map((value, index) => <option value={index} key={index}>{value}</option>)}
+                        </Select>
                     </div>
                 </div>
                 <div className="col-span-1">
                     <div className="flex items-center">
-                        <Label className="inline mr-2 shrink-0" htmlFor="arrow-xMin" value="Y Min:" />
-                        <TextInput id="arrow-xMin" type="text" placeholder="10" {...register("annotationTemp.arrow.yMin")} />
+                        <Label className="inline mr-2 shrink-0" htmlFor="arrow-end-dataindex" value="End Dataset Index:" />
+                        {/* <TextInput id="arrow-end-dataindex" type="text" placeholder="10" {...register("annotationTemp.arrow.yMin")} /> */}
+                        <Select id="arrow-end-dataindex" {...register('annotationTemp.arrow.endDatasetKey')}>
+                            {keyLabels.map(({ key, label }) => <option value={key} key={key}>{label}</option>)}
+                        </Select>
                     </div>
                 </div>
                 <div className="col-span-2">
                     <div className="flex items-center">
-                        <Label className="inline mr-2 shrink-0" htmlFor="arrow-XMax" value="Y Max:" />
-                        <TextInput id="arrow-XMax" type="text" placeholder="10" {...register("annotationTemp.arrow.yMax")} />
+                        <Label className="inline mr-2 shrink-0" htmlFor="arrow-end-data" value="End Data Index:" />
+                        <Select id="arrow-end-data" {...register('annotationTemp.arrow.endDataIndex')}>
+                            {endDataset.map((value, index) => <option value={index} key={index}>{value}</option>)}
+                        </Select>
                     </div>
                 </div>
                 <div className="col-span-1">

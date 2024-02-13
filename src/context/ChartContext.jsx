@@ -1,7 +1,7 @@
 // ChartContext.js
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { md5 } from 'js-md5';
-import { copySimpleObject } from '../utils/utils';
+import { copySimpleObject, getDatasetIndex, getDatasetIndexFromKey, getXValueForMultiDataset, yOffset, yValue } from '../utils/utils';
 // Initial state
 const initialState = {
     forms: {
@@ -29,8 +29,8 @@ const initialState = {
             },
             label: {
                 enabled: false,
-                nindex: "",
-                name: "",
+                datasetKey: "",
+                dataIndex: 0,
                 caption: "",
                 fontName: "",
                 fontSize: "",
@@ -90,7 +90,7 @@ const initialState = {
             label: "Test",
             type: "line",
             id: "line-1707320896272",
-            
+
         },
         "box-1707320977735": {
             enabled: true,
@@ -103,21 +103,21 @@ const initialState = {
             id: "box-1707320977735"
         },
         "arrow-1707348807973": {
-            enabled: true,
-            xMin: "",
-            xMax: "",
-            yMin: "",
-            yMax: "",
-            doubleArrow: "1",
-            label: "",
-            color: "#000000",
-            type: "arrow",
-            id: "arrow-1707348807973"
+            "enabled": true,
+            "doubleArrow": "1",
+            "label": "asdfasdfasdf",
+            "color": "#000000",
+            "type": "arrow",
+            "id": "arrow-1707799128824",
+            "startDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
+            "startDataIndex": "1",
+            "endDatasetKey": "FL1pyNrYWyqAVBdtx7c/Jw==",
+            "endDataIndex": "8"
         },
         "label-1707349710912": {
             enabled: true,
-            nindex: "0",
-            name: "0",
+            datasetKey: "YpmL7a6OYEv2tnX4VxEFXA==",
+            dataIndex: "8",
             caption: "Test",
             fontName: "",
             fontSize: "",
@@ -249,41 +249,6 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
     return newOptions
 }
 
-function findYValueForX(data, xIndex, nameOrIndex, isStacked) {
-
-    if (xIndex < 0 || xIndex > data.datasets.length - 1) {
-        console.log("xIndex out of range:", xIndex);
-        return null;
-    }
-
-    let datasetIndex;
-    if (typeof nameOrIndex === "string") {
-        datasetIndex = data.labels.indexOf(nameOrIndex);
-        if (datasetIndex === -1) {
-            console.log("Column header not found:", nameOrIndex);
-            return null;
-        }
-    } else {
-        datasetIndex = nameOrIndex;
-    }
-
-
-    if (datasetIndex < 0 || datasetIndex >= data.labels.length) {
-        console.log("datasetIndex out of range:", datasetIndex);
-        return null;
-    }
-
-    if (isStacked) {
-        let sum = 0;
-        for (let i = 1; i <= datasetIndex; i++) {
-            sum += data[xIndex + 1][i];
-        }
-        return sum;
-    }
-
-
-    return data.datasets[xIndex][datasetIndex];
-}
 
 const updateGlobalStyles = (oldOptions, styles) => {
     const newOptions = { ...oldOptions }
@@ -321,8 +286,6 @@ const getLineAnnotation = (line, state) => {
     } else if (lineStyle == "wave") {
         lineAnnotation.borderDash = [10, 5, 5];
     }
-
-
 
     if (lineLabel) {
         lineAnnotation.label = {
@@ -373,17 +336,23 @@ const getBoxAnnotation = (box, state) => {
     return boxAnnotation
 }
 
-const getArrowAnnotation = (arrow) => {
+const getArrowAnnotation = (arrow, state) => {
     if (!arrow.id) return null
     if (arrow.id == 'arrowTemp' && !arrow.enabled) return null
 
-    const { xMin: arrowXMin, xMax: arrowXMax, yMin: arrowYMin, yMax: arrowYMax, doubleArrow, label: arrowLabel, color: arrowColor } = arrow
+    const { startDatasetKey, startDataIndex, endDataIndex, endDatasetKey, doubleArrow, label: arrowLabel, color: arrowColor } = arrow
+    const startDatasetIndex = getDatasetIndex(state, startDatasetKey)
+    const endDatasetIndex = getDatasetIndex(state, endDatasetKey)
+    let startXValue = getXValueForMultiDataset(startDatasetIndex, +startDataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
+    let endXValue = getXValueForMultiDataset(endDatasetIndex, +endDataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
+    let startYValue = state.data.datasets[startDatasetIndex].data[+startDataIndex]
+    let endYValue = state.data.datasets[endDatasetIndex].data[+endDataIndex]
 
     const arrowAnnotation = {
-        type: "arrow",
+        type: "line",
+        id: arrow.id,
         borderColor: arrowColor,
         borderWidth: 2,
-        curve: true,
         label: {
             display: false,
         },
@@ -397,13 +366,18 @@ const getArrowAnnotation = (arrow) => {
                 borderColor: arrowColor,
             },
         },
-        xMin: parseFloat(arrowXMin),
-        xMax: parseFloat(arrowXMax),
-        yMin: parseFloat(arrowYMin),
-        yMax: parseFloat(arrowYMax),
-        xScaleID: "x",
-        yScaleID: "y",
-        draggable: true,
+        xMin: startXValue,
+        xMax: endXValue,
+        yMin: startYValue,
+        yMax: endYValue,
+
+        // xMin: parseFloat(arrowXMin),
+        // xMax: parseFloat(arrowXMax),
+        // yMin: parseFloat(arrowYMin),
+        // yMax: parseFloat(arrowYMax),
+        // xScaleID: "x",
+        // yScaleID: "y",
+        // draggable: true,
     };
 
     if (arrowLabel) {
@@ -411,7 +385,7 @@ const getArrowAnnotation = (arrow) => {
             display: true,
             backgroundColor: "rgb(211,211,211)",
             borderRadius: 0,
-            color: "rgb(169,169,169)",
+            color: "rgb(0,0,0)",
             content: [arrowLabel],
         }
 
@@ -419,67 +393,61 @@ const getArrowAnnotation = (arrow) => {
     return arrowAnnotation;
 }
 
+
+
 const getLabelAnnotation = (label, state) => {
     if (!label.id) return null
     if (label.id == 'labelTemp' && !label.enabled) return null
 
-    const { nindex, name, caption: labelText, fontName: labelFont, fontSize, anchor: labelAnchor, color: labelColor } = label
+    const { datasetKey, dataIndex, caption: labelText, fontName: labelFont, fontSize, color: labelColor } = label
 
-    if (nindex == "" || name == "") return null
-    const labelX = parseFloat(nindex)
-    const labelY = parseFloat(name)
-    const labelSize = parseFloat(fontSize || 10)
+    if (!datasetKey || !dataIndex) return null
 
+    const datasetIndex = getDatasetIndex(state, datasetKey)
+
+
+    if (datasetIndex < 0) return null;
+
+    const labelSize = fontSize ? +fontSize : 10
+
+    // const chart = state.getChart();
+    // const datasetMeta = chart.getDatasetMeta(dataIndex);
+    // if (!datasetMeta) return null;
+    // const rectangle = datasetMeta.data[+dataIndex];
+    // if (!rectangle) return null;    
+    // const boundingBox = rectangle.getProps(['x', 'y', 'base', 'width', 'height'], true);
 
     let adjustValueX = 0;
-    let adjustValueY = 0;
-
-
-    if (labelX == 0) {
-        adjustValueX = 50;
-        adjustValueY = -30;
-    }
-
-    if (
-        labelY >= 0.9 * state.options.scales.y.suggestedMax
-    ) {
-        adjustValueX = 0;
-        adjustValueY = 20;
-    } else {
-        adjustValueX = -30;
-        adjustValueY = -30;
-    }
+    let adjustValueY = -60;
 
 
 
-    let isStacked = state.forms.general.stacked;
 
-    let correspondingYValue = findYValueForX(
-        state.data,
-        labelX,
-        labelY,
-        isStacked
-    );
-
-
+    let yValue = state.data.datasets[datasetIndex].data[+dataIndex]
+    let xValue = getXValueForMultiDataset(datasetIndex, +dataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
 
     const labelAnnotation = {
         type: "label",
-        xValue: labelX,
-        yValue: correspondingYValue ? correspondingYValue : labelY,
+
         backgroundColor: 'rgba(245,245,245)',
         borderRadius: 6,
         borderWidth: 1,
         content: [labelText],
+        position: {
+            x: 'end',
+            y: 'end'
+        },
         callout: {
             display: true,
-            position: "bottom",
+            position: "center",
             margin: 0,
         },
         font: {
             family: labelFont,
             size: labelSize,
         },
+        xValue,
+        yValue,
         xAdjust: adjustValueX,
         yAdjust: adjustValueY,
     };
@@ -843,8 +811,12 @@ const updateChartDatasets = (state) => {
 const onAdditionalUpdates = (state, { chartType, chartRef }) => {
     state.chartType = chartType
 
+
     state.onChartRefresh = () => {
         if (!chartRef || !chartRef.current) return;
+    }
+    state.getChart = () => {
+        return chartRef.current
     }
 
 

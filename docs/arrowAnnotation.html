@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chart.js with Interactive Vertical Lines and Horizontal Arrow</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.2"></script>
+</head>
+<body>
+
+<canvas id="myChart" width="400" height="400"></canvas>
+
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var line1Clicked = false;
+    var line2Clicked = false;
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                annotation: {
+                    annotations: {
+                        line1: {
+                            type: 'line',
+                            xMin: 1,
+                            xMax: 1,
+                            borderColor: 'black',
+                            borderWidth: 2,
+                            borderDash: [6, 6],
+                            yMin: 19, // Initial value from data
+                            yMax: 20
+                        },
+                        line2: {
+                            type: 'line',
+                            xMin: 3,
+                            xMax: 3,
+                            borderColor: 'black',
+                            borderWidth: 2,
+                            borderDash: [6, 6],
+                            yMin: 5, // Initial value from data
+                            yMax: 20,
+                            arrowHeads: { // Add arrowhead to the end of the second line
+                              end: {
+                                  display: true,
+                                  size: 10, // You can adjust the size of the arrowhead
+                              }
+                          }
+                        },
+                        arrow: {
+                            type: 'line',
+                            xMin: 1,
+                            xMax: 3,
+                            yMin: 20,
+                            yMax: 20,
+                            borderColor: 'black',
+                            borderWidth: 2,
+                            borderDash: [6, 6], // Make the arrow dashed
+                            label: {
+                                enabled: true,
+                                content: 'Difference',
+                                position: 'start'
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        plugins: [{
+            id: 'clickPlugin',
+            beforeEvent(chart, args, options) {
+                const event = args.event;
+                if (event.type === 'click') {
+                    const xValue = chart.scales.x.getValueForPixel(event.x);
+                    var annotations = chart.options.plugins.annotation.annotations;
+                    var line1 = annotations.line1;
+                    var line2 = annotations.line2;
+
+                    const clickThreshold = 5; // pixels
+                    const line1X = chart.scales.x.getPixelForValue(line1.xMin);
+                    const line2X = chart.scales.x.getPixelForValue(line2.xMin);
+
+                    // Check if line1 was clicked and toggle its state
+                    if (Math.abs(event.x - line1X) < clickThreshold && !line1Clicked && !line2Clicked) {
+                        line1Clicked = !line1Clicked;
+                        highlightLine(chart, line1, line1Clicked);
+                        return;
+                    }
+
+                    // Check if line2 was clicked and toggle its state
+                    if (Math.abs(event.x - line2X) < clickThreshold && !line2Clicked && !line1Clicked) {
+                        line2Clicked = !line2Clicked;
+                        highlightLine(chart, line2, line2Clicked);
+                        return;
+                    }
+
+                    // Update line1 if it was previously clicked
+                    if (line1Clicked) {
+                        updateLine(chart, line1, xValue);
+                        line1Clicked = false;
+                        unhighlightLine(chart, line1);
+                    }
+
+                    // Update line2 if it was previously clicked
+                    if (line2Clicked) {
+                        updateLine(chart, line2, xValue);
+                        line2Clicked = false;
+                        unhighlightLine(chart, line2);
+                    }
+                }
+            }
+        }]
+    });
+
+    function updateLine(chart, line, xValue) {
+        const nearestValue = findNearestDataPoint(chart, xValue, 'x');
+        line.xMin = nearestValue;
+        line.xMax = nearestValue;
+
+        // Set the minimum y-value to the y-value of the respective data point
+        line.yMin = chart.data.datasets[0].data[nearestValue];
+
+        // Update the height of the horizontal arrow and the other vertical line
+        updateArrow(chart);
+    }
+
+    function updateArrow(chart) {
+        var annotations = chart.options.plugins.annotation.annotations;
+        var data = chart.data.datasets[0].data;
+        var value1 = data[Math.round(annotations.line1.xMin)];
+        var value2 = data[Math.round(annotations.line2.xMin)];
+        var pairMaxHeight = Math.max(value1, value2);
+        var percentDiff = calculatePercentageDifference(value1, value2);
+
+        annotations.arrow.xMin = Math.min(annotations.line1.xMin, annotations.line2.xMin);
+        annotations.arrow.xMax = Math.max(annotations.line1.xMin, annotations.line2.xMin);
+        annotations.arrow.yMin = pairMaxHeight + 1; // Just above the tallest bar in the pair
+        annotations.arrow.yMax = pairMaxHeight + 1;
+        annotations.arrow.label.content = percentDiff.toFixed(2) + '%';
+
+        // Update the heights of both vertical lines to match the arrow's height
+        annotations.line1.yMax = annotations.arrow.yMin;
+        annotations.line2.yMax = annotations.arrow.yMin;
+
+        chart.update();
+    }
+
+    function highlightLine(chart, line, isHighlighted) {
+        if (isHighlighted) {
+            // Change the line's appearance when selected
+            line.borderColor = 'rgba(0, 0, 255, 1)'; // Change to a highlighted color
+            line.borderWidth = 3; // Increase the line width
+        } else {
+            // Revert the line's appearance
+            unhighlightLine(chart, line);
+        }
+        chart.update();
+    }
+
+    function unhighlightLine(chart, line) {
+        // Revert the line's appearance to its original state
+        line.borderColor = 'black';
+        line.borderWidth = 2;
+        chart.update();
+    }
+
+    function calculatePercentageDifference(value1, value2) {
+        if (value1 === 0 && value2 === 0) return 0;
+        var diff = value2 - value1;
+        return (diff / value1) * 100;
+    }
+
+    function findNearestDataPoint(chart, value, axis) {
+        let minDiff = Number.MAX_VALUE;
+        let nearestValue = value;
+
+        chart.data.labels.forEach((label, index) => {
+            const chartValue = axis === 'x' ? index : chart.data.datasets[0].data[index];
+            const diff = Math.abs(chartValue - value);
+            if (diff < minDiff) {
+                minDiff = diff;
+                nearestValue = chartValue;
+            }
+        });
+
+        return nearestValue;
+    }
+</script>
+
+</body>
+</html>

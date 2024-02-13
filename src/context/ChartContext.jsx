@@ -41,14 +41,15 @@ const initialState = {
             },
             arrow: {
                 enabled: false,
-                xMin: "",
-                xMax: "",
-                yMin: "",
-                yMax: "",
+                type: "arrow",
                 doubleArrow: "1",
-                label: "",
+                label: "asdfasdfasdf",
                 color: "#000000",
-                type: 'arrow',
+                startDatasetKey: "",
+                startDataIndex: "",
+                endDatasetKey: "",
+                endDataIndex: "",
+                lineType: "general",
                 id: 'arrowTemp'
             }
         },
@@ -112,7 +113,8 @@ const initialState = {
             "startDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
             "startDataIndex": "1",
             "endDatasetKey": "FL1pyNrYWyqAVBdtx7c/Jw==",
-            "endDataIndex": "8"
+            "endDataIndex": "8",
+            lineType: 'general'
         },
         "label-1707349710912": {
             enabled: true,
@@ -305,7 +307,7 @@ const getLineAnnotation = (line, state) => {
         lineAnnotation.xMin = linePosition
         lineAnnotation.xMax = linePosition
     }
-    return lineAnnotation
+    return { [line.id]: lineAnnotation }
 }
 
 const getBoxAnnotation = (box, state) => {
@@ -333,64 +335,113 @@ const getBoxAnnotation = (box, state) => {
             textAlign: 'center',
         };
     }
-    return boxAnnotation
+    return { [box.id]: boxAnnotation }
 }
 
 const getArrowAnnotation = (arrow, state) => {
-    if (!arrow.id) return null
-    if (arrow.id == 'arrowTemp' && !arrow.enabled) return null
+    const arrowId = arrow.id
+    if (!arrowId) return null
+    if (arrowId == 'arrowTemp' && !arrow.enabled) return null
 
-    const { startDatasetKey, startDataIndex, endDataIndex, endDatasetKey, doubleArrow, label: arrowLabel, color: arrowColor } = arrow
+    const { startDatasetKey, startDataIndex, endDataIndex, endDatasetKey, lineType, doubleArrow, label: arrowLabel, color: arrowColor } = arrow
     const startDatasetIndex = getDatasetIndex(state, startDatasetKey)
     const endDatasetIndex = getDatasetIndex(state, endDatasetKey)
+
+    if (startDatasetIndex < 0 || endDatasetIndex < 0) return null
+    if (startDataIndex == '' || endDataIndex == '') return null;
+
     let startXValue = getXValueForMultiDataset(startDatasetIndex, +startDataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
     let endXValue = getXValueForMultiDataset(endDatasetIndex, +endDataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
     let startYValue = state.data.datasets[startDatasetIndex].data[+startDataIndex]
     let endYValue = state.data.datasets[endDatasetIndex].data[+endDataIndex]
+    if (lineType == 'curved' || lineType == 'general') {
 
-    const arrowAnnotation = {
-        type: "line",
-        id: arrow.id,
-        borderColor: arrowColor,
-        borderWidth: 2,
-        label: {
-            display: false,
-        },
-        arrowHeads: {
-            start: {
-                display: doubleArrow == "1",
-                borderColor: arrowColor,
+        const arrowAnnotation = {
+            type: "line",
+            id: arrowId,
+            borderColor: arrowColor,
+            borderWidth: 2,
+            label: {
+                display: false,
             },
-            end: {
-                display: true,
-                borderColor: arrowColor,
+            arrowHeads: {
+                start: {
+                    display: doubleArrow == "1",
+                    borderColor: arrowColor,
+                },
+                end: {
+                    display: true,
+                    borderColor: arrowColor,
+                },
             },
-        },
-        xMin: startXValue,
-        xMax: endXValue,
-        yMin: startYValue,
-        yMax: endYValue,
-
-        // xMin: parseFloat(arrowXMin),
-        // xMax: parseFloat(arrowXMax),
-        // yMin: parseFloat(arrowYMin),
-        // yMax: parseFloat(arrowYMax),
-        // xScaleID: "x",
-        // yScaleID: "y",
-        // draggable: true,
-    };
-
-    if (arrowLabel) {
-        arrowAnnotation.label = {
-            display: true,
-            backgroundColor: "rgb(211,211,211)",
-            borderRadius: 0,
-            color: "rgb(0,0,0)",
-            content: [arrowLabel],
+            xMin: startXValue,
+            xMax: endXValue,
+            yMin: startYValue,
+            yMax: endYValue,
+        };
+        // curved line
+        if (lineType == 'curved') {
+            arrowAnnotation.curve = true
         }
+        if (arrowLabel) {
+            arrowAnnotation.label = {
+                display: true,
+                backgroundColor: "rgb(211,211,211)",
+                borderRadius: 0,
+                color: "rgb(0,0,0)",
+                content: [arrowLabel],
+            }
 
+        }
+        return { [arrow.id]: arrowAnnotation };
+    } else if (lineType == 'grow') {
+        const yValue = Math.max(startYValue, endYValue) * 1.1
+        const arrowAnnotation = {
+            type: "line",
+            id: arrowId,
+            borderColor: arrowColor,
+            borderWidth: 2,
+            borderDash: [6, 6], // Make the arrow dashed
+            label: {
+                display: true,
+                content: 'Difference',
+                position: 'center'
+            },
+            
+            xMin: startXValue,
+            xMax: endXValue,
+            yMin: yValue,
+            yMax: yValue,
+        };
+        const arrowAnnotationLeft = {
+            type: 'line',
+            id: `${arrowId}-left`,
+            xMin: startXValue,
+            xMax: startXValue,
+            yMin: startYValue,
+            yMax: yValue,
+            borderColor: 'black',
+            borderWidth: 2,
+            borderDash: [6, 6],
+        }
+        const arrowAnnotationRight = {
+            id: `${arrowId}-right`,
+            type: 'line',
+            xMin: endXValue,
+            xMax: endXValue,
+            yMin: endYValue,
+            yMax: yValue,
+            borderColor: 'black',
+            borderWidth: 2,
+            borderDash: [6, 6],
+        }
+        return {
+            [arrowId]: arrowAnnotation,
+            [`${arrowId}-left`]: arrowAnnotationLeft,
+            [`${arrowId}-right`]: arrowAnnotationRight
+        }
     }
-    return arrowAnnotation;
+    return null;
 }
 
 
@@ -452,7 +503,7 @@ const getLabelAnnotation = (label, state) => {
         yAdjust: adjustValueY,
     };
 
-    return labelAnnotation;
+    return { [label.id]: labelAnnotation };
 }
 
 const getAnnotation = (item, state) => {
@@ -481,9 +532,7 @@ const updateAnnotation = (oldOptions, param, global, state) => {
 
     const { line, box, label, arrow } = param
     const annotation = {
-        annotations: {
-
-        },
+        annotations: {},
     }
 
     const { annotation: stateAnnotation } = state
@@ -495,7 +544,7 @@ const updateAnnotation = (oldOptions, param, global, state) => {
         if (item) {
             annotation.annotations = {
                 ...annotation.annotations,
-                [annoKey]: item
+                ...item
             }
         }
     }
@@ -504,14 +553,14 @@ const updateAnnotation = (oldOptions, param, global, state) => {
     if (lineTemp) {
         annotation.annotations = {
             ...annotation.annotations,
-            lineTemp
+            ...lineTemp
         }
     }
     const boxTemp = getBoxAnnotation(box, state)
     if (boxTemp) {
         annotation.annotations = {
             ...annotation.annotations,
-            boxTemp
+            ...boxTemp
         }
     }
 
@@ -519,7 +568,7 @@ const updateAnnotation = (oldOptions, param, global, state) => {
     if (labelTemp) {
         annotation.annotations = {
             ...annotation.annotations,
-            labelTemp
+            ...labelTemp
         }
     }
 
@@ -527,7 +576,7 @@ const updateAnnotation = (oldOptions, param, global, state) => {
     if (arrowTemp) {
         annotation.annotations = {
             ...annotation.annotations,
-            arrowTemp
+            ...arrowTemp
         }
     }
 

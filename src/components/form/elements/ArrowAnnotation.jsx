@@ -95,6 +95,16 @@ const ArrowAnnotation = () => {
                 </div>
                 <div className="col-span-1">
                     <div className="flex items-center">
+                        <Label className="inline mr-2" htmlFor="arrow-double-arrow" value="Line Type:" />
+                        <Select id="arrow-double-arrow" {...register('annotationTemp.arrow.lineType')}>
+                            <option value={'general'}>Direct Line</option>
+                            <option value={'curved'}>Curved Line</option>
+                            <option value={'grow'}>Growth Metrics</option>
+                        </Select>
+                    </div>
+                </div>
+                <div className="col-span-1">
+                    <div className="flex items-center">
                         <Label className="inline mr-2 shrink-0" htmlFor="arrow-Label" value="Label:" />
                         <TextInput id="arrow-Label" type="text" placeholder="10" {...register("annotationTemp.arrow.label")} />
                     </div>

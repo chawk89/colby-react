@@ -113,8 +113,21 @@ const initialState = {
             "startDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
             "startDataIndex": "1",
             "endDatasetKey": "FL1pyNrYWyqAVBdtx7c/Jw==",
-            "endDataIndex": "8",
+            "endDataIndex": "2",
             lineType: 'general'
+        },
+        'arrow-1707838906237': {
+            "enabled": true,
+            "type": "arrow",
+            "doubleArrow": "1",
+            "label": "asdfasdfasdf",
+            "color": "#000000",
+            "startDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
+            "startDataIndex": "5",
+            "endDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
+            "endDataIndex": 9,
+            "lineType": "grow",
+            "id": "arrow-1707838906237"
         },
         "label-1707349710912": {
             enabled: true,
@@ -422,7 +435,7 @@ const getArrowAnnotation = (arrow, state) => {
             yMin: startYValue,
             yMax: yValue,
             borderColor: 'black',
-            borderWidth: 1,
+            borderWidth: 3,
             borderDash: [6, 6],
         }
         const arrowAnnotationRight = {
@@ -433,7 +446,7 @@ const getArrowAnnotation = (arrow, state) => {
             yMin: endYValue,
             yMax: yValue,
             borderColor: 'black',
-            borderWidth: 1,
+            borderWidth: 3,
             borderDash: [6, 6],
         }
         return {
@@ -768,31 +781,41 @@ const reducer = (state, action) => {
         }
         case UPDATE_ANNOTATION_ARROW_DATA: {
             const { id: annotationId, side, data } = payload
-            
             let newState = { ...state };
             const { dataIndex, datasetIndex } = data
             const datasets = state.forms.axes.datasets
             const xAxis = state.forms.general.xAxis
             const keys = getDatasetIndexWithoutXAxis(Object.keys(datasets), xAxis)
             const key = keys[datasetIndex]
-            let annotation = null
             if (annotationId.includes('Temp')) {
-                annotation = newState.forms.annotationTemp[annotationId]
+                if (side == 'left') {
+                    newState.forms.annotationTemp[annotationId] = {
+                        ...newState.forms.annotationTemp[annotationId],
+                        startDataIndex: dataIndex,
+                        startDatasetKey: key
+                    }
+                } else if (side == 'right') {
+                    newState.forms.annotationTemp[annotationId] = {
+                        ...newState.forms.annotationTemp[annotationId],
+                        endDataIndex: dataIndex,
+                        endDatasetKey: key
+                    }
+                }
             } else {
-                annotation = newState.annotation[annotationId]
-            }
-            if (side == 'left') {
-                annotation = {
-                    ...annotation,
-                    startDataIndex: dataIndex,
-                    startDatasetKey: key
+                if (side == 'left') {
+                    newState.annotation[annotationId] = {
+                        ...newState.annotation[annotationId],
+                        startDataIndex: dataIndex,
+                        startDatasetKey: key
+                    }
+                } else if (side == 'right') {
+                    newState.annotation[annotationId] = {
+                        ...newState.annotation[annotationId],
+                        endDataIndex: dataIndex,
+                        endDatasetKey: key
+                    }
                 }
-            } else if (side == 'right') {
-                annotation = {
-                    ...annotation,
-                    endDataIndex: dataIndex,
-                    endDatasetKey: key
-                }
+
             }
             const options = updateChartOptions(newState.options, newState.forms, newState)
             newState = { ...newState, options };

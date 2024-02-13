@@ -73,6 +73,7 @@ const handleSingleClick = (ctx, event) => {
     const { element } = ctx
     const elementId = element.options.id
     if (!(elementId.startsWith('arrow') && (elementId.endsWith('left') || elementId.endsWith('right')))) return;
+    console.log('[elementId] clicked', elementId)
 
     const colbyAnnotationTemp = window.colbyAnnotationTemp
     let selected = false;

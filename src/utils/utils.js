@@ -1,6 +1,9 @@
+
+
 export const isEqualObject = (a, b) => JSON.stringify(a) == JSON.stringify(b)
 export const copySimpleObject = (a) => JSON.parse(JSON.stringify(a))
 export const getNewId = () => (new Date()).getTime()
+export const SELECTED_COLOR = 'rgb(0, 0, 255)'
 
 export function yValue(ctx, label) {
     const chart = ctx.chart;
@@ -17,23 +20,51 @@ export function yOffset(ctx, label) {
     return lblPos - y - 5;
 }
 
-function findNearestDataPoint(chart, value, dataIndex, axis) {
+export function findNearestDataPoint(chart, value, axis) {
     let minDiff = Number.MAX_VALUE;
-    let nearestValue = value;
+    let nearestData = {
+        dataIndex: 0,
+        datasetIndex: 0,
+    };
+    const datasets = chart.data.datasets
+    const labels = chart.data.labels
+    for (let datasetIndex = 0; datasetIndex < datasets.length; datasetIndex++) {
+        const datasetMeta = chart.getDatasetMeta(datasetIndex);
+        labels.forEach((label, dataIndex) => {
+            const rectangle = datasetMeta.data[+dataIndex];
+            if (!rectangle) return;
+            const boundingBox = rectangle.getProps(['x', 'y', 'base', 'width', 'height'], true);
 
-    chart.data.labels.forEach((label, index) => {
-        const chartValue = axis === 'x' ? index : chart.data.datasets[dataIndex].data[index];
-        const diff = Math.abs(chartValue - value);
-        if (diff < minDiff) {
-            minDiff = diff;
-            nearestValue = chartValue;
+            const diff = Math.abs(+boundingBox.x + boundingBox.width / 2 - value);
+            if (diff < minDiff) {
+                minDiff = diff;
+                nearestData = {
+                    dataIndex,
+                    datasetIndex,
+                };
+            }
+        });
+    }
+    return nearestData;
+}
+export function getDataPointFromXValue(xValue, datasets, isStacked = false) {
+    const dataIndex = Math.round(xValue)
+    let datasetIndex = 0;
+    for (let i = 0; i < datasets.length; i++) {
+        const calcXValue = getXValueForMultiDataset(i, dataIndex, { datasets, isStacked })
+        if (Math.abs(xValue - calcXValue) < 0.01) {
+            datasetIndex = i
+            break;
         }
-    });
-
-    return nearestValue;
+    }
+    return {
+        dataIndex,
+        datasetIndex
+    }
 }
 
-export const getDatasetIndexFromKey = (list, key, xAxis) => list.filter(item => item != xAxis).findIndex(item => item == key)
+export const getDatasetIndexWithoutXAxis = (list, xAxis) => list.filter(item => item != xAxis)
+export const getDatasetIndexFromKey = (list, key, xAxis) => getDatasetIndexWithoutXAxis(list, xAxis).findIndex(item => item == key)
 
 export const getDatasetIndex = (state, datasetKey) => {
     const datasets = state.forms.axes.datasets
@@ -49,10 +80,35 @@ export const getXValueForMultiDataset = (datasetIndex, dataIndex, {
 }) => {
     if (window.ColbyChartInfo.chartType != 'bar') {
         return +dataIndex
-    }    
+    }
     if (isStacked) {
         return +dataIndex;
     }
     const lblLen = datasets.length
     return +dataIndex + (datasetIndex * 2 + 1) / (2 * lblLen) - 0.5
 }
+export function highlightLine(chart, options, isHighlighted) {
+    if (isHighlighted) {
+        // Change the line's appearance when selected
+        options.borderColor = SELECTED_COLOR; // Change to a highlighted color
+        options.borderWidth = 3; // Increase the line width
+        // chart.update();
+    } else {
+        // Revert the line's appearance
+        unhighlightLine(chart, options);
+    }
+}
+export function unhighlightLine(chart, options) {
+    // Revert the line's appearance to its original state
+    options.borderColor = 'black';
+    options.borderWidth = 2;
+    chart.update();
+}
+export function calculatePercentageDifference(value1, value2) {
+    if (value1 === 0 && value2 === 0) return 0;
+    const diff = value2 - value1;
+    return ((diff / value1) * 100).toFixed(2);
+}
+export const getMainElementId = (id) => id.split('_')[0]
+export const getLeftElementId = (id) => `${id}_left`
+export const getRightElementId = (id) => `${id}_right`

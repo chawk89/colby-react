@@ -194,8 +194,8 @@
 
     function calculatePercentageDifference(value1, value2) {
         if (value1 === 0 && value2 === 0) return 0;
-        var diff = value2 - value1;
-        return (diff / value1) * 100;
+        const diff = value2 - value1;
+        return ((diff / value1) * 100).toFixed(2);
     }
 
     function findNearestDataPoint(chart, value, axis) {

@@ -46,15 +46,13 @@ const ColbyChart = () => {
     const context = useChartContext()
     const { state: { options, data, chartType }, chartRef, dispatch } = context
 
-    const colbyDraggerPlugin = useAnnotationDragger()
+    const colbyDraggerPlugin = useAnnotationDragger(dispatch, context.state )
     const chartOptions = markColbyChartOptions(options)
     return (
         <ReactChart ref={chartRef} type={chartType}
             options={chartOptions}
             data={data}
-            plugins={[colbyDraggerPlugin,
-            
-            ]}
+            plugins={[colbyDraggerPlugin,]}
         />
     )
 }

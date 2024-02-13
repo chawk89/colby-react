@@ -6,11 +6,10 @@
 
 
 import { useEffect } from 'react'
-import { copySimpleObject } from '../utils/utils';
+import { SELECTED_COLOR, copySimpleObject, findNearestDataPoint, getLeftElementId, getMainElementId, getRightElementId, getXValueForMultiDataset, highlightLine, unhighlightLine } from '../utils/utils';
 
 
 export const CLICK_TIMEOUT = 250
-export const SELECTED_COLOR = '#0000FF'
 
 export const onDrag = function (element, moveX, moveY) {
 
@@ -33,7 +32,7 @@ export const onDrag = function (element, moveX, moveY) {
         }
     }
 };
-function updateLine(element, isSelected, selected) {
+function highlightLineByDoubleClicked(element, isSelected, selected) {
     console.log('[updateLine]', element)
     const { options } = element
 
@@ -61,13 +60,41 @@ function onSelectClick(element, colbyAnnotation, chart) {
 
     switch (options.type) {
         case 'line':
-            colbyAnnotation.selected = updateLine(element, isSelected, colbyAnnotation.selected);
+            colbyAnnotation.selected = highlightLineByDoubleClicked(element, isSelected, colbyAnnotation.selected);
             break;
     }
 
     return true;
 }
 
+const handleSingleClick = (ctx, event) => {
+
+    const { chart } = event
+    const { element } = ctx
+    const elementId = element.options.id
+    if (!(elementId.startsWith('arrow') && (elementId.endsWith('left') || elementId.endsWith('right')))) return;
+
+    const colbyAnnotationTemp = window.colbyAnnotationTemp
+    let selected = false;
+    if (colbyAnnotationTemp.arrowSelected?.id != element.options.id) {
+        colbyAnnotationTemp.arrowSelected = element.options;
+        selected = true;
+    } else {
+        colbyAnnotationTemp.arrowSelected = null
+    }
+    highlightLine(chart, element.options, selected);
+
+
+}
+function updateArrowLine(chart, element, eventX, dispatch) {
+    const colbyAnnotationTemp = window.colbyAnnotationTemp
+    const nearestData = findNearestDataPoint(chart, eventX, 'x');
+    const elementId = element.id
+    const mainEleId = getMainElementId(elementId)
+    unhighlightLine(chart, element);
+    colbyAnnotationTemp.arrowSelected = null
+    dispatch({type: 'UPDATE_ANNOTATION_ARROW_DATA', id: mainEleId, side: elementId.endsWith('left') ? 'left' : 'right', data: nearestData})
+}
 
 export const markColbyChartOptions = (options) => ({
     ...options,
@@ -79,19 +106,24 @@ export const markColbyChartOptions = (options) => ({
                 window.colbyAnnotation.element = ctx.element
             },
             leave() {
-
             },
-            click(ctx, { chart }) {
+            click(ctx, event) {
                 // window.colbyAnnotation.element = null
                 // window.colbyAnnotation.lastEvent = null
                 const colbyAnnotationTemp = window?.colbyAnnotationTemp
                 const colbyAnnotation = window.colbyAnnotation
                 if (!colbyAnnotationTemp) return;
                 colbyAnnotationTemp.clickCount = colbyAnnotationTemp.clickCount + 1;
+                const { chart } = event
 
                 const { idx, type, element } = ctx
                 if (colbyAnnotationTemp.clickCount == 1) {
+
+                    // Single click action
                     colbyAnnotationTemp.clickTimer = setTimeout(() => {
+                        if (colbyAnnotationTemp.clickCount == 1) {
+                            handleSingleClick(ctx, event)
+                        }
                         colbyAnnotationTemp.clickCount = 0
                         clearTimeout(colbyAnnotationTemp.clickTimer)
                     }, CLICK_TIMEOUT)
@@ -107,7 +139,7 @@ export const markColbyChartOptions = (options) => ({
     }
 })
 
-const useAnnotationDragger = () => {
+const useAnnotationDragger = (dispatch, state) => {
     useEffect(() => {
         window.colbyAnnotation = {
             element: null,
@@ -116,7 +148,8 @@ const useAnnotationDragger = () => {
         }
         window.colbyAnnotationTemp = {
             clickCount: 0,
-            clickTimer: null
+            clickTimer: null,
+            arrowSelected: null,
         }
     }, [])
 
@@ -134,7 +167,6 @@ const useAnnotationDragger = () => {
             if (!element.options.yScaleID) {
                 moveY = 0;
             }
-
         }
 
         onDrag(element, moveX, moveY);
@@ -162,14 +194,34 @@ const useAnnotationDragger = () => {
         }
     };
 
+    const handleClick = function (chart, args) {
+        const event = args.event;
+        const eventX = event.x;
+        const xValue = chart.scales.x.getValueForPixel(eventX);
+        const colbyAnnotationTemp = window.colbyAnnotationTemp
+        if (colbyAnnotationTemp.arrowSelected) {
+            console.log('[colbyAnnotationTemp.arrowSelected]', colbyAnnotationTemp.arrowSelected)
+            const element = colbyAnnotationTemp.arrowSelected
+            
+            updateArrowLine(chart, element, eventX, dispatch)
+
+        }
+    };
+
+
 
     return ({
         id: 'colbyDraggerPlugin',
         beforeEvent: (chart, args, options) => {
-            const { element } = window.colbyAnnotation
-            if (handleDrag(args.event, element)) {
-                args.changed = true;
-                return;
+            const event = args.event;
+            if (event.type === 'click') {
+                handleClick(chart, args)
+            } else {
+                const { element } = window.colbyAnnotation
+                if (handleDrag(args.event, element)) {
+                    args.changed = true;
+                    return;
+                }
             }
         }
     })

@@ -1,7 +1,7 @@
 // ChartContext.js
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { md5 } from 'js-md5';
-import { copySimpleObject, getDatasetIndex, getDatasetIndexFromKey, getXValueForMultiDataset, yOffset, yValue } from '../utils/utils';
+import { SELECTED_COLOR, calculatePercentageDifference, copySimpleObject, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue } from '../utils/utils';
 // Initial state
 const initialState = {
     forms: {
@@ -199,8 +199,8 @@ export const FETCH_DATA_RANGE = 'FETCH_DATA_RANGE';
 export const ADD_ANNOTATION_ITEM = 'ADD_ANNOTATION_ITEM';
 export const ACTIVE_ANNOTATION_ITEM = 'ACTIVE_ANNOTATION_ITEM';
 export const UPDATE_ANNOTATION_POSITION = 'UPDATE_ANNOTATION_POSITION';
+export const UPDATE_ANNOTATION_ARROW_DATA = 'UPDATE_ANNOTATION_ARROW_DATA';
 
-export const SELECTED_COLOR = '#0000FFFF'
 
 
 const generalOptionUpdate = (oldOptions, general) => {
@@ -396,6 +396,7 @@ const getArrowAnnotation = (arrow, state) => {
         return { [arrow.id]: arrowAnnotation };
     } else if (lineType == 'grow') {
         const yValue = Math.max(startYValue, endYValue) * 1.1
+        const percentDiff = calculatePercentageDifference(+startYValue, +endYValue);
         const arrowAnnotation = {
             type: "line",
             id: arrowId,
@@ -404,10 +405,10 @@ const getArrowAnnotation = (arrow, state) => {
             borderDash: [6, 6], // Make the arrow dashed
             label: {
                 display: true,
-                content: 'Difference',
+                content: `${percentDiff} %`,
                 position: 'center'
             },
-            
+
             xMin: startXValue,
             xMax: endXValue,
             yMin: yValue,
@@ -415,30 +416,30 @@ const getArrowAnnotation = (arrow, state) => {
         };
         const arrowAnnotationLeft = {
             type: 'line',
-            id: `${arrowId}-left`,
+            id: getLeftElementId(arrowId),
             xMin: startXValue,
             xMax: startXValue,
             yMin: startYValue,
             yMax: yValue,
             borderColor: 'black',
-            borderWidth: 2,
+            borderWidth: 1,
             borderDash: [6, 6],
         }
         const arrowAnnotationRight = {
-            id: `${arrowId}-right`,
+            id: getRightElementId(arrowId),
             type: 'line',
             xMin: endXValue,
             xMax: endXValue,
             yMin: endYValue,
             yMax: yValue,
             borderColor: 'black',
-            borderWidth: 2,
+            borderWidth: 1,
             borderDash: [6, 6],
         }
         return {
             [arrowId]: arrowAnnotation,
-            [`${arrowId}-left`]: arrowAnnotationLeft,
-            [`${arrowId}-right`]: arrowAnnotationRight
+            [getLeftElementId(arrowId)]: arrowAnnotationLeft,
+            [getRightElementId(arrowId)]: arrowAnnotationRight
         }
     }
     return null;
@@ -764,6 +765,39 @@ const reducer = (state, action) => {
                 }
             }
             return newState;
+        }
+        case UPDATE_ANNOTATION_ARROW_DATA: {
+            const { id: annotationId, side, data } = payload
+            
+            let newState = { ...state };
+            const { dataIndex, datasetIndex } = data
+            const datasets = state.forms.axes.datasets
+            const xAxis = state.forms.general.xAxis
+            const keys = getDatasetIndexWithoutXAxis(Object.keys(datasets), xAxis)
+            const key = keys[datasetIndex]
+            let annotation = null
+            if (annotationId.includes('Temp')) {
+                annotation = newState.forms.annotationTemp[annotationId]
+            } else {
+                annotation = newState.annotation[annotationId]
+            }
+            if (side == 'left') {
+                annotation = {
+                    ...annotation,
+                    startDataIndex: dataIndex,
+                    startDatasetKey: key
+                }
+            } else if (side == 'right') {
+                annotation = {
+                    ...annotation,
+                    endDataIndex: dataIndex,
+                    endDatasetKey: key
+                }
+            }
+            const options = updateChartOptions(newState.options, newState.forms, newState)
+            newState = { ...newState, options };
+            updateChartDatasets(newState);
+            return newState
         }
         default:
             return state;

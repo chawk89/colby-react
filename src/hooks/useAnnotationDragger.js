@@ -6,7 +6,7 @@
 
 
 import { useEffect } from 'react'
-import { SELECTED_COLOR, copySimpleObject, findNearestDataPoint, getArrowSubtypeById, getLeftElementId, getMainElementId, getRightElementId, getXValueForMultiDataset, highlightLine, isArrowElement, unhighlightLine } from '../utils/utils';
+import { SELECTED_COLOR, copySimpleObject, findNearestDataPoint, getArrowSubtypeById, getLeftElementId, getMainElementId, getRightElementId, getXValueForMultiDataset, highlightLine, isArrowElement, unhighlightLine, wait } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
 
 
@@ -164,9 +164,18 @@ function showColbyMenu(x, y) {
         menu.style.display = 'block';
     }
 }
-const handlDoubleClick = (event, chart) => {
-    if (window.colbyAnnotation.element) return;
-    if (window.colbyAnnotationTemp.arrowElement) return;
+function handleMouseDown(e) {
+    const menu = document.querySelector('.colby-menu');
+    if (menu && e.target.closest('.colby-menu') === null) {
+        menu.style.display = 'none';
+    }
+}
+const handlDoubleClick = async (event, chart) => {
+    event.preventDefault();
+    // wait 250 ms
+    await wait(250);
+    // if (window.colbyAnnotation.element || window.colbyAnnotation.selected) return;
+    // if (window.colbyAnnotationTemp.arrowElement) return;
 
     const rect = chart.canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -249,9 +258,11 @@ const useAnnotationDragger = (dispatch, state) => {
         id: 'colbyDraggerPlugin',
         beforeEvent: (chart, args, options) => {
             const event = args.event;
+            console.log('[event type]', event.type)
             if (event.type === 'click') {
                 handleClick(chart, args)
             } else {
+
                 const { element } = window.colbyAnnotation
                 if (handleDrag(args.event, element)) {
                     args.changed = true;
@@ -261,8 +272,8 @@ const useAnnotationDragger = (dispatch, state) => {
         },
         afterInit(chart, args) {
             // Add event listener to the canvas element
-            chart.canvas.addEventListener('dblclick', e => handlDoubleClick(e, chart));
-            // chart.canvas.addEventListener('click', (event) => this.handleClick(event));
+            chart.canvas.addEventListener('contextmenu', e => handlDoubleClick(e, chart));
+            chart.canvas.addEventListener('mousedown', handleMouseDown);
         }
     })
 }

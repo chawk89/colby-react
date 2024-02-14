@@ -1,12 +1,16 @@
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_CURVE, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from "../components/common/types";
 
+export const SELECTED_COLOR = 'rgb(0, 0, 255)'
+export const ARROW_CAGR_NORMAL_BORDER_COLOR = 'rgb(0, 255, 0)'
+export const ARROW_CAGR_NORMAL_BACKGROUND_COLOR = 'rgb(255, 255, 255)'
 
 export const isEqualObject = (a, b) => JSON.stringify(a) == JSON.stringify(b)
 export const copySimpleObject = (a) => JSON.parse(JSON.stringify(a))
 export const getNewId = () => (new Date()).getTime()
-export const SELECTED_COLOR = 'rgb(0, 0, 255)'
-export const ARROW_CAGR_NORMAL_BORDER_COLOR = 'rgb(0, 255, 0)'
-export const ARROW_CAGR_NORMAL_BACKGROUND_COLOR = 'rgb(255, 255, 255)'
+
+export function wait(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export function yValue(ctx, label) {
     const chart = ctx.chart;
@@ -96,7 +100,7 @@ export function highlightLine(chart, options, isHighlighted, subtype) {
             // Change the line's appearance when selected
             options.borderColor = SELECTED_COLOR; // Change to a highlighted color
             options.borderWidth = 3; // Increase the line width
-        } else if(subtype == ARROW_LINE_TYPE_CAGR) {
+        } else if (subtype == ARROW_LINE_TYPE_CAGR) {
             options.backgroundColor = SELECTED_COLOR;
             options.borderColor = SELECTED_COLOR;
         }
@@ -111,7 +115,7 @@ export function unhighlightLine(chart, options, subtype) {
         // Revert the line's appearance to its original state
         options.borderColor = 'black';
         options.borderWidth = 2;
-    } else if(subtype == ARROW_LINE_TYPE_CAGR) {
+    } else if (subtype == ARROW_LINE_TYPE_CAGR) {
         options.backgroundColor = ARROW_CAGR_NORMAL_BACKGROUND_COLOR;
         options.borderColor = ARROW_CAGR_NORMAL_BORDER_COLOR;
     }
@@ -134,11 +138,11 @@ export const getLeftElementId = (id) => `${id}_left`
 export const getRightElementId = (id) => `${id}_right`
 
 export const getArrowSubtypeById = (id) => {
-    if(!id.startsWith('arrow')) return ''
-    if(id.includes(ARROW_LINE_TYPE_GROW_METRIC)) return ARROW_LINE_TYPE_GROW_METRIC
-    if(id.includes(ARROW_LINE_TYPE_CAGR)) return ARROW_LINE_TYPE_CAGR
-    if(id.includes(ARROW_LINE_TYPE_GENERAL)) return ARROW_LINE_TYPE_GENERAL
-    if(id.includes(ARROW_LINE_TYPE_CURVE)) return ARROW_LINE_TYPE_CURVE
+    if (!id.startsWith('arrow')) return ''
+    if (id.includes(ARROW_LINE_TYPE_GROW_METRIC)) return ARROW_LINE_TYPE_GROW_METRIC
+    if (id.includes(ARROW_LINE_TYPE_CAGR)) return ARROW_LINE_TYPE_CAGR
+    if (id.includes(ARROW_LINE_TYPE_GENERAL)) return ARROW_LINE_TYPE_GENERAL
+    if (id.includes(ARROW_LINE_TYPE_CURVE)) return ARROW_LINE_TYPE_CURVE
     return ''
 }
 export const isArrowElement = (elementId) => elementId.startsWith('arrow')

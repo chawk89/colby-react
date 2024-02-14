@@ -50,7 +50,7 @@ const ColbyChart = () => {
     const colbyDraggerPlugin = useAnnotationDragger(dispatch, context.state)
     const chartOptions = markColbyChartOptions(options)
     const handleClick = (e, data) => {
-        
+        document.querySelector
     }
     return (
         <>

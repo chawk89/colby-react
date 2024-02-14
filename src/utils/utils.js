@@ -8,6 +8,7 @@ export const isEqualObject = (a, b) => JSON.stringify(a) == JSON.stringify(b)
 export const copySimpleObject = (a) => JSON.parse(JSON.stringify(a))
 export const getNewId = () => (new Date()).getTime()
 
+
 export function wait(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -146,3 +147,7 @@ export const getArrowSubtypeById = (id) => {
     return ''
 }
 export const isArrowElement = (elementId) => elementId.startsWith('arrow')
+
+export const calMaxValueInDatasets = (datasets) => {
+    return Math.max(...datasets.map((dataset) => Math.max(...dataset.data)))
+}

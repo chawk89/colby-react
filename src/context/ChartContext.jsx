@@ -1,7 +1,7 @@
 // ChartContext.js
 import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { md5 } from 'js-md5';
-import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR } from '../utils/utils';
+import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_CURVE, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
 // Initial state
 const initialState = {
@@ -356,7 +356,7 @@ const getArrowAnnotation = (arrow, state) => {
     const arrowId = arrow.id
     if (!arrow.id) return null
     if (arrow.id == 'arrowTemp' && !arrow.enabled) return null
-    
+
     const { startDatasetKey, startDataIndex, endDataIndex, endDatasetKey, lineType, doubleArrow, label: arrowLabel, color: arrowColor } = arrow
     const startDatasetIndex = getDatasetIndex(state, startDatasetKey)
     const endDatasetIndex = getDatasetIndex(state, endDatasetKey)
@@ -525,13 +525,23 @@ const getLabelAnnotation = (label, state) => {
 
     if (datasetIndex < 0) return null;
 
+    const chart = state.getChart();
+
     const labelSize = fontSize ? +fontSize : 10
 
     let adjustValueX = 0;
     let adjustValueY = -60;
-
     let yValue = state.data.datasets[datasetIndex].data[+dataIndex]
+    const suggestedMax = calMaxValueInDatasets(state.data.datasets)
+    if (suggestedMax * 0.9 <= yValue) {
+        adjustValueY = -5
+    }
+
+
+
+
     let xValue = getXValueForMultiDataset(datasetIndex, +dataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
+
 
     const labelAnnotation = {
         type: "label",

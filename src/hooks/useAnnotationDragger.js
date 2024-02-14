@@ -164,10 +164,13 @@ function showColbyMenu(x, y) {
         menu.style.display = 'block';
     }
 }
-function handleMouseDown(e) {
+export function hideColbyMenu() {
     const menu = document.querySelector('.colby-menu');
-    if (menu && e.target.closest('.colby-menu') === null) {
-        menu.style.display = 'none';
+    if(menu) menu.style.display = 'none';
+}
+function handleMouseDown(e) {
+    if (e.target.closest('.colby-menu') === null) {
+        hideColbyMenu()
     }
 }
 const handlDoubleClick = async (event, chart) => {

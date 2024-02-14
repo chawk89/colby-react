@@ -1,27 +1,7 @@
 import React from 'react'
 
-const ChartMenu = () => {
+const ChartMenu = ({ onClick }) => {
     return (
-        // <ul className="colby-menu">
-        //     <li className="colby-menu-title ">
-        //         Add Annotations
-        //         <span className="colby-tooltip">Interactive annotations can be added directly to the chart canvas. Click on any annotation to move it. Edit the details of the active annotation in the box below.</span>
-        //     </li>
-        //     <li className="colby-menu-title-separator"></li>
-        //     <li>
-        //         Line Annotation
-        //         <ul className="colby-submenu">
-        //             <li>Horizontal Line</li>
-        //             <li>Vertical Line</li>
-        //         </ul>
-        //         <span className="colby-tooltip">A line with an optional label to highlight a baseline, value, or event.</span>
-        //     </li>
-        //     <li>Box Annotation<span className="colby-tooltip">A box and optional label to highlight a group of datapoints or provide an "unanchored" callout.</span></li>
-        //     <li>Label Annotation<span className="colby-tooltip">Add a text label to annotate and describe a specific part of the chart.</span></li>
-        //     <li>Arrow Annotation<span className="colby-tooltip">A directed line and optional label to highlight a trend.</span></li>
-        //     <li>Growth/Difference Arrow<span className="colby-tooltip">Automatically calculate the percentage change between two data points.</span></li>
-        //     <li>CAGR Arrow<span className="colby-tooltip">Automatically calculate the CAGR between two data points.</span></li>
-        // </ul>
         <div id="dropdownDelay" className="colby-menu absolute z-10 hidden bg-[#f2f2f2] divide-y divide-gray-100 rounded-lg shadow w-44">
             <ul className="py-2 text-sm text-gray-700" aria-labelledby="dropdownDelayButton">
                 <li>
@@ -31,35 +11,43 @@ const ChartMenu = () => {
                     <hr className="h-px bg-gray-300 border-0"></hr>
                 </li>
                 <li className='relative group'>
-                    <a href="#" className="block px-4 py-2 hover:bg-gray-200">Line Annotation</a>
-                    
-                    <ul className="hidden py-2 group-hover:block translate-x-full top-0 p-0 bg-[#f2f2f2] absolute right-0 text-sm text-gray-700" aria-labelledby="dropdownDelayButton">
+                    <span className="block hover:cursor-pointer px-4 py-2 hover:bg-gray-200 flex justify-between items-center"><span>Line Annotation</span>
+                        <svg class="w-3 h-3 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1"></path>
+                        </svg>
+                    </span>
+
+                    <ul className="hidden py-2 group-hover:block translate-x-full top-0 p-0 bg-[#f2f2f2] absolute right-0 text-sm text-gray-700 rounded-lg shadow" aria-labelledby="dropdownDelayButton">
                         <li className='relative'>
-                            <a href="#" className="block px-4 py-2 hover:bg-gray-200">Horizontal</a>
+                            <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'line', subtype: 'horizontal' })}>Horizontal</span>
                         </li>
                         <li className='relative'>
-                            <a href="#" className="block px-4 py-2 hover:bg-gray-200">Vertical</a>
+                            <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'line', subtype: 'vertical' })}>Vertical</span>
                         </li>
                     </ul>
                 </li>
                 <li>
-                    <a href="#" className="block px-4 py-2 hover:bg-gray-200">Box Annotation</a>
+                    <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'box', subtype: 'box' })}>Box Annotation</span>
                 </li>
                 <li>
-                    <a href="#" className="block px-4 py-2 hover:bg-gray-200">Label Annotation</a>
+                    <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'label', subtype: 'label' })}>Label Annotation</span>
                 </li>
                 <li className='relative group'>
-                    <a href="#" className="block px-4 py-2 hover:bg-gray-200">Arrow Annotation</a>
-                    <ul className="hidden py-2 group-hover:block translate-x-full top-0 p-0 bg-[#f2f2f2] absolute right-0 text-sm text-gray-700" aria-labelledby="dropdownDelayButton">
+                    <span className="block hover:cursor-pointer px-4 py-2 hover:bg-gray-200 flex justify-between items-center"><span>Arrow Annotation</span>
+                        <svg class="w-3 h-3 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1"></path>
+                        </svg>
+                    </span>
+                    <ul className="hidden py-2 group-hover:block translate-x-full top-0 p-0 bg-[#f2f2f2] absolute right-0 text-sm text-gray-700 rounded-lg shadow" aria-labelledby="dropdownDelayButton">
                         <li className='relative'>
-                            <a href="#" className="block px-4 py-2 hover:bg-gray-200">General</a>
+                            <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'arrow', subtype: 'general' })}>General</span>
                         </li>
                         <li className='relative'>
-                            <a href="#" className="block px-4 py-2 hover:bg-gray-200">Growth/Difference</a>
+                            <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'arrow', subtype: 'grow' })}>Growth/Difference</span>
                         </li>
                         <li className='relative'>
-                            <a href="#" className="block px-4 py-2 hover:bg-gray-200">CAGR</a>
-                        </li>                        
+                            <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'arrow', subtype: 'cagr' })}>CAGR</span>
+                        </li>
                     </ul>
                 </li>
             </ul>

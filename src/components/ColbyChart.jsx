@@ -49,6 +49,9 @@ const ColbyChart = () => {
 
     const colbyDraggerPlugin = useAnnotationDragger(dispatch, context.state)
     const chartOptions = markColbyChartOptions(options)
+    const handleClick = (e, data) => {
+        
+    }
     return (
         <>
             <ReactChart ref={chartRef} type={chartType}
@@ -56,7 +59,7 @@ const ColbyChart = () => {
                 data={data}
                 plugins={[colbyDraggerPlugin,]}
             />
-            <ChartMenu />
+            <ChartMenu onClick={handleClick} />
         </>
     )
 }

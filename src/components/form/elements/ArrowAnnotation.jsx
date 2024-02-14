@@ -3,9 +3,10 @@ import { Button, Card, Label, Select, TextInput, ToggleSwitch } from 'flowbite-r
 import { Controller, useFormContext } from 'react-hook-form';
 import { useChartContext } from '../../../hooks/useChartContext';
 import { PopoverPicker } from '../../common/PopoverPicker';
-import { getNewId } from '../../../utils/utils';
+import { getArrowElementId, getNewId } from '../../../utils/utils';
 import useChartDatasetKeys from '../../../hooks/useChartDatasetKeys';
 import useChartDatasets from '../../../hooks/useChartDatasets';
+import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_CURVE, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from '../../common/types';
 
 
 const ArrowAnnotation = () => {
@@ -17,6 +18,7 @@ const ArrowAnnotation = () => {
     const xAxis = watch('general.xAxis')
     const startDatasetKey = watch('annotationTemp.arrow.startDatasetKey')
     const endDatasetKey = watch('annotationTemp.arrow.endDatasetKey')
+    const lineType = watch('annotationTemp.arrow.lineType')
     const keyLabels = useChartDatasetKeys(state, xAxis)
 
     const startDataset = useChartDatasets(state, startDatasetKey)
@@ -26,7 +28,7 @@ const ArrowAnnotation = () => {
         setTriggerFlag(true)
         const type = 'arrow'
         onAddAnnotation({
-            type, id: `${type}-${getNewId()}`
+            type, id: getArrowElementId(`${type}-${getNewId()}`, lineType), 
         })
     }
 
@@ -97,9 +99,10 @@ const ArrowAnnotation = () => {
                     <div className="flex items-center">
                         <Label className="inline mr-2" htmlFor="arrow-double-arrow" value="Line Type:" />
                         <Select id="arrow-double-arrow" {...register('annotationTemp.arrow.lineType')}>
-                            <option value={'general'}>Direct Line</option>
-                            <option value={'curved'}>Curved Line</option>
-                            <option value={'grow'}>Growth Metrics</option>
+                            <option value={ARROW_LINE_TYPE_GENERAL}>Direct Line</option>
+                            <option value={ARROW_LINE_TYPE_CURVE}>Curved Line</option>
+                            <option value={ARROW_LINE_TYPE_GROW_METRIC}>Growth Metrics</option>
+                            <option value={ARROW_LINE_TYPE_CAGR}>CAGR</option>
                         </Select>
                     </div>
                 </div>

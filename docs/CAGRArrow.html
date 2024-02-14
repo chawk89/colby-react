@@ -52,7 +52,6 @@
                     annotation: {
                         annotations: {
                             arrowLine: {
-                                id: 'arrowLine',
                                 type: 'line',
                                 xMin: 1,
                                 xMax: 3,
@@ -60,7 +59,7 @@
                                 yMax: 5,
                                 borderColor: 'grey',
                                 borderWidth: 6,
-                                curve: true,
+                                curve: false,
                                 arrowHeads: {
                                     end: {
                                         display: true
@@ -73,7 +72,6 @@
                                 }
                             },
                             startCircle: {
-                                id: 'startCircle',
                                 type: 'point',
                                 xValue: 1,
                                 yValue: 12,
@@ -83,7 +81,6 @@
                                 borderWidth: 2
                             },
                             endCircle: {
-                                id: 'endCircle',
                                 type: 'point',
                                 xValue: 3,
                                 yValue: 5,
@@ -92,50 +89,6 @@
                                 borderColor: 'blue',
                                 borderWidth: 2
                             }
-                            // arrowLine: [
-                            //     {
-                            //         id: 'arrowLine',
-                            //         type: 'line',
-                            //         xMin: 1,
-                            //         xMax: 3,
-                            //         yMin: 12,
-                            //         yMax: 5,
-                            //         borderColor: 'grey',
-                            //         borderWidth: 6,
-                            //         curve: false,
-                            //         arrowHeads: {
-                            //             end: {
-                            //                 display: true
-                            //             }
-                            //         },
-                            //         label: {
-                            //             display: true,
-                            //             content: 'CAGR',
-                            //             position: 'center'
-                            //         }
-                            //     },
-                            //     {
-                            //         id: 'startCircle',
-                            //         type: 'point',
-                            //         xValue: 1,
-                            //         yValue: 12,
-                            //         radius: 5,
-                            //         backgroundColor: 'blue',
-                            //         borderColor: 'blue',
-                            //         borderWidth: 2
-                            //     },
-                            //     {
-                            //         id: 'endCircle',
-                            //         type: 'point',
-                            //         xValue: 3,
-                            //         yValue: 5,
-                            //         radius: 5,
-                            //         backgroundColor: 'blue',
-                            //         borderColor: 'blue',
-                            //         borderWidth: 2
-                            //     }
-                            // ],
-
                         }
                     }
                 }
@@ -147,9 +100,9 @@
                     if (event.type === 'click') {
                         const xValue = chart.scales.x.getValueForPixel(event.x);
                         var annotations = chart.options.plugins.annotation.annotations;
-                        var arrowLine = annotations.arrowLine.main;
-                        var startCircle = annotations.arrowLine.startCircle;
-                        var endCircle = annotations.arrowLine.endCircle;
+                        var arrowLine = annotations.arrowLine;
+                        var startCircle = annotations.startCircle;
+                        var endCircle = annotations.endCircle;
 
                         // Check if start circle was clicked
                         const clickThreshold = 10; // pixels

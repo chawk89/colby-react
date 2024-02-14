@@ -1,7 +1,8 @@
 // ChartContext.js
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
+import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { md5 } from 'js-md5';
-import { SELECTED_COLOR, calculatePercentageDifference, copySimpleObject, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue } from '../utils/utils';
+import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR } from '../utils/utils';
+import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_CURVE, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
 // Initial state
 const initialState = {
     forms: {
@@ -49,7 +50,7 @@ const initialState = {
                 startDataIndex: "",
                 endDatasetKey: "",
                 endDataIndex: "",
-                lineType: "general",
+                lineType: ARROW_LINE_TYPE_GENERAL,
                 id: 'arrowTemp'
             }
         },
@@ -103,20 +104,20 @@ const initialState = {
             type: "box",
             id: "box-1707320977735"
         },
-        "arrow-1707348807973": {
+        "arrow-1707348807973+general": {
             "enabled": true,
             "doubleArrow": "1",
             "label": "asdfasdfasdf",
             "color": "#000000",
             "type": "arrow",
-            "id": "arrow-1707799128824",
+            "id": "arrow-1707799128824+general",
             "startDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
             "startDataIndex": "1",
             "endDatasetKey": "FL1pyNrYWyqAVBdtx7c/Jw==",
             "endDataIndex": "2",
-            lineType: 'general'
+            lineType: ARROW_LINE_TYPE_GENERAL
         },
-        'arrow-1707838906237': {
+        'arrow-1707838906237+grow': {
             "enabled": true,
             "type": "arrow",
             "doubleArrow": "1",
@@ -126,8 +127,8 @@ const initialState = {
             "startDataIndex": "5",
             "endDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
             "endDataIndex": 9,
-            "lineType": "grow",
-            "id": "arrow-1707838906237"
+            "lineType": ARROW_LINE_TYPE_GROW_METRIC,
+            "id": "arrow-1707838906237+grow"
         },
         "label-1707349710912": {
             enabled: true,
@@ -353,22 +354,22 @@ const getBoxAnnotation = (box, state) => {
 
 const getArrowAnnotation = (arrow, state) => {
     const arrowId = arrow.id
-    if (!arrowId) return null
-    if (arrowId == 'arrowTemp' && !arrow.enabled) return null
-
+    if (!arrow.id) return null
+    if (arrow.id == 'arrowTemp' && !arrow.enabled) return null
+    
     const { startDatasetKey, startDataIndex, endDataIndex, endDatasetKey, lineType, doubleArrow, label: arrowLabel, color: arrowColor } = arrow
     const startDatasetIndex = getDatasetIndex(state, startDatasetKey)
     const endDatasetIndex = getDatasetIndex(state, endDatasetKey)
 
     if (startDatasetIndex < 0 || endDatasetIndex < 0) return null
-    if (startDataIndex == '' || endDataIndex == '') return null;
+    if (startDataIndex === '' || endDataIndex === '') return null;
 
     let startXValue = getXValueForMultiDataset(startDatasetIndex, +startDataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
     let endXValue = getXValueForMultiDataset(endDatasetIndex, +endDataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
     let startYValue = state.data.datasets[startDatasetIndex].data[+startDataIndex]
     let endYValue = state.data.datasets[endDatasetIndex].data[+endDataIndex]
-    if (lineType == 'curved' || lineType == 'general') {
 
+    if (lineType == ARROW_LINE_TYPE_CURVE || lineType == ARROW_LINE_TYPE_GENERAL) {
         const arrowAnnotation = {
             type: "line",
             id: arrowId,
@@ -393,7 +394,7 @@ const getArrowAnnotation = (arrow, state) => {
             yMax: endYValue,
         };
         // curved line
-        if (lineType == 'curved') {
+        if (lineType == ARROW_LINE_TYPE_CURVE) {
             arrowAnnotation.curve = true
         }
         if (arrowLabel) {
@@ -407,7 +408,7 @@ const getArrowAnnotation = (arrow, state) => {
 
         }
         return { [arrow.id]: arrowAnnotation };
-    } else if (lineType == 'grow') {
+    } else if (lineType == ARROW_LINE_TYPE_GROW_METRIC) {
         const yValue = Math.max(startYValue, endYValue) * 1.1
         const percentDiff = calculatePercentageDifference(+startYValue, +endYValue);
         const arrowAnnotation = {
@@ -454,6 +455,58 @@ const getArrowAnnotation = (arrow, state) => {
             [getLeftElementId(arrowId)]: arrowAnnotationLeft,
             [getRightElementId(arrowId)]: arrowAnnotationRight
         }
+    } else if (lineType == ARROW_LINE_TYPE_CAGR) {
+
+        const periods = Math.abs(startDataIndex - endDataIndex);
+        const cagr = calculateCAGR(+startYValue, +endYValue, periods);
+
+        const arrowAnnotation = {
+            type: "line",
+            id: arrowId,
+            borderColor: arrowColor,
+            borderWidth: 1,
+            // borderDash: [6, 6], // Make the arrow dashed
+            label: {
+                display: true,
+                content: `CAGR: ${cagr}`,
+                position: 'center'
+            },
+            curve: false,
+            xMin: startXValue,
+            xMax: endXValue,
+            yMin: startYValue,
+            yMax: endYValue,
+            arrowHeads: {
+                end: {
+                    display: true
+                }
+            },
+        };
+        const arrowAnnotationLeft = {
+            id: getLeftElementId(arrowId),
+            type: 'point',
+            xValue: startXValue,
+            yValue: startYValue,
+            radius: 5,
+            backgroundColor: ARROW_CAGR_NORMAL_BACKGROUND_COLOR,
+            borderColor: ARROW_CAGR_NORMAL_BORDER_COLOR,
+            borderWidth: 2
+        }
+        const arrowAnnotationRight = {
+            id: getRightElementId(arrowId),
+            type: 'point',
+            xValue: endXValue,
+            yValue: endYValue,
+            radius: 5,
+            backgroundColor: ARROW_CAGR_NORMAL_BACKGROUND_COLOR,
+            borderColor: ARROW_CAGR_NORMAL_BORDER_COLOR,
+            borderWidth: 2
+        }
+        return {
+            [arrowId]: arrowAnnotation,
+            [getLeftElementId(arrowId)]: arrowAnnotationLeft,
+            [getRightElementId(arrowId)]: arrowAnnotationRight
+        }
     }
     return null;
 }
@@ -470,30 +523,18 @@ const getLabelAnnotation = (label, state) => {
 
     const datasetIndex = getDatasetIndex(state, datasetKey)
 
-
     if (datasetIndex < 0) return null;
 
     const labelSize = fontSize ? +fontSize : 10
 
-    // const chart = state.getChart();
-    // const datasetMeta = chart.getDatasetMeta(dataIndex);
-    // if (!datasetMeta) return null;
-    // const rectangle = datasetMeta.data[+dataIndex];
-    // if (!rectangle) return null;    
-    // const boundingBox = rectangle.getProps(['x', 'y', 'base', 'width', 'height'], true);
-
     let adjustValueX = 0;
     let adjustValueY = -60;
-
-
-
 
     let yValue = state.data.datasets[datasetIndex].data[+dataIndex]
     let xValue = getXValueForMultiDataset(datasetIndex, +dataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
 
     const labelAnnotation = {
         type: "label",
-
         backgroundColor: 'rgba(245,245,245)',
         borderRadius: 6,
         borderWidth: 1,

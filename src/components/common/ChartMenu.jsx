@@ -1,4 +1,5 @@
 import React from 'react'
+import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from './types'
 
 const ChartMenu = ({ onClick }) => {
     return (
@@ -40,13 +41,13 @@ const ChartMenu = ({ onClick }) => {
                     </span>
                     <ul className="hidden py-2 group-hover:block translate-x-full top-0 p-0 bg-[#f2f2f2] absolute right-0 text-sm text-gray-700 rounded-lg shadow" aria-labelledby="dropdownDelayButton">
                         <li className='relative'>
-                            <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'arrow', subtype: 'general' })}>General</span>
+                            <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'arrow', subtype: ARROW_LINE_TYPE_GENERAL })}>General</span>
                         </li>
                         <li className='relative'>
-                            <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'arrow', subtype: 'grow' })}>Growth/Difference</span>
+                            <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'arrow', subtype: ARROW_LINE_TYPE_GROW_METRIC })}>Growth/Difference</span>
                         </li>
                         <li className='relative'>
-                            <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'arrow', subtype: 'cagr' })}>CAGR</span>
+                            <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'arrow', subtype: ARROW_LINE_TYPE_CAGR })}>CAGR</span>
                         </li>
                     </ul>
                 </li>

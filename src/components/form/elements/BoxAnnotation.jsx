@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Label, TextInput, ToggleSwitch } from 'flowbite-react'
 import { Controller, useFormContext } from 'react-hook-form';
-import { getNewId } from '../../../utils/utils';
+import { generateAnnotationId } from '../../../utils/utils';
 import { useChartContext } from '../../../hooks/useChartContext';
 
 const BoxAnnotation = () => {
@@ -15,7 +15,7 @@ const BoxAnnotation = () => {
         setTriggerFlag(true)
         const type = 'box'
         onAddAnnotation({
-            type, id: `${type}-${getNewId()}`
+            type, id: generateAnnotationId(type)
         })
     }
 

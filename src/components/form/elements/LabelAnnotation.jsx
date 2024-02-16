@@ -3,7 +3,7 @@ import { Button, Card, Label, Select, TextInput, ToggleSwitch } from 'flowbite-r
 import { Controller, useFormContext } from 'react-hook-form';
 import { PopoverPicker } from '../../common/PopoverPicker';
 import { useChartContext } from '../../../hooks/useChartContext';
-import { getNewId } from '../../../utils/utils';
+import { generateAnnotationId, getNewId } from '../../../utils/utils';
 import useChartDatasetKeys from '../../../hooks/useChartDatasetKeys';
 import useChartDatasets from '../../../hooks/useChartDatasets';
 
@@ -26,7 +26,7 @@ const LabelAnnotation = () => {
         setTriggerFlag(true)
         const type = 'label'
         onAddAnnotation({
-            type, id: `${type}-${getNewId()}`
+            type, id: generateAnnotationId(type)
         })
     }
 

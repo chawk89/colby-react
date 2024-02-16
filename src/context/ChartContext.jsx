@@ -1,7 +1,7 @@
 // ChartContext.js
 import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { md5 } from 'js-md5';
-import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets } from '../utils/utils';
+import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets, generateAnnotationId } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_CURVE, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
 // Initial state
 const initialState = {
@@ -216,6 +216,7 @@ export const UPDATE_ANNOTATION_ITEM = 'UPDATE_ANNOTATION_ITEM';
 export const UPDATE_ANNOTATION_POSITION = 'UPDATE_ANNOTATION_POSITION';
 export const UPDATE_ANNOTATION_ARROW_DATA = 'UPDATE_ANNOTATION_ARROW_DATA';
 export const DELETE_ANNOTATION_ITEM = 'DELETE_ANNOTATION_ITEM';
+export const CREATE_ANNOTATION_ITEM_BY_CONTEXTMENU = 'CREATE_ANNOTATION_ITEM_BY_CONTEXTMENU';
 
 
 
@@ -360,7 +361,7 @@ const getArrowAnnotation = (arrow, state) => {
     const arrowId = arrow.id
     if (!arrow.id) return null
     if (arrow.id == 'arrowTemp' && !arrow.enabled) return null
-
+    const { annotationSelected } = state
     const { startDatasetKey, startDataIndex, endDataIndex, endDatasetKey, lineType, doubleArrow, label: arrowLabel, color: arrowColor } = arrow
     const startDatasetIndex = getDatasetIndex(state, startDatasetKey)
     const endDatasetIndex = getDatasetIndex(state, endDatasetKey)
@@ -374,22 +375,23 @@ const getArrowAnnotation = (arrow, state) => {
     let endYValue = state.data.datasets[endDatasetIndex].data[+endDataIndex]
 
     if (lineType == ARROW_LINE_TYPE_CURVE || lineType == ARROW_LINE_TYPE_GENERAL) {
+        const borderColor = annotationSelected == arrowId ? SELECTED_COLOR : arrowColor;
         const arrowAnnotation = {
             type: "line",
             id: arrowId,
-            borderColor: arrowColor,
             borderWidth: 2,
+            borderColor,
             label: {
                 display: false,
             },
             arrowHeads: {
                 start: {
                     display: doubleArrow == "1",
-                    borderColor: arrowColor,
+                    borderColor,
                 },
                 end: {
                     display: true,
-                    borderColor: arrowColor,
+                    borderColor,
                 },
             },
             xMin: startXValue,
@@ -749,7 +751,60 @@ const fetchDataRange = (range) => {
     }
 }
 
+const addNewAnnotationByContextMenu = (data, state) => {
+    const { type, subtype, x, y, nearestData } = data
+    const annoInit = initialState.forms.annotationTemp[type]
+    const anno = copySimpleObject(annoInit);
+    const id = generateAnnotationId(type)
+    const { dataIndex, datasetKey } = nearestData
+    anno.enabled = true;
 
+    anno.id = id
+
+    switch (type) {
+        case 'line': {
+            if (subtype == 'vertical') {
+                anno.position = x
+                anno.axis = 'y'
+            } else if (subtype == 'horizontal') {
+                anno.position = y
+                anno.axis = 'x'
+            }
+            break;
+        }
+        case 'box': {
+            anno.label = "undefined"
+            anno.xMax = x
+            anno.xMin = +x + 1
+            anno.yMax = y
+            anno.yMin = (+y) * 1.1
+            break;
+        }
+        case 'label': {
+            anno.dataIndex = dataIndex
+            anno.datasetKey = datasetKey
+            anno.caption = "undefined"
+
+            break;
+        }
+        case 'arrow': {
+            anno.label = "undefined"
+            anno.startDatasetKey = datasetKey
+            anno.startDataIndex = dataIndex
+            anno.endDatasetKey = datasetKey
+            anno.endDataIndex = +dataIndex + 1
+            anno.lineType = subtype
+            break;
+        }
+    }
+    console.log('[handlDoubleClick]', x, y)
+    if (anno.enabled) {
+        const newState = { ...state, annotation: { ...state.annotation, [id]: anno }, annotationSelected: id }
+        return newState
+    }
+    return state;
+
+}
 // Reducer function
 const reducer = (state, action) => {
     const { type, ...payload } = action
@@ -905,6 +960,14 @@ const reducer = (state, action) => {
             updateChartDatasets(newState);
 
             return newState
+        }
+        case CREATE_ANNOTATION_ITEM_BY_CONTEXTMENU: {
+            const { data } = payload
+            let newState = addNewAnnotationByContextMenu(data, state)
+            const options = updateChartOptions(newState.options, newState.forms, newState)
+            newState = { ...newState, options };
+            updateChartDatasets(newState);
+            return newState;
         }
         default:
             return state;

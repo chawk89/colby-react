@@ -247,7 +247,6 @@ const useAnnotationDragger = (dispatch, state) => {
     const handleClick = function (chart, args) {
         const event = args.event;
         const eventX = event.x;
-        const xValue = chart.scales.x.getValueForPixel(eventX);
         const colbyAnnotationTemp = window.colbyAnnotationTemp
         if (colbyAnnotationTemp.arrowElement) {
             console.log('[colbyAnnotationTemp.arrowElement]', colbyAnnotationTemp.arrowElement)

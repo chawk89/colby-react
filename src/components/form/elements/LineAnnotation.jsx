@@ -24,7 +24,7 @@ const LineAnnotation = () => {
         setTriggerFlag(true)
         const type = 'line'
         onAddAnnotation({
-            type, id: `${type}-${getNewId()}`
+            type, id: generateAnnotationId(type)
         })
     }
     useEffect(() => {

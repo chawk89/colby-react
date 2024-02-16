@@ -18,8 +18,9 @@ import { Chart as ReactChart } from 'react-chartjs-2';
 import { useChartContext } from '../hooks/useChartContext'
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import AnnotationPlugin from 'chartjs-plugin-annotation';
-import useAnnotationDragger, { markColbyChartOptions } from '../hooks/useAnnotationDragger';
+import useAnnotationDragger, { hideColbyMenu, markColbyChartOptions } from '../hooks/useAnnotationDragger';
 import ChartMenu from './common/ChartMenu';
+import { findNearestDataPoint, getDatasetIndexWithoutXAxis } from '../utils/utils';
 
 ChartJS.register(
     CategoryScale,
@@ -45,12 +46,29 @@ ChartJS.register(
 
 const ColbyChart = () => {
     const context = useChartContext()
-    const { state: { options, data, chartType }, chartRef, dispatch } = context
+    const { state: { options, forms, data, chartType, getChart }, chartRef, dispatch } = context
 
     const colbyDraggerPlugin = useAnnotationDragger(dispatch, context.state)
     const chartOptions = markColbyChartOptions(options, dispatch)
-    const handleClick = (e, data) => {
+    const handleClick = (event, data) => {
         // document.querySelector
+        console.log('[handleClick]', event.target, data);
+        const chart = getChart()
+        const rect = chart.canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        const xValue = chart.scales.x.getValueForPixel(x);
+        const yValue = chart.scales.y.getValueForPixel(y);
+        const datasets = forms.axes.datasets
+        const xAxis = forms.general.xAxis
+        const nearestData = findNearestDataPoint(chart, x, 'x');
+
+        const datasetKeys = getDatasetIndexWithoutXAxis(Object.keys(datasets), xAxis)
+        const datasetKey = datasetKeys[nearestData.datasetIndex]
+
+        hideColbyMenu()
+        dispatch({ type: 'CREATE_ANNOTATION_ITEM_BY_CONTEXTMENU', data: { ...data, x: xValue, y: yValue, nearestData: { ...nearestData, datasetKey } } })
+
     }
     return (
         <>

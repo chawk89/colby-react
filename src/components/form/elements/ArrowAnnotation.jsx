@@ -3,7 +3,7 @@ import { Button, Card, Label, Select, TextInput, ToggleSwitch } from 'flowbite-r
 import { Controller, useFormContext } from 'react-hook-form';
 import { useChartContext } from '../../../hooks/useChartContext';
 import { PopoverPicker } from '../../common/PopoverPicker';
-import { getArrowElementId, getNewId } from '../../../utils/utils';
+import { generateAnnotationId, getArrowElementId, getNewId } from '../../../utils/utils';
 import useChartDatasetKeys from '../../../hooks/useChartDatasetKeys';
 import useChartDatasets from '../../../hooks/useChartDatasets';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_CURVE, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from '../../common/types';
@@ -28,7 +28,7 @@ const ArrowAnnotation = () => {
         setTriggerFlag(true)
         const type = 'arrow'
         onAddAnnotation({
-            type, id: getArrowElementId(`${type}-${getNewId()}`, lineType), 
+            type, id: getArrowElementId(generateAnnotationId(type), lineType), 
         })
     }
 

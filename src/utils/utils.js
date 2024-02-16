@@ -155,3 +155,4 @@ export const isArrowElement = (elementId) => elementId.startsWith('arrow')
 export const calMaxValueInDatasets = (datasets) => {
     return Math.max(...datasets.map((dataset) => Math.max(...dataset.data)))
 }
+export const generateAnnotationId = (type) => `${type}-${getNewId()}`

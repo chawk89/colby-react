@@ -84,7 +84,7 @@ const EditArrowAnnotation = () => {
                 </Select>
             </div>
         </div>
-        <div className="col-span-1">
+        {(lineType == ARROW_LINE_TYPE_GENERAL || lineType == ARROW_LINE_TYPE_CURVE) && <div className="col-span-1">
             <div className="flex items-center">
                 <Label className="inline mr-2" htmlFor="arrow-double-arrow" value="Double Arrow:" />
                 <Select id="arrow-double-arrow" {...register('properties.doubleArrow')}>
@@ -92,32 +92,30 @@ const EditArrowAnnotation = () => {
                     <option value={0}>false</option>
                 </Select>
             </div>
-        </div>
+        </div>}
         <div className="col-span-1">
             <div className="flex items-center">
                 <Label className="inline mr-2" htmlFor="arrow-double-arrow" value="Line Type:" />
-                <Label className="inline mr-2" htmlFor="arrow-double-arrow" value={lineType}></Label>
-
+                <Label className="inline mr-2" htmlFor="arrow-double-arrow" value={arrowLineTypes[lineType]}></Label>
 
             </div>
         </div>
-        <div className="col-span-1">
-            <div className="flex items-center">
-                <Label className="inline mr-2 shrink-0" htmlFor="arrow-Label" value="Label:" />
-                <TextInput id="arrow-Label" type="text" placeholder="10" {...register("properties.label")} />
+        {(lineType == ARROW_LINE_TYPE_GENERAL || lineType == ARROW_LINE_TYPE_CURVE) &&
+            <div className="col-span-1">
+                <div className="flex items-center">
+                    <Label className="inline mr-2 shrink-0" htmlFor="arrow-Label" value="Label:" />
+                    <TextInput id="arrow-Label" type="text" placeholder="10" {...register("properties.label")} />
+                </div>
             </div>
-        </div>
+        }
 
-        <div className="col-span-1">
-            <div className="flex items-center">
+        <div className="col-span-3">
+            <div className="flex items-center justify-between">
                 <Button onClick={handleConfirmClick}> ok </Button>
-            </div>
-        </div>
-        <div className="col-span-1">
-            <div className="flex items-center">
                 <Button onClick={handleDeleteClick}> Delete </Button>
             </div>
         </div>
+
 
     </div>
 

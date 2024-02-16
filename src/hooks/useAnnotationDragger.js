@@ -33,37 +33,40 @@ export const onDrag = function (element, moveX, moveY) {
         }
     }
 };
-function highlightLineByDoubleClicked(element, isSelected, selected) {
-    console.log('[updateLine]', element)
-    const { options } = element
+function highlightLineByDoubleClicked(element, alreadySelected, selected) {
+    // console.log('[updateLine]', element)
+    // const { options } = element
 
-    if (isSelected) {
-        options.borderColor = selected.borderColor
-        options.borderWidth = selected.borderWidth
+    if (alreadySelected) {
+        // options.borderColor = selected.borderColor
+        // options.borderWidth = selected.borderWidth
         return {}
     } else {
         const result = copySimpleObject({
             id: options.id,
-            borderColor: options.borderColor,
-            borderWidth: options.borderWidth
+            // borderColor: options.borderColor,
+            // borderWidth: options.borderWidth
         })
-        options.borderColor = SELECTED_COLOR
-        options.borderWidth = +options.borderWidth + 2
+        // options.borderColor = SELECTED_COLOR
+        // options.borderWidth = +options.borderWidth + 2
         return result;
     }
 }
-function onSelectClick(element, colbyAnnotation, chart) {
+function onSelectClick(element, colbyAnnotation, chart, dispatch) {
     if (!colbyAnnotation) return false;
-
     const { options } = element
-    const isSelected = colbyAnnotation.selected?.id == options.id
-    console.log("[annotation][Double click]", options, chart, isSelected);
+    // const alreadySelected = colbyAnnotation.selected?.id == options.id
+    // console.log("[annotation][Double click]", options, chart, alreadySelected);
 
-    switch (options.type) {
-        case 'line':
-            colbyAnnotation.selected = highlightLineByDoubleClicked(element, isSelected, colbyAnnotation.selected);
-            break;
-    }
+    // switch (options.type) {
+    //     case 'line':
+    //         colbyAnnotation.selected = highlightLineByDoubleClicked(element, alreadySelected, colbyAnnotation.selected);
+    //         break;
+    // }
+    dispatch({
+        type: 'ACTIVE_ANNOTATION_ITEM',
+        id: options.id
+    })
 
     return true;
 }
@@ -110,7 +113,7 @@ const checkMovableIfElement = (elementId) => {
     return true
 }
 
-export const markColbyChartOptions = (options) => ({
+export const markColbyChartOptions = (options, dispatch) => ({
     ...options,
     plugins: {
         ...options.plugins,
@@ -146,7 +149,7 @@ export const markColbyChartOptions = (options) => ({
                     }, CLICK_TIMEOUT)
                 } else if (colbyAnnotationTemp.clickCount == 2) {
                     // Double click action
-                    onSelectClick(element, colbyAnnotation, chart)
+                    onSelectClick(element, colbyAnnotation, chart, dispatch)
 
                     colbyAnnotationTemp.clickCount = 0;
                     clearTimeout(colbyAnnotationTemp.clickCount)
@@ -173,7 +176,7 @@ function handleMouseDown(e) {
         hideColbyMenu()
     }
 }
-const handlDoubleClick = async (event, chart) => {
+const handlContextMenu = async (event, chart) => {
     event.preventDefault();
     // wait 250 ms
     await wait(250);
@@ -261,7 +264,7 @@ const useAnnotationDragger = (dispatch, state) => {
         id: 'colbyDraggerPlugin',
         beforeEvent: (chart, args, options) => {
             const event = args.event;
-            console.log('[event type]', event.type)
+            // console.log('[event type]', event.type)
             if (event.type === 'click') {
                 handleClick(chart, args)
             } else {
@@ -275,7 +278,7 @@ const useAnnotationDragger = (dispatch, state) => {
         },
         afterInit(chart, args) {
             // Add event listener to the canvas element
-            chart.canvas.addEventListener('contextmenu', e => handlDoubleClick(e, chart));
+            chart.canvas.addEventListener('contextmenu', e => handlContextMenu(e, chart));
             chart.canvas.addEventListener('mousedown', handleMouseDown);
         }
     })

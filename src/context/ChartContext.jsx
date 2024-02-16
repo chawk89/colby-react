@@ -110,7 +110,7 @@ const initialState = {
             "label": "asdfasdfasdf",
             "color": "#000000",
             "type": "arrow",
-            "id": "arrow-1707799128824+general",
+            "id": "arrow-1707348807973+general",
             "startDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
             "startDataIndex": "1",
             "endDatasetKey": "FL1pyNrYWyqAVBdtx7c/Jw==",
@@ -212,8 +212,10 @@ export const RELOAD_FORM = 'RELOAD_FORM';
 export const FETCH_DATA_RANGE = 'FETCH_DATA_RANGE';
 export const ADD_ANNOTATION_ITEM = 'ADD_ANNOTATION_ITEM';
 export const ACTIVE_ANNOTATION_ITEM = 'ACTIVE_ANNOTATION_ITEM';
+export const UPDATE_ANNOTATION_ITEM = 'UPDATE_ANNOTATION_ITEM';
 export const UPDATE_ANNOTATION_POSITION = 'UPDATE_ANNOTATION_POSITION';
 export const UPDATE_ANNOTATION_ARROW_DATA = 'UPDATE_ANNOTATION_ARROW_DATA';
+export const DELETE_ANNOTATION_ITEM = 'DELETE_ANNOTATION_ITEM';
 
 
 
@@ -289,11 +291,13 @@ const getLineAnnotation = (line, state) => {
 
     const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel } = line
 
+    const isSelected = state.annotationSelected == line.id
+
     const lineAnnotation = {
         type: "line",
         id: line.id,
-        borderColor: lineColor,
-        borderWidth: lineThickness,
+        borderColor: isSelected ? SELECTED_COLOR : lineColor,
+        borderWidth: isSelected ? +lineThickness + 2 : lineThickness,
         draggable: true,
     };
 
@@ -528,6 +532,7 @@ const getLabelAnnotation = (label, state) => {
     const chart = state.getChart();
 
     const labelSize = fontSize ? +fontSize : 10
+    const { annotationSelected } = state
 
     let adjustValueX = 0;
     let adjustValueY = -60;
@@ -539,13 +544,12 @@ const getLabelAnnotation = (label, state) => {
 
 
 
-
     let xValue = getXValueForMultiDataset(datasetIndex, +dataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
 
 
     const labelAnnotation = {
         type: "label",
-        backgroundColor: 'rgba(245,245,245)',
+        backgroundColor: annotationSelected == label.id ? SELECTED_COLOR : 'rgba(245,245,245)',
         borderRadius: 6,
         borderWidth: 1,
         content: [labelText],
@@ -811,7 +815,8 @@ const reducer = (state, action) => {
         }
         case ACTIVE_ANNOTATION_ITEM: {
             const { id: annotationId } = payload
-            let newState = { ...state, annotationSelected: annotationId };
+            const { annotationSelected } = state
+            let newState = { ...state, annotationSelected: (annotationSelected == annotationId || annotationId == '') ? '' : annotationId };
             const options = updateChartOptions(state.options, newState.forms, newState)
             newState = { ...newState, options };
             updateChartDatasets(newState);
@@ -871,6 +876,34 @@ const reducer = (state, action) => {
             const options = updateChartOptions(newState.options, newState.forms, newState)
             newState = { ...newState, options };
             updateChartDatasets(newState);
+            return newState
+        }
+        case UPDATE_ANNOTATION_ITEM: {
+            const { data } = payload
+            const { id: annotationId } = data
+
+            let newState = {
+                ...state,
+            }
+            newState.annotation[annotationId] = copySimpleObject(data)
+            const options = updateChartOptions(newState.options, newState.forms, newState)
+            newState = { ...newState, options };
+            updateChartDatasets(newState);
+
+            return newState
+        }
+        case DELETE_ANNOTATION_ITEM: {
+            const { id: annotationId } = payload
+            const { [annotationId]: deletedAnnotaiton, ...restAnnotaiton } = state.annotation
+            let newState = {
+                ...state,
+                annotation: restAnnotaiton,
+                annotationSelected: ''
+            }
+            const options = updateChartOptions(newState.options, newState.forms, newState)
+            newState = { ...newState, options };
+            updateChartDatasets(newState);
+
             return newState
         }
         default:

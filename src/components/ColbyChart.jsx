@@ -48,9 +48,9 @@ const ColbyChart = () => {
     const { state: { options, data, chartType }, chartRef, dispatch } = context
 
     const colbyDraggerPlugin = useAnnotationDragger(dispatch, context.state)
-    const chartOptions = markColbyChartOptions(options)
+    const chartOptions = markColbyChartOptions(options, dispatch)
     const handleClick = (e, data) => {
-        document.querySelector
+        // document.querySelector
     }
     return (
         <>

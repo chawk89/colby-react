@@ -1,10 +1,8 @@
 import { useState } from 'react'
-import { copySimpleObject, isEqualObject } from '../utils/utils';
+import { checkValidateValueSame, copySimpleObject, isEqualObject } from '../utils/utils';
 import useDebounceEffect from './useDebounceEffect';
 
-const checkValidateValueSame = (isEqual, propertyList, { preValues, curValues }) => {
-    return propertyList.every(a => isEqual(preValues[a], curValues[a]))
-}
+
 const useFormValue = (watch, onChangeHandle, list) => {
 
     const formValues = watch();

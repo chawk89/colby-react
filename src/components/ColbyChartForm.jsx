@@ -11,17 +11,18 @@ import useFormValue from '../hooks/useFormValue';
 import AnnotationTab from './form/tabs/AnnotationTab';
 import ColbyTextInput from './form/elements/ColbyTextInput';
 import GeneralTab from './form/tabs/GeneralTab';
+import PropertiesTab from './form/tabs/PropertiesTab';
 
-const FormPropertyValues = ["annotationTemp", "general", "xAxis", "yAxis", "styles", "axes" ]
+const FormPropertyValues = ["annotationTemp", "general", "xAxis", "yAxis", "styles", "axes"]
 
 const ColbyChartForm = () => {
 
-    const { state: { forms, data }, dispatch, onDownloadChart, onClearCache } = useChartContext()
+    const { state: { forms, data, annotationSelected }, dispatch, onDownloadChart, onClearCache } = useChartContext()
 
     const methods = useForm({ defaultValues: forms })
 
     const { register, control, watch, reset: resetForm } = methods
-    
+
     const { axes } = forms
     const { keyLabels } = axes
     console.log('[axes]', axes)
@@ -33,7 +34,7 @@ const ColbyChartForm = () => {
         resetForm()
         // onClearCache()
     }, [onClearCache])
-    
+
 
     useFormValue(watch, handleUpdate, FormPropertyValues)
 
@@ -46,7 +47,7 @@ const ColbyChartForm = () => {
             <form onSubmit={methods.handleSubmit(onSubmit)} className='w-full'>
                 <Tabs style="fullWidth" className='w-full'>
                     {/* general tab start */}
-                    <Tabs.Item  title="General" icon={MdDashboard}>                        
+                    <Tabs.Item title="General" icon={MdDashboard}>
                         <GeneralTab keyLabels={keyLabels} />
                     </Tabs.Item>
                     {/* general tab end */}
@@ -133,6 +134,9 @@ const ColbyChartForm = () => {
                                 </div>
                             </div>
                         </div>
+                    </Tabs.Item>
+                    <Tabs.Item title="Properties" icon={HiClipboardList} >
+                        {annotationSelected && <PropertiesTab />}
                     </Tabs.Item>
                 </Tabs>
                 <div className="w-full flex justify-between mt-10">

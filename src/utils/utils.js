@@ -93,7 +93,11 @@ export const getXValueForMultiDataset = (datasetIndex, dataIndex, {
         return +dataIndex;
     }
     const lblLen = datasets.length
+ 
     return +dataIndex + (datasetIndex * 2 + 1) / (2 * lblLen) - 0.5
+}
+export const checkValidateValueSame = (isEqual, propertyList, { preValues, curValues }) => {
+    return propertyList.every(a => isEqual(preValues[a], curValues[a]))
 }
 export function highlightLine(chart, options, isHighlighted, subtype) {
     if (isHighlighted) {

@@ -79,6 +79,16 @@ async function init() {
         loadingStatus: 'none',
         storageKey: `appState-${uuid}-${chartType}`,
     }
+    window.onInsertImage = (data) => {
+        return new Promise((res, rej) => {
+            google.script.run
+                .withSuccessHandler(function (rlt) {
+                    res(rlt)
+                })
+                .insertImageToCurrentTab(data);
+        });
+    }
+
 }
 
 const fetchDataRange = async (range) => {

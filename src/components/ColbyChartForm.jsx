@@ -17,7 +17,7 @@ const FormPropertyValues = ["annotationTemp", "general", "xAxis", "yAxis", "styl
 
 const ColbyChartForm = () => {
 
-    const { state: { forms, data, annotationSelected }, dispatch, onDownloadChart, onClearCache } = useChartContext()
+    const { state: { forms, data, annotationSelected }, dispatch, onDownloadChart, onInsertImage, onClearCache } = useChartContext()
 
     const methods = useForm({ defaultValues: forms })
 
@@ -141,6 +141,7 @@ const ColbyChartForm = () => {
                 </Tabs>
                 <div className="w-full flex justify-between mt-10">
                     <Button color="blue" onClick={handleClearCache}>Reset Form</Button>
+                    <Button color="success" onClick={onInsertImage}>Insert Image</Button>
                     <Button color="success" onClick={onDownloadChart}>Download Chart</Button>
                 </div>
 

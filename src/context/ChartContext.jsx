@@ -1152,6 +1152,10 @@ export const ChartProvider = ({ children }) => {
             document.body.removeChild(downloadLink);
         }
     }
+    const onInsertImage = () => {
+        console.log('[onInsertImage]')
+
+    }
     const onClearCache = () => {
         localStorage.removeItem(storageKey)
         // console.log('[initialState.forms]', initialState.forms)
@@ -1173,7 +1177,7 @@ export const ChartProvider = ({ children }) => {
     }, [state, storageKey]);
 
     return (
-        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart, onClearCache, onAddAnnotation }}>
+        <ChartContext.Provider value={{ state, dispatch, chartRef, onDownloadChart, onInsertImage, onClearCache, onAddAnnotation }}>
             {children}
         </ChartContext.Provider>
     );

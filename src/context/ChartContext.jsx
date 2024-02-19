@@ -1152,8 +1152,15 @@ export const ChartProvider = ({ children }) => {
             document.body.removeChild(downloadLink);
         }
     }
-    const onInsertImage = () => {
-        console.log('[onInsertImage]')
+    const onInsertImage = async () => {
+        try {
+            const canvas = chartRef.current.canvas;
+            const dataURL = canvas.toDataURL('image/jpeg');
+            const result = await window.onInsertImage(dataURL)
+            console.log('[onInsertImage] - success', result)
+        } catch (error) {
+            console.log('[onInsertImage] - failed')
+        }
 
     }
     const onClearCache = () => {

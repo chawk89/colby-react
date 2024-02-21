@@ -1139,12 +1139,19 @@ export const ChartProvider = ({ children }) => {
 
         if (canvas) {
             console.log('chartRef.current', canvas)
+            const newCanvas = canvas.cloneNode(true);
+            const ctx = newCanvas.getContext('2d');
+            ctx.fillStyle = "#FFF";
+            ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+            ctx.drawImage(canvas, 0, 0);
+            // return newCanvas.toDataURL("image/jpeg");
+
             // Convert canvas to data URL
-            const dataURL = canvas.toDataURL('image/png');
+            const dataURL = newCanvas.toDataURL('image/png');
             // Create a link element
             const downloadLink = document.createElement('a');
             downloadLink.href = dataURL;
-            downloadLink.download = 'canvas_image.jpg';
+            downloadLink.download = 'canvas_image.png';
 
             // Trigger a click event on the link to initiate download
             document.body.appendChild(downloadLink);
@@ -1155,9 +1162,16 @@ export const ChartProvider = ({ children }) => {
     const onInsertImage = async () => {
         try {
             const canvas = chartRef.current.canvas;
-            const dataURL = canvas.toDataURL('image/jpeg');
-            const result = await window.onInsertImage(dataURL)
-            console.log('[onInsertImage] - success', result)
+            const newCanvas = canvas.cloneNode(true);
+            const ctx = newCanvas.getContext('2d');
+            ctx.fillStyle = "#FFF";
+            ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+            ctx.drawImage(canvas, 0, 0);
+            const dataURL = newCanvas.toDataURL('image/jpeg');
+            if (window.onInsertImage) {
+                const result = await window.onInsertImage(dataURL)
+                console.log('[onInsertImage] - success newCanvas', result)
+            }
         } catch (error) {
             console.log('[onInsertImage] - failed')
         }

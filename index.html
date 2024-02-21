@@ -25,6 +25,7 @@
 
       return result
     }
+
     async function fetchData() {
       return new Promise(res => setTimeout(res, 3000))
     }
@@ -132,6 +133,7 @@
         rawDatasets,
         loadingStatus: 'loaded'
       }
+
     }
     async function init() {
       const testKey = await (() => { console.log('init'); return 'test-key' })();
@@ -141,6 +143,12 @@
         storageKey: `appState-${testKey}`,
         loadingStatus: 'none',
         fetchDataRange
+      }
+      window.onInsertImage = function (data) {
+        console.log('[onInsertImage] window', data)
+        const test = data
+        return true;
+
       }
     }
     init();

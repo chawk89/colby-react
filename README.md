@@ -8,8 +8,12 @@ This project provides a set of functions and utilities to generate the effective
 
 ## Getting Started
 
-`npm run dev`  development mode
-`npm run build` production mode
+### Development mode
+`npm run dev` 
+
+### Production mode
+`npm run build` 
+
 It will update the following packages.
 https://raw.githack.com/aimardev/colby-react/dev/dist/assets/index.js
 https://raw.githack.com/aimardev/colby-react/dev/dist/assets/index.css

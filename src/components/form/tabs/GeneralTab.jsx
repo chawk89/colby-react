@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Checkbox, Label, Select, ToggleSwitch } from 'flowbite-react';
+import { Checkbox, Label, Select, TextInput, ToggleSwitch } from 'flowbite-react';
 import { Controller, useFormContext } from "react-hook-form"
 
 import ColbyTextInput from '../elements/ColbyTextInput';
@@ -40,6 +40,22 @@ const GeneralTab = ({ keyLabels }) => {
             </div>
             <div className="col-span-1">
                 <div className="flex items-center">
+                    <Label className="inline mr-2" htmlFor="titleFont" value="Title Font:" />
+                    <TextInput id="titleFont" type="text" placeholder="" control={control} name='general.titleFont' />
+                </div>
+            </div>
+            <div className="col-span-1">
+                <div className="flex items-center">
+                    <Label className="inline mr-2 shrink-0" htmlFor="title-style" value="Title Style:" />
+                    <Select id="title-style" {...register('general.titleStyle')}>
+                        <option value='normal'>Normal</option>
+                        <option value='bold'>Bold</option>
+                        <option value='italic'>Italic</option>
+                    </Select>
+                </div>
+            </div>
+            <div className="col-span-1">
+                <div className="flex items-center">
                     <Label className="inline mr-2" htmlFor="generalXAxisSelect" value="X-Axis Dataset:" />
                     <Select id="generalXAxisSelect" {...register('general.xAxis')}>
                         {keyLabels.map(({ key, label }) => <option key={key} value={key}>{label}</option>)}
@@ -67,7 +83,7 @@ const GeneralTab = ({ keyLabels }) => {
                     />
                 </div>
             </div>
-            <div className="col-span-2">
+            <div className="col-span-1">
                 <div className="flex items-center">
                     <Controller
                         name="general.switchRowColumn"
@@ -76,6 +92,18 @@ const GeneralTab = ({ keyLabels }) => {
                             return <ToggleSwitch label="Switch rows and columns" checked={value} onChange={onChange} />
                         }}
                     />
+                </div>
+            </div>
+
+            <div className="col-span-1">
+                <div className="flex items-center">
+                    <Label className="inline mr-2 shrink-0" htmlFor="legend-pos" value="Legend Position:" />
+                    <Select id="legend-pos" {...register('general.legendPos')}>
+                        <option value='right'>Right</option>
+                        <option value='bottom'>Bottom</option>
+                        <option value='left'>Left</option>                        
+                        <option value='top'>Top</option>                        
+                    </Select>
                 </div>
             </div>
             <div className="col-span-1">
@@ -100,7 +128,7 @@ const GeneralTab = ({ keyLabels }) => {
                     />
                 </div>
             </div>
-            <div className="col-span-3">
+            <div className="col-span-1">
                 <div className="flex items-center">
                     <Label className="inline mr-2" htmlFor="dataRange" value="Data Range:" />
                     <ColbyTextInput
@@ -110,6 +138,7 @@ const GeneralTab = ({ keyLabels }) => {
                     />
                 </div>
             </div>
+            
         </div>
     );
 }

@@ -12,8 +12,11 @@ import AnnotationTab from './form/tabs/AnnotationTab';
 import ColbyTextInput from './form/elements/ColbyTextInput';
 import GeneralTab from './form/tabs/GeneralTab';
 import PropertiesTab from './form/tabs/PropertiesTab';
+import BackgroundTab from './form/tabs/BackgroundTab';
+import XAxisTab from './form/tabs/XAxisTab';
+import YAxisTab from './form/tabs/YAxisTab';
 
-const FormPropertyValues = ["annotationTemp", "general", "xAxis", "yAxis", "styles", "axes"]
+const FormPropertyValues = ["annotationTemp", "general", "xAxis", "yAxis", "global", "axes"]
 
 const ColbyChartForm = () => {
 
@@ -53,50 +56,12 @@ const ColbyChartForm = () => {
                     {/* general tab end */}
                     {/* X Axis tab start */}
                     <Tabs.Item title="X-Axis" icon={MdDashboard}>
-                        <div className="w-full min-h-32 grid grid-cols-2 gap-4">
-                            <div className="col-span-1">
-                                <div className="flex items-center">
-                                    <Label className="inline mr-2" htmlFor="xMin" value="X-Min:" />
-                                    <ColbyTextInput id="xMin" type="number" placeholder="xMin" control={control} name='xAxis.min' />
-                                </div>
-                            </div>
-                            <div className="col-span-1">
-                                <div className="flex items-center">
-                                    <Label className="inline mr-2" htmlFor="xMax" value="X-Max:" />
-                                    <ColbyTextInput id="xMax" type="number" placeholder="xMax" control={control} name='xAxis.max' />
-                                </div>
-                            </div>
-                            <div className="col-span-2">
-                                <div className="flex items-center">
-                                    <Label className="inline mr-2" htmlFor="xLabel" value="Label:" />
-                                    <ColbyTextInput id="xLabel" type="text" placeholder="Default X Axis" control={control} name='xAxis.label' />
-                                </div>
-                            </div>
-                        </div>
+                        <XAxisTab />
                     </Tabs.Item>
                     {/* X Axis tab end */}
                     {/* Y Axis tab start */}
                     <Tabs.Item title="Y-Axis" icon={HiAdjustments}>
-                        <div className="w-full min-h-32 grid grid-cols-2 gap-4">
-                            <div className="col-span-1">
-                                <div className="flex items-center">
-                                    <Label className="inline mr-2" htmlFor="yMin" value="Y-Min:" />
-                                    <ColbyTextInput id="yMin" type="number" placeholder="yMin" control={control} name='yAxis.min' />
-                                </div>
-                            </div>
-                            <div className="col-span-1">
-                                <div className="flex items-center">
-                                    <Label className="inline mr-2" htmlFor="yMax" value="Y-Max:" />
-                                    <ColbyTextInput id="yMax" type="number" placeholder="yMax" control={control} name='yAxis.max' />
-                                </div>
-                            </div>
-                            <div className="col-span-2">
-                                <div className="flex items-center">
-                                    <Label className="inline mr-2" htmlFor="yLabel" value="Label:" />
-                                    <ColbyTextInput id="yLabel" type="text" placeholder="Default Y Axis" control={control} name='yAxis.label' />
-                                </div>
-                            </div>
-                        </div>
+                        <YAxisTab />
                     </Tabs.Item>
                     {/* Y Axis tab end */}
                     {/* Annotations tab start */}
@@ -105,35 +70,8 @@ const ColbyChartForm = () => {
                     </Tabs.Item>
                     {/* Annotations tab end */}
                     {/* Style tab start */}
-                    <Tabs.Item title="Style" icon={HiAdjustments}>
-                        <div className="w-full min-h-32">
-                            <div className="w-full grid grid-cols-3 gap-4">
-                                <div className="col-span-1">
-                                    <div className="flex items-center">
-                                        <Label className="inline mr-2" htmlFor="style-titlefont" value="Title Font:" />
-                                        <TextInput id="style-titlefont" type="text" placeholder="Lora" {...register('styles.fontName')} />
-                                    </div>
-                                </div>
-                                <div className="col-span-1">
-                                    <div className="flex items-center h-full">
-                                        <Label className="inline mr-2" htmlFor="style-color" value="Title Color:" />
-                                        <Controller
-                                            name="styles.fontColor"
-                                            control={control}
-                                            render={({ field: { value, onChange } }) => {
-                                                return <PopoverPicker color={value} onChange={onChange} />;
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="col-span-1">
-                                    <div className="flex items-center">
-                                        <Label className="inline mr-2" htmlFor="style-fontsize" value="Font Size:" />
-                                        <TextInput id="style-fontsize" type="text" placeholder="18" {...register('styles.fontSize')} />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <Tabs.Item title="Global" icon={HiAdjustments}>
+                        <BackgroundTab />
                     </Tabs.Item>
                     <Tabs.Item title="Properties" icon={HiClipboardList} >
                         {annotationSelected && <PropertiesTab />}

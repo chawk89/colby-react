@@ -99,15 +99,6 @@ const LabelAnnotation = () => {
                             <TextInput id="annotation-label-fontSize" type="number" placeholder="10" {...register('annotationTemp.label.fontSize')} />
                         </div>
                     </div>
-                    {/* <div className="col-span-1">
-                        <div className="flex items-center">
-                            <Label className="inline mr-2" htmlFor="annotation-label-anchor" value="Anchor:" />
-                            <Select id="annotation-label-anchor" {...register('annotationTemp.label.anchor')}>
-                                <option value={1}>true</option>
-                                <option value={0}>false</option>
-                            </Select>
-                        </div>
-                    </div> */}
                     <div className="col-span-1">
                         <div className="flex items-center">
                             <Button onClick={handleAddClick}> Add </Button>

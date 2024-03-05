@@ -71,10 +71,11 @@ const initialState = {
             yMin: "",
             yMax: ""
         },
-        styles: {
+        global: {
             fontName: "Lora",
             fontSize: "18",
-            fontColor: "#3e1818"
+            titleColor: "#3e1818",
+            backColor: "#3e1818",
         },
         axes: {
             keyLabels: [],
@@ -269,14 +270,14 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
 }
 
 
-const updateGlobalStyles = (oldOptions, styles) => {
+const updateGlobalStyles = (oldOptions, global) => {
     const newOptions = { ...oldOptions }
     // styles
     // newOptions.plugins.title.text = title
 
-    const { fontName, fontSize, fontColor } = styles
+    const { fontName, fontSize, titleColor, bgColor } = global
     const font = {}
-    newOptions.plugins.title.color = fontColor
+    newOptions.plugins.title.color = titleColor
     if (fontName) {
         font.family = fontName
     }
@@ -284,6 +285,12 @@ const updateGlobalStyles = (oldOptions, styles) => {
         font.size = +fontSize
     }
     newOptions.plugins.title.font = font
+    newOptions.plugins.colbyDraggerPlugin = {
+        bgcolor: bgColor
+    }
+    console.log('[newOptions]', newOptions)
+
+    // colbyDraggerPlugin.bgcolor = bgColor
     return newOptions
 }
 const getLineAnnotation = (line, state) => {
@@ -660,7 +667,7 @@ const updateAnnotation = (oldOptions, param, global, state) => {
 }
 const updateChartOptions = (oldOptions, forms, state) => {
     // chart title
-    const { annotationTemp, general, xAxis, yAxis, styles } = forms
+    const { annotationTemp, general, xAxis, yAxis, global } = forms
 
     // general options
     let newOptions = generalOptionUpdate(oldOptions, general)
@@ -671,7 +678,7 @@ const updateChartOptions = (oldOptions, forms, state) => {
     newOptions = updateAnnotation(newOptions, annotationTemp, forms, state)
 
     // updateGlobalStyles
-    newOptions = updateGlobalStyles(newOptions, styles)
+    newOptions = updateGlobalStyles(newOptions, global)
 
     // console.log('[newOptions]', newOptions)
 
@@ -1139,12 +1146,7 @@ export const ChartProvider = ({ children }) => {
 
         if (canvas) {
             console.log('chartRef.current', canvas)
-            const newCanvas = canvas.cloneNode(true);
-            const ctx = newCanvas.getContext('2d');
-            ctx.fillStyle = "#FFF";
-            ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
-            ctx.drawImage(canvas, 0, 0);
-            // return newCanvas.toDataURL("image/jpeg");
+            const newCanvas = canvas            
 
             // Convert canvas to data URL
             const dataURL = newCanvas.toDataURL('image/png');
@@ -1161,12 +1163,7 @@ export const ChartProvider = ({ children }) => {
     }
     const onInsertImage = async () => {
         try {
-            const canvas = chartRef.current.canvas;
-            const newCanvas = canvas.cloneNode(true);
-            const ctx = newCanvas.getContext('2d');
-            ctx.fillStyle = "#FFF";
-            ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
-            ctx.drawImage(canvas, 0, 0);
+            const newCanvas = chartRef.current.canvas;            
             const dataURL = newCanvas.toDataURL('image/jpeg');
             if (window.onInsertImage) {
                 const result = await window.onInsertImage(dataURL)

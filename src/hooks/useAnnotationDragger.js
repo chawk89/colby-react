@@ -169,7 +169,7 @@ function showColbyMenu(x, y) {
 }
 export function hideColbyMenu() {
     const menu = document.querySelector('.colby-menu');
-    if(menu) menu.style.display = 'none';
+    if (menu) menu.style.display = 'none';
 }
 function handleMouseDown(e) {
     if (e.target.closest('.colby-menu') === null) {
@@ -279,6 +279,14 @@ const useAnnotationDragger = (dispatch, state) => {
             // Add event listener to the canvas element
             chart.canvas.addEventListener('contextmenu', e => handlContextMenu(e, chart));
             chart.canvas.addEventListener('mousedown', handleMouseDown);
+        },
+        beforeDraw: (chart, args, options) => {
+            const { ctx } = chart;
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-over';
+            ctx.fillStyle = options.bgcolor || '#99ffff';
+            ctx.fillRect(0, 0, chart.width, chart.height);
+            ctx.restore();
         }
     })
 }

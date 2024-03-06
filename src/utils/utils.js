@@ -189,3 +189,63 @@ export const getFontStyle = (font, style) => {
     }
     return font;
 }
+export const getGradientColor = ({ chart, color, opacity }) => {
+    const { ctx, chartArea } = chart;
+    if (!chartArea) {
+        // This case happens on initial chart load
+        return color;
+    }
+    const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+    // Create the gradient because this is either the first render
+    // or the size of the chart has changed
+    gradient.addColorStop(0, colorToRGBA(color, +opacity));
+    gradient.addColorStop(0.1, colorToRGBA(color, +opacity * 0.5));
+    gradient.addColorStop(0.7, colorToRGBA(color, 0));
+    return gradient;
+}
+export function colorToRGBA(color, opacity) {
+    if (color[0] == '#') {
+        return hexToRGBA(color, opacity);
+    }
+    if (color.startsWith('rgba')) {
+        return rgbaToRGBA(color, opacity);
+    }
+    if (color.startsWith('rgb')) {
+        return rgbToRGBA(color, opacity);
+    }
+    return color
+
+}
+export function hexToRGBA(hex, opacity) {
+    var bigint = parseInt(hex.slice(1), 16);
+    var r = (bigint >> 16) & 255;
+    var g = (bigint >> 8) & 255;
+    var b = bigint & 255;
+    return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + opacity + ')';
+}
+export function rgbToRGBA(rgb, opacity) {
+    var match = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    if (!match) {
+        throw new Error('Invalid RGB color format');
+    }
+    var r = parseInt(match[1], 10);
+    var g = parseInt(match[2], 10);
+    var b = parseInt(match[3], 10);
+    return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + opacity + ')';
+}
+
+export function rgbaToRGBA(color, opacity) {
+    // Remove 'rgba(' and ')' from the color string
+    const colorValues = color.substring(5, color.length - 1);
+
+    // Split the color values into an array
+    const valuesArray = colorValues.split(',');
+
+    // Extract the individual color values
+    const red = parseInt(valuesArray[0].trim(), 10);
+    const green = parseInt(valuesArray[1].trim(), 10);
+    const blue = parseInt(valuesArray[2].trim(), 10);
+
+    // Create and return the RGBA object
+    return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
+}

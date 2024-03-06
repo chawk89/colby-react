@@ -1,7 +1,7 @@
 // ChartContext.js
 import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { md5 } from 'js-md5';
-import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets, generateAnnotationId, getFontStyle } from '../utils/utils';
+import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets, generateAnnotationId, getFontStyle, colorToRGBA, getGradientColor } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_CURVE, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
 // Initial state
 const initState = {
@@ -66,7 +66,7 @@ const initState = {
             fontSize: "18",
             titleColor: "#3e1818",
             backColor: "#ffffff",
-            titleStyle: "italic-bold",            
+            titleStyle: "italic-bold",
             legendPosition: "top"
         },
         xAxis: {
@@ -239,7 +239,7 @@ export const CREATE_ANNOTATION_ITEM_BY_CONTEXTMENU = 'CREATE_ANNOTATION_ITEM_BY_
 export const DEFAULT_COLORS = ['rgba(255, 99, 132, 0.5)', 'rgba(53, 162, 235, 0.5)']
 
 
-const globalOptionUpdate = (oldOptions, global) => {
+const updateGlobalOption = (oldOptions, global) => {
     const newOptions = { ...oldOptions }
     const {
         title,
@@ -283,7 +283,7 @@ const globalOptionUpdate = (oldOptions, global) => {
         bgcolor: bgColor
     }
 
-    if(legendPosition) {
+    if (legendPosition) {
         newOptions.plugins.legend.position = legendPosition
     }
 
@@ -318,10 +318,8 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
 const updateDatasetsStyles = (oldOptions, datasets) => {
     const newOptions = { ...oldOptions }
     // styles
-    // newOptions.plugins.title.text = title
-
-
     console.log('[newOptions]', newOptions)
+    // datasets
 
     // colbyDraggerPlugin.bgcolor = bgColor
     return newOptions
@@ -703,7 +701,7 @@ const updateChartOptions = (oldOptions, forms, state) => {
     const { annotationTemp, global, xAxis, yAxis, datasets } = forms
 
     // global options
-    let newOptions = globalOptionUpdate(oldOptions, global)
+    let newOptions = updateGlobalOption(oldOptions, global)
     // axis options
     newOptions = updateAxisRangeValue(newOptions, { xAxis, yAxis })
 
@@ -1105,7 +1103,22 @@ const updateChartDatasets = (state) => {
     const createDatasets = window?.ColbyChartInfo?.createDatasets
     if (!createDatasets || !xAxisLabel) return;
     const result = createDatasets(data);
+    const datasets = state.forms.datasets
     if (result) {
+        result.datasets = result.datasets.map(d => {
+            const { key } = d
+            const { color, gradient, opacity } = datasets[key]
+            const borderColor = colorToRGBA(color, +opacity)
+
+            return {
+                ...d,
+                borderColor,
+                backgroundColor: ({chart}) => {                    
+                    return (gradient == 'yes') ? getGradientColor({chart, color, opacity}) : borderColor
+                }
+
+            }
+        })
         state.data = result
         if (!state.options.scales.x.title.text) {
             state.options.scales.x.title.text = xAxisLabel

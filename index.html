@@ -19,7 +19,10 @@
         datasets: datasets.map(({ key, values, label }, index) => ({
           data: values,
           label,
-          backgroundColor: colorArray[index]
+          backgroundColor: colorArray[index],
+          key,
+          id: key
+
         }))
       }
 

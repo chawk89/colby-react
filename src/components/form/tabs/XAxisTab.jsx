@@ -49,7 +49,7 @@ const XAxisTab = () => {
             <div className="col-span-1">
                 <div className="flex items-center">
                     <Label className="inline mr-2" htmlFor="xLabelFont" value="Label Font:" />
-                    <TextInput id="xLabelFont" type="text" placeholder="" control={control} name='xAxis.labelFont' />
+                    <ColbyTextInput id="xLabelFont" type="text" placeholder="" control={control} name='xAxis.labelFont' />
                 </div>
             </div>
             <div className="col-span-2">
@@ -59,6 +59,7 @@ const XAxisTab = () => {
                         <option value='normal'>Normal</option>
                         <option value='bold'>Bold</option>
                         <option value='italic'>Italic</option>
+                        <option value='italic-bold'>Italic Bold</option>
                     </Select>
                 </div>
             </div>

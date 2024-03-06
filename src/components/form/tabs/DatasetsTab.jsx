@@ -38,8 +38,8 @@ const BackgroundTab = () => {
                                 </div>
                             </div>
                             <div className="col-span-1">
-                                <div className="flex items-center h-full">
-                                    <Label className="inline mr-2" htmlFor="style-color" value="Opactity:" />
+                                <div className="flex items-center h-full">                                 
+                                    <Label className="inline mr-2" htmlFor="style-color" value="Opactity:" />                                 
                                     <Controller
                                         name={`datasets.${key}.opacity`}
                                         control={control}

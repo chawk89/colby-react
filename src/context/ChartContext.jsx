@@ -70,8 +70,8 @@ const initState = {
             legendPosition: "top"
         },
         xAxis: {
-            xMin: "",
-            xMax: "",
+            min: "",
+            max: "",
             labelStyle: "normal",
             showGrid: "0",
             labelColor: "#000000",
@@ -79,8 +79,8 @@ const initState = {
             showAxis: "0"
         },
         yAxis: {
-            xMin: "",
-            xMax: "",
+            min: "",
+            max: "",
             labelStyle: "normal",
             showGrid: "0",
             labelColor: "#000000",
@@ -301,15 +301,74 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
     const newOptions = { ...oldOptions }
 
 
-    newOptions.scales.x.min = validateMinMaxValue(xAxis.min) ? xAxis.min : undefined;
-    newOptions.scales.x.max = validateMinMaxValue(xAxis.max) ? xAxis.max : undefined;
-    newOptions.scales.x.title.text = xAxis.label ?? "";
 
 
-    newOptions.scales.y.min = validateMinMaxValue(yAxis.min) ? yAxis.min : undefined
-    newOptions.scales.y.max = validateMinMaxValue(yAxis.max) ? yAxis.max : undefined;
-    newOptions.scales.y.title.text = yAxis.label ?? "";
+    // xAxis Value
+    {
+        const {     
+            showGrid,
+            showAxis,
+            labelStyle,
+            labelColor,
+            labelSize,
+            labelFont,
+            min,
+            max,
+            label,
+        } = xAxis
+        
+        newOptions.scales.x.min = validateMinMaxValue(min) ? min : undefined;
+        newOptions.scales.x.max = validateMinMaxValue(max) ? max : undefined;
+        newOptions.scales.x.title.text = label ?? "";
+        
+        
+        let xAxisFont = {}
+        newOptions.plugins.title.color = labelColor
+        if (labelFont) {
+            xAxisFont.family = labelFont
+        }
+        if (labelSize) {
+            xAxisFont.size = +labelSize
+        }
+        if (labelStyle) {
+            xAxisFont = getFontStyle(xAxisFont, labelStyle)
 
+        }
+        newOptions.scales.x.title.font = xAxisFont
+    }
+    // yAxis Value
+    {
+        const {
+            showGrid,
+            showAxis,
+            labelStyle,
+            labelColor,
+            labelSize,
+            labelFont,
+            min,
+            max,
+            label,
+        } = yAxis
+        
+        newOptions.scales.y.min = validateMinMaxValue(min) ? min : undefined;
+        newOptions.scales.y.max = validateMinMaxValue(max) ? max : undefined;
+        newOptions.scales.y.title.text = label ?? "";
+        
+        
+        let yAxisFont = {}
+        newOptions.plugins.title.color = labelColor
+        if (labelFont) {
+            yAxisFont.family = labelFont
+        }
+        if (labelSize) {
+            yAxisFont.size = +labelSize
+        }
+        if (labelStyle) {
+            yAxisFont = getFontStyle(yAxisFont, labelStyle)
+
+        }
+        newOptions.scales.y.title.font = yAxisFont
+    }
 
     return newOptions
 }
@@ -1033,13 +1092,13 @@ const initializeState = ({ state, info }) => {
     const keyLabels = chartData.header.map(h => ({ key: md5.base64(h), label: h }))
     const datasets = getChartDataObj(keyLabels, chartData.cols)
     const yAxis = keyLabels.reduce((prev, current) => ({ ...prev, [current.key]: true }), {});
-
-    const globalDatasets = keyLabels.reduce((obj, keyLabel, index) => {
-        obj[keyLabel.key] = {
+    const formDatasets = state.forms.datasets
+    const globalDatasets = keyLabels.reduce((obj, keyLabel, index) => {        
+        obj[keyLabel.key] = formDatasets[keyLabel.key] || {
             barPadding: "",
             color: DEFAULT_COLORS[index % DEFAULT_COLORS.length],
             gradient: "no",
-            opacity: 1
+            opacity: 0.5
         };
         return obj;
     }, {});
@@ -1113,8 +1172,8 @@ const updateChartDatasets = (state) => {
             return {
                 ...d,
                 borderColor,
-                backgroundColor: ({chart}) => {                    
-                    return (gradient == 'yes') ? getGradientColor({chart, color, opacity}) : borderColor
+                backgroundColor: ({ chart }) => {
+                    return (gradient == 'yes') ? getGradientColor({ chart, color, opacity }) : borderColor
                 }
 
             }

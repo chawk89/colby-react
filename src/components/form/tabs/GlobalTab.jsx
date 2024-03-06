@@ -28,7 +28,7 @@ const GlobalTab = ({ keyLabels }) => {
 
     return (
         <div className="w-full">
-              <Card className="w-full mt-2">
+            <Card className="w-full mt-2">
                 <h3 className="w-full text-xl font-bold mb-2">
                     Main
                 </h3>
@@ -205,7 +205,7 @@ const GlobalTab = ({ keyLabels }) => {
 
                 </div>
             </Card>
-          
+
         </div>
     );
 }

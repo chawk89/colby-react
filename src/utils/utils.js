@@ -93,7 +93,7 @@ export const getXValueForMultiDataset = (datasetIndex, dataIndex, {
         return +dataIndex;
     }
     const lblLen = datasets.length
- 
+
     return +dataIndex + (datasetIndex * 2 + 1) / (2 * lblLen) - 0.5
 }
 export const checkValidateValueSame = (isEqual, propertyList, { preValues, curValues }) => {
@@ -156,3 +156,36 @@ export const calMaxValueInDatasets = (datasets) => {
     return Math.max(...datasets.map((dataset) => Math.max(...dataset.data)))
 }
 export const generateAnnotationId = (type) => `${type}-${getNewId()}`
+export const getFontStyle = (font, style) => {
+    switch (style) {
+        case 'normal': {
+            return {
+                ...font,
+                style: 'normal',
+                weight: 'normal'
+            }
+        }
+        case 'bold': {
+            return {
+                ...font,
+                style: 'normal',
+                weight: 'bold'
+            }
+        }
+        case 'italic': {
+            return {
+                ...font,
+                style: 'italic',
+                weight: 'normal'
+            }
+        }
+        case 'italic-bold': {
+            return {
+                ...font,
+                style: 'italic',
+                weight: 'bold'
+            }
+        }
+    }
+    return font;
+}

@@ -1,7 +1,7 @@
 // ChartContext.js
 import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { md5 } from 'js-md5';
-import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets, generateAnnotationId } from '../utils/utils';
+import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets, generateAnnotationId, getFontStyle } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_CURVE, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
 // Initial state
 const initState = {
@@ -66,6 +66,8 @@ const initState = {
             fontSize: "18",
             titleColor: "#3e1818",
             backColor: "#ffffff",
+            titleStyle: "italic-bold",            
+            legendPosition: "top"
         },
         xAxis: {
             xMin: "",
@@ -85,9 +87,7 @@ const initState = {
             labelSize: "10",
             showAxis: "0"
         },
-        datasets: {            
-            datasets: {}
-        },
+        datasets: {},
         axes: {
             keyLabels: [],
         },
@@ -246,7 +246,13 @@ const globalOptionUpdate = (oldOptions, global) => {
         stacked,
         switchRowColumn,
         showLabels,
-        showLegend
+        showLegend,
+        fontName,
+        fontSize,
+        titleColor,
+        titleStyle,
+        bgColor,
+        legendPosition
     } = global
     // title
     newOptions.plugins.title.text = title
@@ -259,8 +265,8 @@ const globalOptionUpdate = (oldOptions, global) => {
     newOptions.plugins.datalabels.display = showLabels
     // switch RowColumn
     // newOptions.indexAxis = switchRowColumn ? 'y' : 'x'
-    const { fontName, fontSize, titleColor, bgColor } = global
-    const font = {}
+
+    let font = {}
     newOptions.plugins.title.color = titleColor
     if (fontName) {
         font.family = fontName
@@ -268,9 +274,17 @@ const globalOptionUpdate = (oldOptions, global) => {
     if (fontSize) {
         font.size = +fontSize
     }
+    if (titleStyle) {
+        font = getFontStyle(font, titleStyle)
+
+    }
     newOptions.plugins.title.font = font
     newOptions.plugins.colbyDraggerPlugin = {
         bgcolor: bgColor
+    }
+
+    if(legendPosition) {
+        newOptions.plugins.legend.position = legendPosition
     }
 
     return newOptions
@@ -306,7 +320,7 @@ const updateDatasetsStyles = (oldOptions, datasets) => {
     // styles
     // newOptions.plugins.title.text = title
 
-    
+
     console.log('[newOptions]', newOptions)
 
     // colbyDraggerPlugin.bgcolor = bgColor
@@ -1045,10 +1059,7 @@ const initializeState = ({ state, info }) => {
                 keyLabels,
                 datasets
             },
-            datasets: {
-                ...state.forms.datasets,
-                datasets: globalDatasets
-            }
+            datasets: globalDatasets
         },
         chartType
     }

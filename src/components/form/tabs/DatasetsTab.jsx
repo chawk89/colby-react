@@ -11,18 +11,13 @@ import useChartDatasetKeys from '../../../hooks/useChartDatasetKeys';
 const BackgroundTab = () => {
     const { control, register, watch } = useFormContext()
     const xAxis = watch('global.xAxis')
-    const dataRange = watch('dataRange')
-    const { state, dispatch } = useChartContext()
-    const [pastDataRange, setPastDataRange] = useState(dataRange)
+    const { state } = useChartContext()
     const keyLabels = useChartDatasetKeys(state, xAxis)
-    const context = useChartContext()
+
     const { chartType } = state
 
     return (
         <div className="w-full px-8 py-4">
-
-
-
             <div className="w-full flex flex-col gap-2">
                 {keyLabels.map(({ key, label }) =>
                     <Card key={key} className="w-full">
@@ -34,7 +29,7 @@ const BackgroundTab = () => {
                                 <div className="flex items-center h-full">
                                     <Label className="inline mr-2" htmlFor="style-color" value="Color:" />
                                     <Controller
-                                        name={`datasets.datasets.${key}.color`}
+                                        name={`datasets.${key}.color`}
                                         control={control}
                                         render={({ field: { value, onChange } }) => {
                                             return <PopoverPicker color={value} onChange={onChange} />;
@@ -46,7 +41,7 @@ const BackgroundTab = () => {
                                 <div className="flex items-center h-full">
                                     <Label className="inline mr-2" htmlFor="style-color" value="Opactity:" />
                                     <Controller
-                                        name={`datasets.datasets.${key}.opacity`}
+                                        name={`datasets.${key}.opacity`}
                                         control={control}
                                         render={({ field: { value, onChange } }) => {
                                             return <RangeSlider color={value} onChange={onChange} min="0" max="1" step="0.01" />;
@@ -57,7 +52,7 @@ const BackgroundTab = () => {
                             <div className="col-span-1">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2 shrink-0" htmlFor="label-style" value="Gradient:" />
-                                    <Select id="label-style" {...register(`datasets.datasets.${key}.gradient`)}>
+                                    <Select id="label-style" {...register(`datasets.${key}.gradient`)}>
                                         <option value='yes'>Yes</option>
                                         <option value='no'>No</option>
                                     </Select>
@@ -66,7 +61,7 @@ const BackgroundTab = () => {
                             {/* markertype in non-bar chart case  */}
                             {chartType != 'bar' && <div className="col-span-1 mt-4">
                                 <Label className="inline mr-2" htmlFor="markertype" value="Marker Type:" />
-                                <Select className="w-full" {...register(`datasets.datasets.${key}.markertype`)}>
+                                <Select className="w-full" {...register(`datasets.${key}.markertype`)}>
                                     <option value={'triangle'}>Triangle</option>
                                     <option value={'square'}>Square</option>
                                     <option value={'point'}>Point</option>
@@ -75,7 +70,7 @@ const BackgroundTab = () => {
                             {/* line type in line chart case  */}
                             {chartType == 'line' && <div className="col-span-1 mt-4">
                                 <Label className="inline mr-2" htmlFor="linetype" value="Line Type:" />
-                                <Select className="w-full" {...register(`datasets.datasets.${key}.linetype`)}>
+                                <Select className="w-full" {...register(`datasets.${key}.linetype`)}>
                                     <option value={'dashed'}>Dashed</option>
                                     <option value={'solid'}>Solid</option>
                                     <option value={'dotted'}>Dotted</option>
@@ -85,7 +80,7 @@ const BackgroundTab = () => {
                             {chartType == 'bar' && <div className="col-span-1 mt-4">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="bar-padding" value="Padding:" />
-                                    <TextInput id="bar-padding" type="text" placeholder="0" {...register(`datasets.datasets.${key}.barpadding`)} />
+                                    <TextInput id="bar-padding" type="text" placeholder="0" {...register(`datasets.${key}.barpadding`)} />
                                 </div>
                             </div>}
                         </div>

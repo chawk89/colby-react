@@ -9,10 +9,9 @@ import { PopoverPicker } from './common/PopoverPicker'
 import { UDPATE_FORM } from '../context/ChartContext';
 import useFormValue from '../hooks/useFormValue';
 import AnnotationTab from './form/tabs/AnnotationTab';
-import ColbyTextInput from './form/elements/ColbyTextInput';
 import GlobalTab from './form/tabs/GlobalTab';
 import PropertiesTab from './form/tabs/PropertiesTab';
-import BackgroundTab from './form/tabs/BackgroundTab';
+import DatasetsTab from './form/tabs/DatasetsTab';
 import XAxisTab from './form/tabs/XAxisTab';
 import YAxisTab from './form/tabs/YAxisTab';
 
@@ -50,7 +49,7 @@ const ColbyChartForm = () => {
             <form onSubmit={methods.handleSubmit(onSubmit)} className='w-full'>
                 <Tabs style="fullWidth" className='w-full'>
                     {/* global tab start */}
-                    <Tabs.Item title="Global" icon={MdDashboard}>
+                    <Tabs.Item title="Global" active icon={MdDashboard}>
                         <GlobalTab keyLabels={keyLabels} />
                     </Tabs.Item>
                     {/* global tab end */}
@@ -64,18 +63,18 @@ const ColbyChartForm = () => {
                         <YAxisTab />
                     </Tabs.Item>
                     {/* Y Axis tab end */}
+                    {/* Style tab start */}
+                    <Tabs.Item title="Datasets" icon={HiAdjustments}>
+                        <DatasetsTab />
+                    </Tabs.Item>
                     {/* Annotations tab start */}
-                    <Tabs.Item active title="Annotations" icon={HiClipboardList}>
+                    <Tabs.Item  title="Annotations" icon={HiClipboardList}>
+                        {annotationSelected && <PropertiesTab />}
                         <AnnotationTab />
                     </Tabs.Item>
                     {/* Annotations tab end */}
-                    {/* Style tab start */}
-                    <Tabs.Item title="Datasets" icon={HiAdjustments}>
-                        <BackgroundTab />
-                    </Tabs.Item>
-                    <Tabs.Item title="Properties" icon={HiClipboardList} >
-                        {annotationSelected && <PropertiesTab />}
-                    </Tabs.Item>
+                    {/* <Tabs.Item title="Properties" icon={HiClipboardList} >
+                    </Tabs.Item> */}
                 </Tabs>
                 <div className="w-full flex justify-between mt-10">
                     <Button color="blue" onClick={handleClearCache}>Reset Form</Button>

@@ -28,6 +28,64 @@ const GlobalTab = ({ keyLabels }) => {
 
     return (
         <div className="w-full">
+              <Card className="w-full mt-2">
+                <h3 className="w-full text-xl font-bold mb-2">
+                    Main
+                </h3>
+                <div className="w-full grid grid-cols-3 gap-4 px-8">
+                    <div className="col-span-1">
+                        <div className="flex items-center h-full">
+                            <Label className="inline mr-2" htmlFor="style-color" value="Background Color:" />
+                            <Controller
+                                name="global.bgColor"
+                                control={control}
+                                render={({ field: { value, onChange } }) => {
+                                    return <PopoverPicker color={value} onChange={onChange} />;
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="col-span-1">
+                        <div className="flex items-center">
+                            <Controller
+                                name="global.stacked"
+                                control={control}
+                                render={({ field: { value, onChange } }) => {
+                                    return <ToggleSwitch label="Stacked" checked={value} onChange={onChange} />
+                                }}
+                            />
+                        </div>
+                    </div>
+                    <div className="col-span-1">
+                        <div className="flex items-center">
+                            <Controller
+                                name="global.switchRowColumn"
+                                control={control}
+                                render={({ field: { value, onChange } }) => {
+                                    return <ToggleSwitch label="Switch rows and columns" checked={value} onChange={onChange} />
+                                }}
+                            />
+                        </div>
+                    </div>
+
+
+                    <div className="col-span-1">
+                        <div className="flex items-center">
+                            <Controller
+                                name="global.showLabels"
+                                control={control}
+                                render={({ field: { value, onChange } }) => {
+                                    return <ToggleSwitch label="Show Labels" checked={value} onChange={onChange} />
+                                }}
+                            />
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </Card>
             <Card className="w-full">
                 <h3 className="w-full text-xl font-bold mb-2">
                     Title
@@ -57,6 +115,7 @@ const GlobalTab = ({ keyLabels }) => {
                                 <option value='normal'>Normal</option>
                                 <option value='bold'>Bold</option>
                                 <option value='italic'>Italic</option>
+                                <option value='italic-bold'>Italic-Bold</option>
                             </Select>
                         </div>
                     </div>
@@ -117,65 +176,10 @@ const GlobalTab = ({ keyLabels }) => {
                 </div>
             </Card>
             <Card className="w-full mt-2">
+                <h3 className="w-full text-xl font-bold mb-2">
+                    Legend
+                </h3>
                 <div className="w-full grid grid-cols-3 gap-4 px-8">
-                    <div className="col-span-1">
-                        <div className="flex items-center h-full">
-                            <Label className="inline mr-2" htmlFor="style-color" value="Background Color:" />
-                            <Controller
-                                name="global.bgColor"
-                                control={control}
-                                render={({ field: { value, onChange } }) => {
-                                    return <PopoverPicker color={value} onChange={onChange} />;
-                                }}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="col-span-1">
-                        <div className="flex items-center">
-                            <Controller
-                                name="global.stacked"
-                                control={control}
-                                render={({ field: { value, onChange } }) => {
-                                    return <ToggleSwitch label="Stacked" checked={value} onChange={onChange} />
-                                }}
-                            />
-                        </div>
-                    </div>
-                    <div className="col-span-1">
-                        <div className="flex items-center">
-                            <Controller
-                                name="global.switchRowColumn"
-                                control={control}
-                                render={({ field: { value, onChange } }) => {
-                                    return <ToggleSwitch label="Switch rows and columns" checked={value} onChange={onChange} />
-                                }}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="col-span-1">
-                        <div className="flex items-center">
-                            <Label className="inline mr-2 shrink-0" htmlFor="legend-pos" value="Legend Position:" />
-                            <Select id="legend-pos" {...register('global.legendPos')}>
-                                <option value='right'>Right</option>
-                                <option value='bottom'>Bottom</option>
-                                <option value='left'>Left</option>
-                                <option value='top'>Top</option>
-                            </Select>
-                        </div>
-                    </div>
-                    <div className="col-span-1">
-                        <div className="flex items-center">
-                            <Controller
-                                name="global.showLabels"
-                                control={control}
-                                render={({ field: { value, onChange } }) => {
-                                    return <ToggleSwitch label="Show Labels" checked={value} onChange={onChange} />
-                                }}
-                            />
-                        </div>
-                    </div>
                     <div className="col-span-1">
                         <div className="flex items-center">
                             <Controller
@@ -187,10 +191,21 @@ const GlobalTab = ({ keyLabels }) => {
                             />
                         </div>
                     </div>
-
+                    <div className="col-span-1">
+                        <div className="flex items-center">
+                            <Label className="inline mr-2 shrink-0" htmlFor="legend-pos" value="Legend Position:" />
+                            <Select id="legend-pos" {...register('global.legendPosition')}>
+                                <option value='top'>Top</option>
+                                <option value='right'>Right</option>
+                                <option value='bottom'>Bottom</option>
+                                <option value='left'>Left</option>
+                            </Select>
+                        </div>
+                    </div>
 
                 </div>
             </Card>
+          
         </div>
     );
 }

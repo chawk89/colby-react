@@ -4,7 +4,7 @@ import { md5 } from 'js-md5';
 import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets, generateAnnotationId } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_CURVE, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
 // Initial state
-const initialState = {
+const initState = {
     forms: {
         annotationTemp: {
             line: {
@@ -65,17 +65,28 @@ const initialState = {
         },
         xAxis: {
             xMin: "",
-            xMax: ""
+            xMax: "",
+            labelStyle: "normal",
+            showGrid: "0",
+            labelColor: "#000000",
+            labelSize: "10",
+            showAxis: "0"
         },
         yAxis: {
-            yMin: "",
-            yMax: ""
+            xMin: "",
+            xMax: "",
+            labelStyle: "normal",
+            showGrid: "0",
+            labelColor: "#000000",
+            labelSize: "10",
+            showAxis: "0"
         },
         global: {
             fontName: "Lora",
             fontSize: "18",
             titleColor: "#3e1818",
-            backColor: "#3e1818",
+            backColor: "#ffffff",
+            datasets: {}
         },
         axes: {
             keyLabels: [],
@@ -201,6 +212,12 @@ const initialState = {
                     text: "Default Y-Axis Label",
                 },
             }
+        },
+        layout: {
+            padding: {
+                right: 30,
+                left: 20,
+            }
         }
     },
     eventId: ''
@@ -219,6 +236,7 @@ export const UPDATE_ANNOTATION_ARROW_DATA = 'UPDATE_ANNOTATION_ARROW_DATA';
 export const DELETE_ANNOTATION_ITEM = 'DELETE_ANNOTATION_ITEM';
 export const CREATE_ANNOTATION_ITEM_BY_CONTEXTMENU = 'CREATE_ANNOTATION_ITEM_BY_CONTEXTMENU';
 
+export const DEFAULT_COLORS = ['rgba(255, 99, 132, 0.5)', 'rgba(53, 162, 235, 0.5)']
 
 
 const generalOptionUpdate = (oldOptions, general) => {
@@ -760,7 +778,7 @@ const fetchDataRange = (range) => {
 
 const addNewAnnotationByContextMenu = (data, state) => {
     const { type, subtype, x, y, nearestData } = data
-    const annoInit = initialState.forms.annotationTemp[type]
+    const annoInit = initState.forms.annotationTemp[type]
     const anno = copySimpleObject(annoInit);
     const id = generateAnnotationId(type)
     const { dataIndex, datasetKey } = nearestData
@@ -848,7 +866,7 @@ const reducer = (state, action) => {
                 ...state,
             }
             const annoTemp = newState.forms.annotationTemp[annotationType]
-            const annoInit = initialState.forms.annotationTemp[annotationType]
+            const annoInit = initState.forms.annotationTemp[annotationType]
 
             if (annoTemp.enabled) {
                 const initValue = copySimpleObject(annoInit)
@@ -994,14 +1012,24 @@ const getChartDataObj = (labels, cols) => {
     }
     return result
 }
-const onInitializeState = ({ state, info }) => {
+const initializeState = ({ state, info }) => {
 
     const { chartType, rawDatasets } = info
     const chartData = rawDatasets
 
     const keyLabels = chartData.header.map(h => ({ key: md5.base64(h), label: h }))
     const datasets = getChartDataObj(keyLabels, chartData.cols)
-    const yAxis = keyLabels.reduce((p, c) => ({ ...p, [c.key]: true }), {})
+    const yAxis = keyLabels.reduce((prev, current) => ({ ...prev, [current.key]: true }), {});
+
+    const generalDatasets = keyLabels.reduce((obj, keyLabel, index) => {
+        obj[keyLabel.key] = {
+            barPadding: "",
+            color: DEFAULT_COLORS[index % DEFAULT_COLORS.length],
+            gradient: "no",
+            opacity: 1
+        };
+        return obj;
+    }, {});
 
     return {
         ...state,
@@ -1015,6 +1043,10 @@ const onInitializeState = ({ state, info }) => {
             axes: {
                 keyLabels,
                 datasets
+            },
+            global: {
+                ...state.forms.global,
+                datasets: generalDatasets
             }
         },
         chartType
@@ -1135,7 +1167,7 @@ export const ChartProvider = ({ children }) => {
 
 
     const chartRef = useRef(null);
-    const storedState = onInitializeState({ state: storageValue || initialState, info: ColbyChartInfo });
+    const storedState = initializeState({ state: storageValue || initState, info: ColbyChartInfo });
 
     onAdditionalUpdates(storedState, { chartRef, chartType })
 
@@ -1146,7 +1178,7 @@ export const ChartProvider = ({ children }) => {
 
         if (canvas) {
             console.log('chartRef.current', canvas)
-            const newCanvas = canvas            
+            const newCanvas = canvas
 
             // Convert canvas to data URL
             const dataURL = newCanvas.toDataURL('image/png');
@@ -1163,7 +1195,7 @@ export const ChartProvider = ({ children }) => {
     }
     const onInsertImage = async () => {
         try {
-            const newCanvas = chartRef.current.canvas;            
+            const newCanvas = chartRef.current.canvas;
             const dataURL = newCanvas.toDataURL('image/jpeg');
             if (window.onInsertImage) {
                 const result = await window.onInsertImage(dataURL)

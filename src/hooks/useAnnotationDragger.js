@@ -284,7 +284,7 @@ const useAnnotationDragger = (dispatch, state) => {
             const { ctx } = chart;
             ctx.save();
             ctx.globalCompositeOperation = 'destination-over';
-            ctx.fillStyle = options.bgcolor || '#99ffff';
+            ctx.fillStyle = options.bgcolor || '#ffffff';
             ctx.fillRect(0, 0, chart.width, chart.height);
             ctx.restore();
         }

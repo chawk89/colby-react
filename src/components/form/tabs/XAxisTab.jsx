@@ -31,7 +31,7 @@ const XAxisTab = () => {
             <div className="col-span-1">
                 <div className="flex items-center">
                     <Label className="inline mr-2" htmlFor="xLabelSize" value="Label Size:" />
-                    <TextInput id="xLabelSize" type="text" placeholder="10" control={control} name='xAxis.labelSize' />
+                    <ColbyTextInput id="xLabelSize" type="text" placeholder="10" control={control} name='xAxis.labelSize' />
                 </div>
             </div>
             <div className="col-span-1">
@@ -74,7 +74,7 @@ const XAxisTab = () => {
             <div className="col-span-1">
                 <div className="flex items-center">
                     <Label className="inline mr-2 shrink-0" htmlFor="show-axis-lines" value="Show Axis Lines:" />
-                    <Select id="show-axis-lines" {...register('xAxis.showGrid')}>
+                    <Select id="show-axis-lines" {...register('xAxis.showAxis')}>
                         <option value='1'>Yes</option>
                         <option value='0'>No</option>
                     </Select>

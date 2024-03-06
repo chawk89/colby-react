@@ -92,10 +92,19 @@ const BackgroundTab = () => {
                                         <Controller
                                             name={`global.datasets.${key}.opacity`}
                                             control={control}
-                                            render={({ field: { value, onChange } }) => {                                                
+                                            render={({ field: { value, onChange } }) => {
                                                 return <RangeSlider color={value} onChange={onChange} min="0" max="1" step="0.01" />;
                                             }}
                                         />
+                                    </div>
+                                </div>
+                                <div className="col-span-1">
+                                    <div className="flex items-center">
+                                        <Label className="inline mr-2 shrink-0" htmlFor="label-style" value="Gradient:" />
+                                        <Select id="label-style" {...register(`global.datasets.${key}.gradient`)}>
+                                            <option value='yes'>Yes</option>
+                                            <option value='no'>No</option>
+                                        </Select>
                                     </div>
                                 </div>
                                 {/* markertype in non-bar chart case  */}
@@ -106,7 +115,6 @@ const BackgroundTab = () => {
                                         <option value={'square'}>Square</option>
                                         <option value={'point'}>Point</option>
                                     </Select>
-
                                 </div>}
                                 {/* line type in line chart case  */}
                                 {chartType == 'line' && <div className="col-span-1 mt-4">

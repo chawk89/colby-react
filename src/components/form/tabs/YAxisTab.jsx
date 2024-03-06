@@ -74,7 +74,7 @@ const YAxisTab = () => {
             <div className="col-span-1">
                 <div className="flex items-center">
                     <Label className="inline mr-2 shrink-0" htmlFor="show-axis-lines" value="Show Axis Lines:" />
-                    <Select id="show-axis-lines" {...register('yAxis.showGrid')}>
+                    <Select id="show-axis-lines" {...register('yAxis.showAxis')}>
                         <option value='1'>Yes</option>
                         <option value='0'>No</option>
                     </Select>

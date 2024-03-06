@@ -11,7 +11,7 @@ export const PopoverPicker = ({ color, onChange }) => {
     useClickOutside(popover, close);
 
     return (
-        <div className="picker">
+        <div className="picker z-10">
             <div
                 className="swatch"
                 style={{ backgroundColor: color }}

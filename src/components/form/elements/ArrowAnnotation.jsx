@@ -15,7 +15,7 @@ const ArrowAnnotation = () => {
     const arrowEnabled = watch('annotationTemp.arrow.enabled')
     const [triggerFlag, setTriggerFlag] = useState(false)
 
-    const xAxis = watch('general.xAxis')
+    const xAxis = watch('global.xAxis')
     const startDatasetKey = watch('annotationTemp.arrow.startDatasetKey')
     const endDatasetKey = watch('annotationTemp.arrow.endDatasetKey')
     const lineType = watch('annotationTemp.arrow.lineType')

@@ -76,7 +76,7 @@ export const getDatasetIndexFromKey = (list, key, xAxis) => getDatasetIndexWitho
 
 export const getDatasetIndex = (state, datasetKey) => {
     const datasets = state.forms.axes.datasets
-    const xAxis = state.forms.general.xAxis
+    const xAxis = state.forms.global.xAxis
     const datasetsKeys = Object.keys(datasets)
 
     const dataIndex = getDatasetIndexFromKey(datasetsKeys, datasetKey, xAxis)

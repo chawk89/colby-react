@@ -12,7 +12,7 @@ const LineAnnotation = () => {
     const { control, register, watch, setValue } = useFormContext()
     const lineEnabled = watch('annotationTemp.line.enabled')
     const axis = watch('annotationTemp.line.axis')
-    const xAxis = watch('general.xAxis')
+    const xAxis = watch('global.xAxis')
 
 
     // const dataset = datasetKey? datasets[datasetKey].values: []

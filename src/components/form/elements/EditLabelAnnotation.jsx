@@ -14,7 +14,7 @@ const EditLabelAnnotation = () => {
     const { control, register, watch, setValue } = useFormContext()
     const { state: { annotationSelected } } = useChartContext()
     
-    const xAxis = watch('general.xAxis')
+    const xAxis = watch('global.xAxis')
     const datasetKey = watch('properties.datasetKey')
 
     const keyLabels = useChartDatasetKeys(state, xAxis)

@@ -17,7 +17,7 @@ const LabelAnnotation = () => {
     const labelEnabled = watch('annotationTemp.label.enabled')
     const [triggerFlag, setTriggerFlag] = useState(false)
 
-    const xAxis = watch('general.xAxis')
+    const xAxis = watch('global.xAxis')
     const datasetKey = watch('annotationTemp.label.datasetKey')
     const dataset = useChartDatasets(state, datasetKey)
     const keyLabels = useChartDatasetKeys(state, xAxis)

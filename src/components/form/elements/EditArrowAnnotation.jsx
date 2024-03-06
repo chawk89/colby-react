@@ -21,7 +21,7 @@ const EditArrowAnnotation = () => {
     const { control, register, watch, setValue } = useFormContext()
     const { state: { annotationSelected } } = useChartContext()
 
-    const xAxis = watch('general.xAxis')
+    const xAxis = watch('global.xAxis')
 
     const startDatasetKey = watch('properties.startDatasetKey')
     const endDatasetKey = watch('properties.endDatasetKey')

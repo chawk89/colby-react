@@ -60,7 +60,7 @@ const ColbyChart = () => {
         const xValue = chart.scales.x.getValueForPixel(x);
         const yValue = chart.scales.y.getValueForPixel(y);
         const datasets = forms.axes.datasets
-        const xAxis = forms.general.xAxis
+        const xAxis = forms.global.xAxis
         const nearestData = findNearestDataPoint(chart, x, 'x');
 
         const datasetKeys = getDatasetIndexWithoutXAxis(Object.keys(datasets), xAxis)

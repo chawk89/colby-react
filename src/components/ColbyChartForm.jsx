@@ -10,13 +10,13 @@ import { UDPATE_FORM } from '../context/ChartContext';
 import useFormValue from '../hooks/useFormValue';
 import AnnotationTab from './form/tabs/AnnotationTab';
 import ColbyTextInput from './form/elements/ColbyTextInput';
-import GeneralTab from './form/tabs/GeneralTab';
+import GlobalTab from './form/tabs/GlobalTab';
 import PropertiesTab from './form/tabs/PropertiesTab';
 import BackgroundTab from './form/tabs/BackgroundTab';
 import XAxisTab from './form/tabs/XAxisTab';
 import YAxisTab from './form/tabs/YAxisTab';
 
-const FormPropertyValues = ["annotationTemp", "general", "xAxis", "yAxis", "global", "axes"]
+const FormPropertyValues = ["annotationTemp", "global", "xAxis", "yAxis", "datasets", "axes"]
 
 const ColbyChartForm = () => {
 
@@ -49,11 +49,11 @@ const ColbyChartForm = () => {
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)} className='w-full'>
                 <Tabs style="fullWidth" className='w-full'>
-                    {/* general tab start */}
-                    <Tabs.Item title="General" icon={MdDashboard}>
-                        <GeneralTab keyLabels={keyLabels} />
+                    {/* global tab start */}
+                    <Tabs.Item title="Global" icon={MdDashboard}>
+                        <GlobalTab keyLabels={keyLabels} />
                     </Tabs.Item>
-                    {/* general tab end */}
+                    {/* global tab end */}
                     {/* X Axis tab start */}
                     <Tabs.Item title="X-Axis" icon={MdDashboard}>
                         <XAxisTab />
@@ -70,7 +70,7 @@ const ColbyChartForm = () => {
                     </Tabs.Item>
                     {/* Annotations tab end */}
                     {/* Style tab start */}
-                    <Tabs.Item title="Global" icon={HiAdjustments}>
+                    <Tabs.Item title="Datasets" icon={HiAdjustments}>
                         <BackgroundTab />
                     </Tabs.Item>
                     <Tabs.Item title="Properties" icon={HiClipboardList} >

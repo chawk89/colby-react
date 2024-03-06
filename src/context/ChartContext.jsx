@@ -54,14 +54,18 @@ const initState = {
                 id: 'arrowTemp'
             }
         },
-        general: {
+        global: {
             title: "",
             xAxis: "",
             plotted: false,
             stacked: false,
             switchRowColumn: false,
             showLabels: false,
-            showLegend: false
+            showLegend: false,
+            fontName: "Lora",
+            fontSize: "18",
+            titleColor: "#3e1818",
+            backColor: "#ffffff",
         },
         xAxis: {
             xMin: "",
@@ -81,11 +85,7 @@ const initState = {
             labelSize: "10",
             showAxis: "0"
         },
-        global: {
-            fontName: "Lora",
-            fontSize: "18",
-            titleColor: "#3e1818",
-            backColor: "#ffffff",
+        datasets: {            
             datasets: {}
         },
         axes: {
@@ -116,13 +116,13 @@ const initState = {
             type: "box",
             id: "box-1707320977735"
         },
-        "arrow-1707348807973+general": {
+        "arrow-1707348807973+global": {
             "enabled": true,
             "doubleArrow": "1",
             "label": "asdfasdfasdf",
             "color": "#000000",
             "type": "arrow",
-            "id": "arrow-1707348807973+general",
+            "id": "arrow-1707348807973+global",
             "startDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
             "startDataIndex": "1",
             "endDatasetKey": "FL1pyNrYWyqAVBdtx7c/Jw==",
@@ -239,7 +239,7 @@ export const CREATE_ANNOTATION_ITEM_BY_CONTEXTMENU = 'CREATE_ANNOTATION_ITEM_BY_
 export const DEFAULT_COLORS = ['rgba(255, 99, 132, 0.5)', 'rgba(53, 162, 235, 0.5)']
 
 
-const generalOptionUpdate = (oldOptions, general) => {
+const globalOptionUpdate = (oldOptions, global) => {
     const newOptions = { ...oldOptions }
     const {
         title,
@@ -247,7 +247,7 @@ const generalOptionUpdate = (oldOptions, general) => {
         switchRowColumn,
         showLabels,
         showLegend
-    } = general
+    } = global
     // title
     newOptions.plugins.title.text = title
     // stacked
@@ -259,6 +259,19 @@ const generalOptionUpdate = (oldOptions, general) => {
     newOptions.plugins.datalabels.display = showLabels
     // switch RowColumn
     // newOptions.indexAxis = switchRowColumn ? 'y' : 'x'
+    const { fontName, fontSize, titleColor, bgColor } = global
+    const font = {}
+    newOptions.plugins.title.color = titleColor
+    if (fontName) {
+        font.family = fontName
+    }
+    if (fontSize) {
+        font.size = +fontSize
+    }
+    newOptions.plugins.title.font = font
+    newOptions.plugins.colbyDraggerPlugin = {
+        bgcolor: bgColor
+    }
 
     return newOptions
 }
@@ -288,24 +301,12 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
 }
 
 
-const updateGlobalStyles = (oldOptions, global) => {
+const updateDatasetsStyles = (oldOptions, datasets) => {
     const newOptions = { ...oldOptions }
     // styles
     // newOptions.plugins.title.text = title
 
-    const { fontName, fontSize, titleColor, bgColor } = global
-    const font = {}
-    newOptions.plugins.title.color = titleColor
-    if (fontName) {
-        font.family = fontName
-    }
-    if (fontSize) {
-        font.size = +fontSize
-    }
-    newOptions.plugins.title.font = font
-    newOptions.plugins.colbyDraggerPlugin = {
-        bgcolor: bgColor
-    }
+    
     console.log('[newOptions]', newOptions)
 
     // colbyDraggerPlugin.bgcolor = bgColor
@@ -394,8 +395,8 @@ const getArrowAnnotation = (arrow, state) => {
     if (startDatasetIndex < 0 || endDatasetIndex < 0) return null
     if (startDataIndex === '' || endDataIndex === '') return null;
 
-    let startXValue = getXValueForMultiDataset(startDatasetIndex, +startDataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
-    let endXValue = getXValueForMultiDataset(endDatasetIndex, +endDataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
+    let startXValue = getXValueForMultiDataset(startDatasetIndex, +startDataIndex, { datasets: state.data.datasets, isStacked: state.forms.global.stacked })
+    let endXValue = getXValueForMultiDataset(endDatasetIndex, +endDataIndex, { datasets: state.data.datasets, isStacked: state.forms.global.stacked })
     let startYValue = state.data.datasets[startDatasetIndex].data[+startDataIndex]
     let endYValue = state.data.datasets[endDatasetIndex].data[+endDataIndex]
 
@@ -571,7 +572,7 @@ const getLabelAnnotation = (label, state) => {
 
 
 
-    let xValue = getXValueForMultiDataset(datasetIndex, +dataIndex, { datasets: state.data.datasets, isStacked: state.forms.general.stacked })
+    let xValue = getXValueForMultiDataset(datasetIndex, +dataIndex, { datasets: state.data.datasets, isStacked: state.forms.global.stacked })
 
 
     const labelAnnotation = {
@@ -623,7 +624,7 @@ const getAnnotation = (item, state) => {
     return null;
 
 }
-const updateAnnotation = (oldOptions, param, global, state) => {
+const updateAnnotation = (oldOptions, param, datasets, state) => {
     const newOptions = { ...oldOptions }
 
     const { line, box, label, arrow } = param
@@ -685,18 +686,18 @@ const updateAnnotation = (oldOptions, param, global, state) => {
 }
 const updateChartOptions = (oldOptions, forms, state) => {
     // chart title
-    const { annotationTemp, general, xAxis, yAxis, global } = forms
+    const { annotationTemp, global, xAxis, yAxis, datasets } = forms
 
-    // general options
-    let newOptions = generalOptionUpdate(oldOptions, general)
+    // global options
+    let newOptions = globalOptionUpdate(oldOptions, global)
     // axis options
     newOptions = updateAxisRangeValue(newOptions, { xAxis, yAxis })
 
     // updateAnnotation
     newOptions = updateAnnotation(newOptions, annotationTemp, forms, state)
 
-    // updateGlobalStyles
-    newOptions = updateGlobalStyles(newOptions, global)
+    // updateDatasetsStyles
+    newOptions = updateDatasetsStyles(newOptions, datasets)
 
     // console.log('[newOptions]', newOptions)
 
@@ -920,7 +921,7 @@ const reducer = (state, action) => {
             let newState = { ...state };
             const { dataIndex, datasetIndex } = data
             const datasets = state.forms.axes.datasets
-            const xAxis = state.forms.general.xAxis
+            const xAxis = state.forms.global.xAxis
             const keys = getDatasetIndexWithoutXAxis(Object.keys(datasets), xAxis)
             const key = keys[datasetIndex]
             if (annotationId.includes('Temp')) {
@@ -1021,7 +1022,7 @@ const initializeState = ({ state, info }) => {
     const datasets = getChartDataObj(keyLabels, chartData.cols)
     const yAxis = keyLabels.reduce((prev, current) => ({ ...prev, [current.key]: true }), {});
 
-    const generalDatasets = keyLabels.reduce((obj, keyLabel, index) => {
+    const globalDatasets = keyLabels.reduce((obj, keyLabel, index) => {
         obj[keyLabel.key] = {
             barPadding: "",
             color: DEFAULT_COLORS[index % DEFAULT_COLORS.length],
@@ -1035,8 +1036,8 @@ const initializeState = ({ state, info }) => {
         ...state,
         forms: {
             ...state.forms,
-            general: {
-                ...state.forms.general,
+            global: {
+                ...state.forms.global,
                 xAxis: keyLabels[0].key,
                 yAxis
             },
@@ -1044,20 +1045,20 @@ const initializeState = ({ state, info }) => {
                 keyLabels,
                 datasets
             },
-            global: {
-                ...state.forms.global,
-                datasets: generalDatasets
+            datasets: {
+                ...state.forms.datasets,
+                datasets: globalDatasets
             }
         },
         chartType
     }
 }
 const getXAxisDatafield = (data) => {
-    const { forms: { general: { xAxis } } } = data
+    const { forms: { global: { xAxis } } } = data
     return xAxis
 }
 const getYAxisDatafield = (data) => {
-    const { forms: { general: { yAxis } } } = data
+    const { forms: { global: { yAxis } } } = data
     return yAxis
 }
 

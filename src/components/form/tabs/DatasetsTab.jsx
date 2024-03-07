@@ -80,7 +80,7 @@ const BackgroundTab = () => {
                             {chartType == 'bar' && <div className="col-span-1 mt-4">
                                 <div className="flex items-center">
                                     <Label className="inline mr-2" htmlFor="bar-padding" value="Padding:" />
-                                    <TextInput id="bar-padding" type="text" placeholder="0" {...register(`datasets.${key}.barpadding`)} />
+                                    <TextInput id="bar-padding" type="number" min="0" max="1" step="0.01" placeholder="0" {...register(`datasets.${key}.barPadding`)} />
                                 </div>
                             </div>}
                         </div>

@@ -300,12 +300,10 @@ const validateMinMaxValue = (v) => {
 const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
     const newOptions = { ...oldOptions }
 
-
-
-
     // xAxis Value
     {
-        const {     
+        
+        const {
             showGrid,
             showAxis,
             labelStyle,
@@ -316,14 +314,23 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
             max,
             label,
         } = xAxis
-        
+
         newOptions.scales.x.min = validateMinMaxValue(min) ? min : undefined;
         newOptions.scales.x.max = validateMinMaxValue(max) ? max : undefined;
         newOptions.scales.x.title.text = label ?? "";
-        
-        
+        newOptions.scales.x.display = showAxis == '1';
+        newOptions.scales.x.border = {
+            display: true
+        }
+        newOptions.scales.x.grid = {
+            display: showGrid == '1',
+            drawOnChartArea: true,
+            drawTicks: true
+        }
+
+
         let xAxisFont = {}
-        newOptions.plugins.title.color = labelColor
+        newOptions.scales.x.title.color = labelColor
         if (labelFont) {
             xAxisFont.family = labelFont
         }
@@ -349,14 +356,15 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
             max,
             label,
         } = yAxis
-        
+
         newOptions.scales.y.min = validateMinMaxValue(min) ? min : undefined;
         newOptions.scales.y.max = validateMinMaxValue(max) ? max : undefined;
         newOptions.scales.y.title.text = label ?? "";
-        
-        
+        newOptions.scales.y.display = showAxis == '1';
+
+
         let yAxisFont = {}
-        newOptions.plugins.title.color = labelColor
+        newOptions.scales.y.title.color = labelColor
         if (labelFont) {
             yAxisFont.family = labelFont
         }
@@ -368,6 +376,14 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
 
         }
         newOptions.scales.y.title.font = yAxisFont
+        newOptions.scales.y.grid = {
+            display: showGrid == '1',
+            drawOnChartArea: true,
+            ticks: true
+        }
+        newOptions.scales.y.border = {
+            display: true
+        }
     }
 
     return newOptions
@@ -1093,9 +1109,9 @@ const initializeState = ({ state, info }) => {
     const datasets = getChartDataObj(keyLabels, chartData.cols)
     const yAxis = keyLabels.reduce((prev, current) => ({ ...prev, [current.key]: true }), {});
     const formDatasets = state.forms.datasets
-    const globalDatasets = keyLabels.reduce((obj, keyLabel, index) => {        
+    const globalDatasets = keyLabels.reduce((obj, keyLabel, index) => {
         obj[keyLabel.key] = formDatasets[keyLabel.key] || {
-            barPadding: "",
+            barPadding: 0.1,
             color: DEFAULT_COLORS[index % DEFAULT_COLORS.length],
             gradient: "no",
             opacity: 0.5
@@ -1166,15 +1182,17 @@ const updateChartDatasets = (state) => {
     if (result) {
         result.datasets = result.datasets.map(d => {
             const { key } = d
-            const { color, gradient, opacity } = datasets[key]
+            const { barPadding, color, gradient, opacity } = datasets[key]
             const borderColor = colorToRGBA(color, +opacity)
+            const barPercentage = (!!barPadding) ? 1 - barPadding : 0.9
 
             return {
                 ...d,
                 borderColor,
                 backgroundColor: ({ chart }) => {
                     return (gradient == 'yes') ? getGradientColor({ chart, color, opacity }) : borderColor
-                }
+                },
+                barPercentage
 
             }
         })

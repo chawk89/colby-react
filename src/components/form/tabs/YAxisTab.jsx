@@ -31,7 +31,7 @@ const YAxisTab = () => {
             <div className="col-span-1">
                 <div className="flex items-center">
                     <Label className="inline mr-2" htmlFor="yLabelSize" value="Label Size:" />
-                    <TextInput id="yLabelSize" type="text" placeholder="10" control={control} name='yAxis.labelSize' />
+                    <ColbyTextInput id="yLabelSize" type="text" placeholder="10" control={control} name='yAxis.labelSize' />
                 </div>
             </div>
             <div className="col-span-1">
@@ -49,7 +49,7 @@ const YAxisTab = () => {
             <div className="col-span-1">
                 <div className="flex items-center">
                     <Label className="inline mr-2" htmlFor="yLabelFont" value="Label Font:" />
-                    <TextInput id="yLabelFont" type="text" placeholder="" control={control} name='yAxis.labelFont' />
+                    <TextInput id="ColbyTextInput" type="text" placeholder="" control={control} name='yAxis.labelFont' />
                 </div>
             </div>
             <div className="col-span-2">
@@ -59,6 +59,7 @@ const YAxisTab = () => {
                         <option value='normal'>Normal</option>
                         <option value='bold'>Bold</option>
                         <option value='italic'>Italic</option>
+                        <option value='italic-bold'>Italic Bold</option>
                     </Select>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 // ChartContext.js
 import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { md5 } from 'js-md5';
-import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets, generateAnnotationId, getFontStyle, colorToRGBA, getGradientColor } from '../utils/utils';
+import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets, generateAnnotationId, getFontStyle, colorToRGBA, getGradientColor, getBackgroundColor } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_CURVE, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
 // Initial state
 const initState = {
@@ -58,10 +58,10 @@ const initState = {
             title: "",
             xAxis: "",
             plotted: false,
-            stacked: false,
+            stacked: 'none',
             switchRowColumn: false,
-            showLabels: false,
-            showLegend: false,
+            showLabels: true,
+            showLegend: true,
             fontName: "Lora",
             fontSize: "18",
             titleColor: "#3e1818",
@@ -73,19 +73,19 @@ const initState = {
             min: "",
             max: "",
             labelStyle: "normal",
-            showGrid: "0",
             labelColor: "#000000",
             labelSize: "10",
-            showAxis: "0"
+            showAxis: "1",
+            showGrid: "1"
         },
         yAxis: {
             min: "",
             max: "",
             labelStyle: "normal",
-            showGrid: "0",
             labelColor: "#000000",
             labelSize: "10",
-            showAxis: "0"
+            showAxis: "1",
+            showGrid: "1"
         },
         datasets: {},
         axes: {
@@ -239,7 +239,7 @@ export const CREATE_ANNOTATION_ITEM_BY_CONTEXTMENU = 'CREATE_ANNOTATION_ITEM_BY_
 export const DEFAULT_COLORS = ['rgba(255, 99, 132, 0.5)', 'rgba(53, 162, 235, 0.5)']
 
 
-const updateGlobalOption = (oldOptions, global) => {
+const updateGlobalOption = (oldOptions, global, state) => {
     const newOptions = { ...oldOptions }
     const {
         title,
@@ -257,8 +257,26 @@ const updateGlobalOption = (oldOptions, global) => {
     // title
     newOptions.plugins.title.text = title
     // stacked
-    newOptions.scales.y.stacked = stacked
-    newOptions.scales.x.stacked = stacked
+    switch (stacked) {
+        case '100-stacked':
+            newOptions.scales.y.stacked = true
+            newOptions.scales.y.max = '150'
+            newOptions.scales.y.min = '100'
+            newOptions.scales.x.stacked = true
+
+            break;
+        case 'stacked':
+            newOptions.scales.y.stacked = true
+            newOptions.scales.x.stacked = true
+            break;
+        case 'none':
+        default:
+            newOptions.scales.y.stacked = false
+            newOptions.scales.x.stacked = false
+            break;
+    }
+    newOptions.scales.y.ticks.callback = (value) => calcYAxisTickCallback(value, state)
+
     // legend
     newOptions.plugins.legend.display = showLegend
     // show datalabels
@@ -302,7 +320,7 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
 
     // xAxis Value
     {
-        
+
         const {
             showGrid,
             showAxis,
@@ -403,9 +421,11 @@ const getLineAnnotation = (line, state) => {
     if (!line.id) return null
     if (line.id == 'lineTemp' && !line.enabled) return null
 
+
     const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel } = line
 
     const isSelected = state.annotationSelected == line.id
+    const unit = calcYAxisUnit(state)
 
     const lineAnnotation = {
         type: "line",
@@ -419,6 +439,8 @@ const getLineAnnotation = (line, state) => {
         lineAnnotation.borderDash = [5, 5];
     } else if (lineStyle == "wave") {
         lineAnnotation.borderDash = [10, 5, 5];
+    } else {
+        lineAnnotation.borderDash = [];
     }
 
     if (lineLabel) {
@@ -432,8 +454,8 @@ const getLineAnnotation = (line, state) => {
 
     if (lineAxis == "x") {
         lineAnnotation.yScaleID = "y"
-        lineAnnotation.yMin = linePosition
-        lineAnnotation.yMax = linePosition
+        lineAnnotation.yMin = linePosition / unit
+        lineAnnotation.yMax = linePosition / unit
     } else if (lineAxis == "y") {
         lineAnnotation.xScaleID = "x"
         lineAnnotation.xMin = linePosition
@@ -446,6 +468,7 @@ const getBoxAnnotation = (box, state) => {
     if (!box.id) return null
     if (box.id == 'boxTemp' && !box.enabled) return null
     const active = box.id && state.annotationSelected == box.id
+    const unit = calcYAxisUnit(state)
 
     const { xMin, xMax, yMin, yMax, label } = box
     const boxAnnotation = {
@@ -453,8 +476,8 @@ const getBoxAnnotation = (box, state) => {
         id: box.id ?? 'boxTemp',
         xMin,
         xMax,
-        yMin,
-        yMax,
+        yMin: yMin / unit,
+        yMax: yMax / unit,
         backgroundColor: active ? SELECTED_COLOR : 'rgba(255, 99, 132, 0.25)'
     };
 
@@ -486,6 +509,7 @@ const getArrowAnnotation = (arrow, state) => {
     let endXValue = getXValueForMultiDataset(endDatasetIndex, +endDataIndex, { datasets: state.data.datasets, isStacked: state.forms.global.stacked })
     let startYValue = state.data.datasets[startDatasetIndex].data[+startDataIndex]
     let endYValue = state.data.datasets[endDatasetIndex].data[+endDataIndex]
+    const unit = 1
 
     if (lineType == ARROW_LINE_TYPE_CURVE || lineType == ARROW_LINE_TYPE_GENERAL) {
         const borderColor = annotationSelected == arrowId ? SELECTED_COLOR : arrowColor;
@@ -509,8 +533,8 @@ const getArrowAnnotation = (arrow, state) => {
             },
             xMin: startXValue,
             xMax: endXValue,
-            yMin: startYValue,
-            yMax: endYValue,
+            yMin: startYValue / unit,
+            yMax: endYValue / unit,
         };
         // curved line
         if (lineType == ARROW_LINE_TYPE_CURVE) {
@@ -544,16 +568,16 @@ const getArrowAnnotation = (arrow, state) => {
 
             xMin: startXValue,
             xMax: endXValue,
-            yMin: yValue,
-            yMax: yValue,
+            yMin: yValue / unit,
+            yMax: yValue / unit,
         };
         const arrowAnnotationLeft = {
             type: 'line',
             id: getLeftElementId(arrowId),
             xMin: startXValue,
             xMax: startXValue,
-            yMin: startYValue,
-            yMax: yValue,
+            yMin: startYValue / unit,
+            yMax: yValue / unit,
             borderColor: 'black',
             borderWidth: 3,
             borderDash: [6, 6],
@@ -563,8 +587,8 @@ const getArrowAnnotation = (arrow, state) => {
             type: 'line',
             xMin: endXValue,
             xMax: endXValue,
-            yMin: endYValue,
-            yMax: yValue,
+            yMin: endYValue / unit,
+            yMax: yValue / unit,
             borderColor: 'black',
             borderWidth: 3,
             borderDash: [6, 6],
@@ -593,8 +617,8 @@ const getArrowAnnotation = (arrow, state) => {
             curve: false,
             xMin: startXValue,
             xMax: endXValue,
-            yMin: startYValue,
-            yMax: endYValue,
+            yMin: startYValue / unit,
+            yMax: endYValue / unit,
             arrowHeads: {
                 end: {
                     display: true
@@ -614,8 +638,8 @@ const getArrowAnnotation = (arrow, state) => {
         const arrowAnnotationRight = {
             id: getRightElementId(arrowId),
             type: 'point',
-            xValue: endXValue,
-            yValue: endYValue,
+            xValue: endXValue / unit,
+            yValue: endYValue / unit,
             radius: 5,
             backgroundColor: ARROW_CAGR_NORMAL_BACKGROUND_COLOR,
             borderColor: ARROW_CAGR_NORMAL_BORDER_COLOR,
@@ -776,7 +800,7 @@ const updateChartOptions = (oldOptions, forms, state) => {
     const { annotationTemp, global, xAxis, yAxis, datasets } = forms
 
     // global options
-    let newOptions = updateGlobalOption(oldOptions, global)
+    let newOptions = updateGlobalOption(oldOptions, global, state)
     // axis options
     newOptions = updateAxisRangeValue(newOptions, { xAxis, yAxis })
 
@@ -1169,6 +1193,30 @@ const getFilteredDatasets = (data) => {
         xAxisLabel: axesDatasets[xAxis].label
     }
 }
+const calcYAxisUnit = (state) => {
+    const stacked = state?.forms?.global?.stacked || 'none'
+    // title      
+    let resultMaxValue = 1
+    if (stacked == '100-stacked') {
+        const filteredDatasets = getFilteredDatasets(state);
+
+        if (!filteredDatasets?.datasets) return resultMaxValue;
+
+        resultMaxValue = Math.max(...filteredDatasets.datasets.map(d => Math.max(...d.values))) / 100
+
+    }
+    return resultMaxValue
+}
+const calcYAxisTickCallback = (value, state) => {
+    // console.log(value)
+
+    // if (typeof value === 'number' && value == Math.floor(value)) return Math.floor(value)
+    if (state.forms.global.stacked == '100-stacked') {
+        return value + '%';
+    } else {
+        return value
+    }
+}
 const updateChartDatasets = (state) => {
     const filteredDatasets = getFilteredDatasets(state);
 
@@ -1180,21 +1228,40 @@ const updateChartDatasets = (state) => {
     const result = createDatasets(data);
     const datasets = state.forms.datasets
     if (result) {
+        const resultMaxValue = calcYAxisUnit(state)
+        const { chartType: parentChartType } = state
+
+        console.log('[resultMaxValue]', resultMaxValue)
         result.datasets = result.datasets.map(d => {
-            const { key } = d
-            const { barPadding, color, gradient, opacity } = datasets[key]
+            const { key, data } = d
+            const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, pointStyle } = datasets[key]
+            console.log('[datasets[key]]', datasets[key])
             const borderColor = colorToRGBA(color, +opacity)
             const barPercentage = (!!barPadding) ? 1 - barPadding : 0.9
 
-            return {
+            const dataset = {
                 ...d,
+                data: data.map(d => +d / resultMaxValue),
                 borderColor,
                 backgroundColor: ({ chart }) => {
-                    return (gradient == 'yes') ? getGradientColor({ chart, color, opacity }) : borderColor
+                    return (gradient == 'yes') ? getGradientColor({ chart, color, opacity }) : getBackgroundColor({ chart, color: borderColor, opacity: 0.3 })
                 },
-                barPercentage
-
+                barPercentage,
+                fill: fill == 'true',
+                borderWidth: thickness ? +thickness : 1,
+                type: chartType == 'default' ? parentChartType : chartType,
+                pointRadius: pointRadius ?? 2,
+                pointStyle: pointStyle ?? 'circle'
             }
+
+            if (lineStyle == "dashed") {
+                dataset.borderDash = [10, 5, 5];
+            } else if (lineStyle == "dotted") {
+                dataset.borderDash = [5, 5];
+            } else {
+                dataset.borderDash = [];
+            }
+            return dataset;
         })
         state.data = result
         if (!state.options.scales.x.title.text) {
@@ -1223,11 +1290,7 @@ const onAdditionalUpdates = (state, { chartType, chartRef }) => {
     }
     state.options.scales.y.ticks = {
         ...state.options.scales.y.ticks,
-        callback: function (value) {
-            // console.log(value)
-            // if (typeof value === 'number' && value == Math.floor(value)) return Math.floor(value)
-            return value
-        }
+        callback: (value) => calcYAxisTickCallback(value, state)
     }
 
     const xAxis = getXAxisDatafield(state)

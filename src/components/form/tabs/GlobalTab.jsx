@@ -28,7 +28,7 @@ const GlobalTab = ({ keyLabels }) => {
 
     return (
         <div className="w-full">
-            <Card className="w-full mt-2">
+            <Card className="w-full mb-2">
                 <h3 className="w-full text-xl font-bold mb-2">
                     Main
                 </h3>
@@ -48,13 +48,22 @@ const GlobalTab = ({ keyLabels }) => {
 
                     <div className="col-span-1">
                         <div className="flex items-center">
-                            <Controller
-                                name="global.stacked"
-                                control={control}
-                                render={({ field: { value, onChange } }) => {
-                                    return <ToggleSwitch label="Stacked" checked={value} onChange={onChange} />
-                                }}
-                            />
+                            <Label className="inline mr-2 shrink-0" htmlFor="global stacking" value="Stacked:" />
+                            <Select id="global stacking" {...register('global.stacked')}>
+                                <option value='none'>None</option>
+                                <option value='stacked'>Stacked</option>
+                                <option value='100-stacked'>100% Stacked</option>                                
+                            </Select>                            
+                        </div>
+                    </div>
+                    <div className="col-span-1">
+                        <div className="flex items-center">
+                            <Label className="inline mr-2 shrink-0" htmlFor="global stacking" value="Stacked:" />
+                            <Select id="global stacking" {...register('global.stacked')}>
+                                <option value='none'>None</option>
+                                <option value='stacked'>Stacked</option>
+                                <option value='100-stacked'>100% Stacked</option>                                
+                            </Select>                            
                         </div>
                     </div>
                     <div className="col-span-1">

@@ -203,6 +203,15 @@ export const getGradientColor = ({ chart, color, opacity }) => {
     gradient.addColorStop(0.7, colorToRGBA(color, 0));
     return gradient;
 }
+export const getBackgroundColor = ({ chart, color, opacity }) => {
+    const { ctx, chartArea } = chart;
+    if (!chartArea) {
+        // This case happens on initial chart load
+        return color;
+    }
+    
+    return colorToRGBA(color, +opacity);    
+}
 export function colorToRGBA(color, opacity) {
     if (color[0] == '#') {
         return hexToRGBA(color, opacity);
@@ -217,20 +226,20 @@ export function colorToRGBA(color, opacity) {
 
 }
 export function hexToRGBA(hex, opacity) {
-    var bigint = parseInt(hex.slice(1), 16);
-    var r = (bigint >> 16) & 255;
-    var g = (bigint >> 8) & 255;
-    var b = bigint & 255;
+    const bigint = parseInt(hex.slice(1), 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
     return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + opacity + ')';
 }
 export function rgbToRGBA(rgb, opacity) {
-    var match = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    const match = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
     if (!match) {
         throw new Error('Invalid RGB color format');
     }
-    var r = parseInt(match[1], 10);
-    var g = parseInt(match[2], 10);
-    var b = parseInt(match[3], 10);
+    const r = parseInt(match[1], 10);
+    const g = parseInt(match[2], 10);
+    const b = parseInt(match[3], 10);
     return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + opacity + ')';
 }
 

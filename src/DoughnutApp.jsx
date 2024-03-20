@@ -24,7 +24,7 @@ function DoughnutApp() {
 
   return (
     isFirstLoading && storageValueExists ?
-      <ConfirmDialog message={'Do you want to clear the cache?'} onConfirm={handleConfirm} onCancel={handleCancel}
+      <ConfirmDialog message={'Cache exists. Do you want to clear the cache?'} onConfirm={handleConfirm} onCancel={handleCancel}
       /> :
       <>
         {loadingStatus != 'loaded' && <ColbyLoader />}

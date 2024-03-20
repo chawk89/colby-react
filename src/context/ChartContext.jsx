@@ -94,66 +94,66 @@ const initState = {
         dataRange: ''
     },
     annotation: {
-        "line-1707320896272": {
-            enabled: true,
-            axis: "x",
-            position: "500",
-            style: "dashed",
-            thickness: "1",
-            color: "#8F0000",
-            label: "Test",
-            type: "line",
-            id: "line-1707320896272",
+        // "line-1707320896272": {
+        //     enabled: true,
+        //     axis: "x",
+        //     position: "500",
+        //     style: "dashed",
+        //     thickness: "1",
+        //     color: "#8F0000",
+        //     label: "Test",
+        //     type: "line",
+        //     id: "line-1707320896272",
 
-        },
-        "box-1707320977735": {
-            enabled: true,
-            label: "",
-            xMax: "Q2 FY2013",
-            xMin: "Q1 FY2013",
-            yMax: "1500",
-            yMin: "500",
-            type: "box",
-            id: "box-1707320977735"
-        },
-        "arrow-1707348807973+global": {
-            "enabled": true,
-            "doubleArrow": "1",
-            "label": "asdfasdfasdf",
-            "color": "#000000",
-            "type": "arrow",
-            "id": "arrow-1707348807973+global",
-            "startDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
-            "startDataIndex": "1",
-            "endDatasetKey": "FL1pyNrYWyqAVBdtx7c/Jw==",
-            "endDataIndex": "2",
-            lineType: ARROW_LINE_TYPE_GENERAL
-        },
-        'arrow-1707838906237+grow': {
-            "enabled": true,
-            "type": "arrow",
-            "doubleArrow": "1",
-            "label": "asdfasdfasdf",
-            "color": "#000000",
-            "startDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
-            "startDataIndex": "5",
-            "endDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
-            "endDataIndex": 9,
-            "lineType": ARROW_LINE_TYPE_GROW_METRIC,
-            "id": "arrow-1707838906237+grow"
-        },
-        "label-1707349710912": {
-            enabled: true,
-            datasetKey: "YpmL7a6OYEv2tnX4VxEFXA==",
-            dataIndex: "8",
-            caption: "Test",
-            fontName: "",
-            fontSize: "",
-            anchor: "1",
-            color: "#000000",
-            type: "label",
-            id: "label-1707349710912"
-        }
+        // },
+        // "box-1707320977735": {
+        //     enabled: true,
+        //     label: "",
+        //     xMax: "Q2 FY2013",
+        //     xMin: "Q1 FY2013",
+        //     yMax: "1500",
+        //     yMin: "500",
+        //     type: "box",
+        //     id: "box-1707320977735"
+        // },
+        // "arrow-1707348807973+global": {
+        //     "enabled": true,
+        //     "doubleArrow": "1",
+        //     "label": "asdfasdfasdf",
+        //     "color": "#000000",
+        //     "type": "arrow",
+        //     "id": "arrow-1707348807973+global",
+        //     "startDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
+        //     "startDataIndex": "1",
+        //     "endDatasetKey": "FL1pyNrYWyqAVBdtx7c/Jw==",
+        //     "endDataIndex": "2",
+        //     lineType: ARROW_LINE_TYPE_GENERAL
+        // },
+        // 'arrow-1707838906237+grow': {
+        //     "enabled": true,
+        //     "type": "arrow",
+        //     "doubleArrow": "1",
+        //     "label": "asdfasdfasdf",
+        //     "color": "#000000",
+        //     "startDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
+        //     "startDataIndex": "5",
+        //     "endDatasetKey": "YpmL7a6OYEv2tnX4VxEFXA==",
+        //     "endDataIndex": 9,
+        //     "lineType": ARROW_LINE_TYPE_GROW_METRIC,
+        //     "id": "arrow-1707838906237+grow"
+        // },
+        // "label-1707349710912": {
+        //     enabled: true,
+        //     datasetKey: "YpmL7a6OYEv2tnX4VxEFXA==",
+        //     dataIndex: "8",
+        //     caption: "Test",
+        //     fontName: "",
+        //     fontSize: "",
+        //     anchor: "1",
+        //     color: "#000000",
+        //     type: "label",
+        //     id: "label-1707349710912"
+        // }
     },
     annotationSelected: '',
     options: {
@@ -1228,45 +1228,88 @@ const updateChartDatasets = (state) => {
     const result = createDatasets(data);
     const datasets = state.forms.datasets
     if (result) {
-        const resultMaxValue = calcYAxisUnit(state)
         const { chartType: parentChartType } = state
 
-        console.log('[resultMaxValue]', resultMaxValue)
-        result.datasets = result.datasets.map(d => {
-            const { key, data } = d
-            const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, pointStyle } = datasets[key]
-            console.log('[datasets[key]]', datasets[key])
-            const borderColor = colorToRGBA(color, +opacity)
-            const barPercentage = (!!barPadding) ? 1 - barPadding : 0.9
+        // bubble chart
+        if (parentChartType == 'bubble') {
 
-            const dataset = {
-                ...d,
-                data: data.map(d => +d / resultMaxValue),
-                borderColor,
-                backgroundColor: ({ chart }) => {
-                    return (gradient == 'yes') ? getGradientColor({ chart, color, opacity }) : getBackgroundColor({ chart, color: borderColor, opacity: 0.3 })
-                },
-                barPercentage,
-                fill: fill == 'true',
-                borderWidth: thickness ? +thickness : 1,
-                type: chartType == 'default' ? parentChartType : chartType,
-                pointRadius: pointRadius ?? 2,
-                pointStyle: pointStyle ?? 'circle'
-            }
+            // console.log('[resultMaxValue]', resultMaxValue)
+            result.datasets = result.datasets.map(d => {
+                const { key, data } = d
+                const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, pointStyle } = datasets[key]
+                console.log('[datasets[key]]', datasets[key])
+                const borderColor = colorToRGBA(color, +opacity)
+                const barPercentage = (!!barPadding) ? 1 - barPadding : 0.9
 
-            if (lineStyle == "dashed") {
-                dataset.borderDash = [10, 5, 5];
-            } else if (lineStyle == "dotted") {
-                dataset.borderDash = [5, 5];
-            } else {
-                dataset.borderDash = [];
+                const dataset = {
+                    ...d,
+                    // data: data.map(d => +d),
+                    borderColor,
+                    // backgroundColor: ({ chart }) => {
+                    //     return (gradient == 'yes') ? getGradientColor({ chart, color, opacity }) : getBackgroundColor({ chart, color: borderColor, opacity: 0.3 })
+                    // },
+                    // barPercentage,
+                    // fill: fill == 'true',
+                    // borderWidth: thickness ? +thickness : 1,
+                    // type: chartType == 'default' ? parentChartType : chartType,
+                    // pointRadius: pointRadius ?? 2,
+                    // pointStyle: pointStyle ?? 'circle'
+                }
+
+                // if (lineStyle == "dashed") {
+                //     dataset.borderDash = [10, 5, 5];
+                // } else if (lineStyle == "dotted") {
+                //     dataset.borderDash = [5, 5];
+                // } else {
+                //     dataset.borderDash = [];
+                // }
+                return dataset;
+            })
+            state.data = result
+            if (!state.options.scales.x.title.text) {
+                state.options.scales.x.title.text = xAxisLabel
             }
-            return dataset;
-        })
-        state.data = result
-        if (!state.options.scales.x.title.text) {
-            state.options.scales.x.title.text = xAxisLabel
+        } else {
+            const resultMaxValue = calcYAxisUnit(state)
+
+            console.log('[resultMaxValue]', resultMaxValue)
+            result.datasets = result.datasets.map(d => {
+                const { key, data } = d
+                const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, pointStyle } = datasets[key]
+                console.log('[datasets[key]]', datasets[key])
+                const borderColor = colorToRGBA(color, +opacity)
+                const barPercentage = (!!barPadding) ? 1 - barPadding : 0.9
+
+                const dataset = {
+                    ...d,
+                    data: data.map(d => +d / resultMaxValue),
+                    borderColor,
+                    backgroundColor: ({ chart }) => {
+                        return (gradient == 'yes') ? getGradientColor({ chart, color, opacity }) : getBackgroundColor({ chart, color: borderColor, opacity: 0.3 })
+                    },
+                    barPercentage,
+                    fill: fill == 'true',
+                    borderWidth: thickness ? +thickness : 1,
+                    type: chartType == 'default' ? parentChartType : chartType,
+                    pointRadius: pointRadius ?? 2,
+                    pointStyle: pointStyle ?? 'circle'
+                }
+
+                if (lineStyle == "dashed") {
+                    dataset.borderDash = [10, 5, 5];
+                } else if (lineStyle == "dotted") {
+                    dataset.borderDash = [5, 5];
+                } else {
+                    dataset.borderDash = [];
+                }
+                return dataset;
+            })
+            state.data = result
+            if (!state.options.scales.x.title.text) {
+                state.options.scales.x.title.text = xAxisLabel
+            }
         }
+
     }
 }
 const onAdditionalUpdates = (state, { chartType, chartRef }) => {

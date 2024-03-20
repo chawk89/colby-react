@@ -1232,46 +1232,41 @@ const updateChartDatasets = (state) => {
 
         // bubble chart
         if (parentChartType == 'bubble') {
-
             // console.log('[resultMaxValue]', resultMaxValue)
             result.datasets = result.datasets.map(d => {
                 const { key, data } = d
                 const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, pointStyle } = datasets[key]
                 console.log('[datasets[key]]', datasets[key])
                 const borderColor = colorToRGBA(color, +opacity)
-                const barPercentage = (!!barPadding) ? 1 - barPadding : 0.9
-
                 const dataset = {
-                    ...d,
-                    // data: data.map(d => +d),
+                    ...d,                    
                     borderColor,
-                    // backgroundColor: ({ chart }) => {
-                    //     return (gradient == 'yes') ? getGradientColor({ chart, color, opacity }) : getBackgroundColor({ chart, color: borderColor, opacity: 0.3 })
-                    // },
-                    // barPercentage,
-                    // fill: fill == 'true',
-                    // borderWidth: thickness ? +thickness : 1,
-                    // type: chartType == 'default' ? parentChartType : chartType,
-                    // pointRadius: pointRadius ?? 2,
-                    // pointStyle: pointStyle ?? 'circle'
-                }
-
-                // if (lineStyle == "dashed") {
-                //     dataset.borderDash = [10, 5, 5];
-                // } else if (lineStyle == "dotted") {
-                //     dataset.borderDash = [5, 5];
-                // } else {
-                //     dataset.borderDash = [];
-                // }
+                    
+                }                
                 return dataset;
             })
             state.data = result
             if (!state.options.scales.x.title.text) {
                 state.options.scales.x.title.text = xAxisLabel
             }
+        } else if (parentChartType == 'doughnut' || parentChartType == 'pie') {
+            // console.log('[resultMaxValue]', resultMaxValue)
+            result.datasets = result.datasets.map(d => {
+                
+                
+                
+                const dataset = {
+                    ...d,        
+                    hoverOffset: 4            
+                }                
+                return dataset;
+            })
+            state.data = result
+            // if (!state.options.scales.x.title.text) {
+            //     state.options.scales.x.title.text = xAxisLabel
+            // }
         } else {
             const resultMaxValue = calcYAxisUnit(state)
-
             console.log('[resultMaxValue]', resultMaxValue)
             result.datasets = result.datasets.map(d => {
                 const { key, data } = d

@@ -209,8 +209,8 @@ export const getBackgroundColor = ({ chart, color, opacity }) => {
         // This case happens on initial chart load
         return color;
     }
-    
-    return colorToRGBA(color, +opacity);    
+
+    return colorToRGBA(color, +opacity);
 }
 export function colorToRGBA(color, opacity) {
     if (color[0] == '#') {

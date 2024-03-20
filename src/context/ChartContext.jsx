@@ -1282,7 +1282,7 @@ const updateChartDatasets = (state) => {
 
                 const dataset = {
                     ...d,
-                    data: data.map(d => +d / resultMaxValue),
+                    data: data.map(d => Array.isArray(d) ? d.map(v => +v / resultMaxValue) : +d / resultMaxValue),
                     borderColor,
                     backgroundColor: ({ chart }) => {
                         return (gradient == 'yes') ? getGradientColor({ chart, color, opacity }) : getBackgroundColor({ chart, color: borderColor, opacity: 0.3 })

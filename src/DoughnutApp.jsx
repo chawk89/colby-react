@@ -1,14 +1,13 @@
-import { useEffect, useMemo, useRef } from 'react'
 import NarrativeMessage from './components/NarrativeMessage'
 import ColbyChart from './components/ColbyChart'
-import ColbyChartForm from './components/ColbyChartForm'
+import ColbyDoughnutChartForm from './components/ColbyDoughnutChartForm'
 import ColbyLoader from './components/ColbyLoader'
 import { ChartProvider } from './context/ChartContext'
 import { useLoadingStatus } from './hooks/useLoadingStatus'
 
 import './App.scss'
 
-function WaterFallApp() {
+function DoughnutApp() {
   const loadingStatus = useLoadingStatus()
 
   return (
@@ -25,7 +24,7 @@ function WaterFallApp() {
             </div>
           </div>
           <div className="w-full flex mt-4">
-            <ColbyChartForm />
+            <ColbyDoughnutChartForm />
           </div>
         </div>
       </ChartProvider>
@@ -33,4 +32,4 @@ function WaterFallApp() {
   )
 }
 
-export default WaterFallApp
+export default DoughnutApp

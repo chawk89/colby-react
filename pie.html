@@ -113,7 +113,7 @@
     async function init() {
       const testKey = await (() => { console.log('init'); return 'test-key' })();
       window.ColbyChartInfo = {
-        chartType: 'doughnut',
+        chartType: 'pie',
         chartSubType: 'waterfall',
         createDatasets: createDoughnutDatasets,
         storageKey: `appState-${testKey}`,
@@ -129,7 +129,7 @@
     init();
 
   </script>
-  <div id="root-doughnut"></div>
+  <div id="root-pie"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 

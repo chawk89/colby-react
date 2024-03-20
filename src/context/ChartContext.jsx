@@ -60,7 +60,7 @@ const initState = {
             plotted: false,
             stacked: 'none',
             switchRowColumn: false,
-            showLabels: true,
+            showLabels: false,
             showLegend: true,
             fontName: "Lora",
             fontSize: "18",

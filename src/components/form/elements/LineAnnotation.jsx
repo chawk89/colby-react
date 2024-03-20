@@ -3,7 +3,7 @@ import { Button, Card, Label, Select, TextInput, ToggleSwitch } from 'flowbite-r
 import { Controller, useForm, useFormContext } from 'react-hook-form';
 import { PopoverPicker } from '../../common/PopoverPicker';
 import { useChartContext } from '../../../hooks/useChartContext';
-import { getNewId } from '../../../utils/utils';
+import { generateAnnotationId, getNewId } from '../../../utils/utils';
 import useChartLabels from '../../../hooks/useChartLabels';
 
 const LineAnnotation = () => {

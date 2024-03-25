@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> React </title>
+</head>
+
+<body>
+  <script>
+    function createDatasets(data) {
+      const { labels, datasets } = data
+      if (!labels || !labels.key || !labels.values || labels.values.length == 0 || !datasets) return null;
+
+      const colorArray = ['rgba(255, 99, 132, 0.5)', 'rgba(53, 162, 235, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(53, 162, 235, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(53, 162, 235, 0.5)']
+      const result = {
+        labels: labels.values,
+        datasets: datasets.map(({ key, values, label }, index) => ({
+          data: values,
+          label,
+          backgroundColor: colorArray[index],
+          key,
+          id: key
+
+        }))
+      }
+
+      return result
+    }
+
+    async function fetchData() {
+      return new Promise(res => setTimeout(res, 3000))
+    }
+    async function fetchDataRange(range) {
+      console.log('[fetchDataRange]', !!range)
+      window.ColbyChartInfo = {
+        ...window.ColbyChartInfo,
+        loadingStatus: 'loading'
+      }
+      await fetchData()
+      const data = [['Date',
+        'Q1 FY2013',
+        'Q2 FY2013',
+        'Q3 FY2013',
+        'Q4 FY2013',
+        'Q1 FY2014',
+        'Q2 FY2014',
+        'Q3 FY2014',
+        'Q4 FY2014',
+        'Q1 FY2015',
+        'Q2 FY2015',
+        'Q3 FY2015',
+        'Q4 FY2015'],
+      ['Online Sales',
+        '237',
+        '492',
+        '625',
+        '1239',
+        '1686',
+        '1728',
+        '1716',
+        '1839',
+        '4543',
+        '4630',
+        '4890',
+        '7405'],
+      ['Offline Sales',
+        '5208',
+        '5094',
+        '5907',
+        '6063',
+        '5499',
+        '5670',
+        '5571',
+        '6165',
+        '6346',
+        '6382',
+        '5719',
+        '4442']
+      ]
+     
+      const rawDatasets = {
+        colCount: data.length,
+        header: data.map(r => r[0]),
+        cols: data.map(r => r.slice(1))
+      }
+
+      window.ColbyChartInfo = {
+        ...window.ColbyChartInfo,
+        rawDatasets,
+        loadingStatus: 'loaded'
+      }
+
+    }
+    async function init() {
+      const testKey = await (() => { console.log('init'); return 'test-key' })();
+      window.ColbyChartInfo = {
+        // chartType: 'bar',
+        chartType: 'bar',
+        createDatasets,
+        storageKey: `appState-${testKey}`,
+        loadingStatus: 'none',
+        fetchDataRange
+      }
+      window.onInsertImage = function (data) {
+        console.log('[onInsertImage] window', data)
+        const test = data
+        return true;
+      }
+    }
+    init();
+
+  </script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>

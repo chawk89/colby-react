@@ -18,19 +18,22 @@
       const result = {
         labels: labels.values,
         datasets: datasets.map(({ key, values, label }, index) => {
+
           const data = values.reduce((vs, cur) => {
-            vs.values.push([vs.sum, vs.sum + (+cur)])
-            vs.sum += +cur
+            const curNum = +cur
+            vs.values.push([vs.sum, vs.sum + (curNum)])
+            vs.sum += curNum
+            vs.bgColors.push(curNum > 0 ? colorArray[0] : colorArray[1])
             return vs;
-          }, { values: [], sum: 0 })
+          }, { values: [], sum: 0, bgColors: [] })
+          console.log('[background color]', data.bgColors)
 
           return {
             data: data.values,
             label,
-            backgroundColor: colorArray[index],
+            backgroundColor: data.bgColors,
             key,
             id: key
-
           }
         })
       }
@@ -62,7 +65,7 @@
         'Q3 FY2015',
         'Q4 FY2015'],
       ['Online Sales',
-        '237',
+        '7405',
         '-492',
         '625',
         '-1239',
@@ -73,20 +76,20 @@
         '-4543',
         '4630',
         '-4890',
-        '7405'],
-      ['Offline Sales',
-        '5208',
-        '-5094',
-        '5907',
-        '-6063',
-        '-5499',
-        '5670',
-        '-5571',
-        '6165',
-        '-6346',
-        '6382',
-        '5719',
-        '-4442']
+        '237'],
+        // ['Offline Sales',
+        //   '5208',
+        //   '-5094',
+        //   '5907',
+        //   '-6063',
+        //   '-5499',
+        //   '5670',
+        //   '-5571',
+        //   '6165',
+        //   '-6346',
+        //   '6382',
+        //   '5719',
+        //   '-4442']
       ]
 
       const rawDatasets = {

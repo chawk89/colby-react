@@ -1236,15 +1236,16 @@ const updateChartDatasets = (state) => {
         if (parentChartType == 'bubble') {
             // console.log('[resultMaxValue]', resultMaxValue)
             result.datasets = result.datasets.map(d => {
-                const { key, data } = d
+                const { key, data, backgroundColor } = d
                 const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, markerType } = datasets[key]
                 console.log('[datasets[key]]', datasets[key])
                 const borderColor = colorToRGBA(color, +opacity)
                 const dataset = {
                     ...d,
                     borderColor,
-
+                    
                 }
+               
                 return dataset;
             })
             state.data = result
@@ -1254,9 +1255,6 @@ const updateChartDatasets = (state) => {
         } else if (parentChartType == 'doughnut' || parentChartType == 'pie') {
             // console.log('[resultMaxValue]', resultMaxValue)
             result.datasets = result.datasets.map(d => {
-
-
-
                 const dataset = {
                     ...d,
                     hoverOffset: 4
@@ -1271,7 +1269,7 @@ const updateChartDatasets = (state) => {
             const resultMaxValue = calcYAxisUnit(state)
             console.log('[resultMaxValue]', resultMaxValue)
             result.datasets = result.datasets.map(d => {
-                const { key, data } = d
+                const { key, data, backgroundColor } = d
                 const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, markerType } = datasets[key]
                 console.log('[datasets[key]]', key, datasets[key])
                 const borderColor = colorToRGBA(color, +opacity)
@@ -1339,9 +1337,6 @@ const onAdditionalUpdates = (state, { chartType, chartRef }) => {
         state.options.scales.x.display = false
         state.options.scales.y.display = false
     }
-
-
-
 
     const xAxis = getXAxisDatafield(state)
     if (xAxis) {

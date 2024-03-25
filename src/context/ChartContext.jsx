@@ -1235,14 +1235,14 @@ const updateChartDatasets = (state) => {
             // console.log('[resultMaxValue]', resultMaxValue)
             result.datasets = result.datasets.map(d => {
                 const { key, data } = d
-                const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, pointStyle } = datasets[key]
+                const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, markerType } = datasets[key]
                 console.log('[datasets[key]]', datasets[key])
                 const borderColor = colorToRGBA(color, +opacity)
                 const dataset = {
-                    ...d,                    
+                    ...d,
                     borderColor,
-                    
-                }                
+
+                }
                 return dataset;
             })
             state.data = result
@@ -1252,13 +1252,13 @@ const updateChartDatasets = (state) => {
         } else if (parentChartType == 'doughnut' || parentChartType == 'pie') {
             // console.log('[resultMaxValue]', resultMaxValue)
             result.datasets = result.datasets.map(d => {
-                
-                
-                
+
+
+
                 const dataset = {
-                    ...d,        
-                    hoverOffset: 4            
-                }                
+                    ...d,
+                    hoverOffset: 4
+                }
                 return dataset;
             })
             state.data = result
@@ -1270,10 +1270,11 @@ const updateChartDatasets = (state) => {
             console.log('[resultMaxValue]', resultMaxValue)
             result.datasets = result.datasets.map(d => {
                 const { key, data } = d
-                const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, pointStyle } = datasets[key]
-                console.log('[datasets[key]]', datasets[key])
+                const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, markerType } = datasets[key]
+                console.log('[datasets[key]]', key, datasets[key])
                 const borderColor = colorToRGBA(color, +opacity)
                 const barPercentage = (!!barPadding) ? 1 - barPadding : 0.9
+
 
                 const dataset = {
                     ...d,
@@ -1286,8 +1287,8 @@ const updateChartDatasets = (state) => {
                     fill: fill == 'true',
                     borderWidth: thickness ? +thickness : 1,
                     type: chartType == 'default' ? parentChartType : chartType,
-                    pointRadius: pointRadius ?? 2,
-                    pointStyle: pointStyle ?? 'circle'
+                    pointRadius: pointRadius && +pointRadius > 2 ? pointRadius : 2,
+                    pointStyle: markerType ?? 'circle'
                 }
 
                 if (lineStyle == "dashed") {

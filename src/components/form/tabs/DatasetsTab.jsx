@@ -7,6 +7,12 @@ import { useChartContext } from '../../../hooks/useChartContext';
 import { FETCH_DATA_RANGE } from '../../../context/ChartContext';
 import { PopoverPicker } from '../../common/PopoverPicker';
 import useChartDatasetKeys from '../../../hooks/useChartDatasetKeys';
+import DoughnutFormFields from '../elements/datasets/DoughnutFormFields';
+import WaterfallFormFields from '../elements/datasets/WaterfallFormFields';
+import ScatterFormFields from '../elements/datasets/ScatterFormFields';
+import LineFormFields from '../elements/datasets/LineFormFields';
+import BarFormFields from '../elements/datasets/BarFormFields';
+import BubbleFormFields from '../elements/datasets/BubbleFormFields';
 
 const BackgroundTab = () => {
     const { control, register, watch } = useFormContext()
@@ -77,80 +83,18 @@ const BackgroundTab = () => {
                                     </Select>
                                 </div>
                             </div>
-                            {/* markertype in non-bar chart case  */}
-                            {geChartType(key) != 'bar' && <div className="col-span-1 mt-4">
-                                <div className="flex items-center h-full">
-                                    <Label className="inline mr-2 shrink-0" htmlFor="markertype" value="Marker Type:" />
-                                    <Select className="w-full" {...register(`datasets.${key}.markertype`)}>
-                                        <option value={'triangle'}>Triangle</option>
-                                        <option value={'square'}>Square</option>
-                                        <option value={'point'}>Point</option>
-                                    </Select>
-                                </div>
-                            </div>}
                             <div className="col-span-3 bg-gray-200 h-px w-full border-t border-gray-300"></div>
-                            {/* line type in line chart case  */}
-                            {geChartType(key) == 'line' && <>
-                                <div className="col-span-1 mt-4">
-                                    <div className="flex items-center h-full">
-                                        <Label className="inline mr-2 shrink-0" htmlFor="lineStyle" value="Line Type:" />
-                                        <Select className="w-full" {...register(`datasets.${key}.lineStyle`)}>
-                                            <option value={'dashed'}>Dashed</option>
-                                            <option value={'solid'}>Solid</option>
-                                            <option value={'dotted'}>Dotted</option>
-                                        </Select>
-                                    </div>
-                                </div>
-                                <div className="col-span-1 mt-4">
-                                    <div className="flex items-center">
-                                        <Label className="inline mr-2" htmlFor="line-thickness" value="Thickness:" />
-                                        <TextInput id="line-thickness" type="number" min="1" placeholder="0" {...register(`datasets.${key}.thickness`)} />
-                                    </div>
-                                </div>
-                                <div className="col-span-1 mt-4">
-                                    <div className="flex items-center h-full">
-                                        <Label className="inline mr-2 shrink-0" htmlFor="linetype" value="Fill:" />
-                                        <Select className="w-full" {...register(`datasets.${key}.fill`)}>
-                                            <option value={false}>None</option>
-                                            <option value={true}>Fill</option>
-                                        </Select>
-                                    </div>
-                                </div>
-                            </>}
-                            {/* line type in line chart case  */}
-                            {geChartType(key) == 'scatter' && <>
-                                <div className="col-span-1 mt-4">
-                                    <div className="flex items-center h-full">
-                                        <Label className="inline mr-2 shrink-0" htmlFor="pointStyle" value="Point Style:" />
-                                        <Select className="w-full" {...register(`datasets.${key}.pointStyle`)}>
-                                            <option value={'circle'} >Circle</option>
-                                            <option value={'cross'} >Cross</option>
-                                            <option value={'crossRot'} >CrossRot</option>
-                                            <option value={'dash'} >Dash</option>
-                                            <option value={'line'} >Line</option>
-                                            <option value={'rect'} >Rect</option>
-                                            <option value={'rectRounded'} >RectRounded</option>
-                                            <option value={'rectRot'} >RectRot</option>
-                                            <option value={'star'} >Star</option>
-                                            <option value={'triangle'} >Triangle</option>
-                                        </Select>
-                                    </div>
-                                </div>
-                                <div className="col-span-1 mt-4">
-                                    <div className="flex items-center">
-                                        <Label className="inline mr-2" htmlFor="line-thickness" value="Point Size:" />
-                                        <TextInput id="line-thickness" type="number" min="1" placeholder="1" {...register(`datasets.${key}.pointRadius`)} />
-                                    </div>
-                                </div>
-
-                            </>}
-                            {/* line type in line chart case  */}
-                            {geChartType(key) == 'bar' && <div className="col-span-1 mt-4">
-                                <div className="flex items-center">
-                                    <Label className="inline mr-2" htmlFor="bar-padding" value="Padding:" />
-                                    <TextInput id="bar-padding" type="number" min="0" max="1" step="0.01" placeholder="0" {...register(`datasets.${key}.barPadding`)} />
-                                </div>
-                            </div>}
+                            {/* markertype in non-bar chart case  */}
+                            {geChartType(key) == 'line' && <LineFormFields datakey={key} />}
+                            {geChartType(key) == 'bar' && <BarFormFields datakey={key} />}
+                            {geChartType(key) == 'scatter' && <ScatterFormFields datakey={key} />}
+                            {geChartType(key) == 'bubble' && <BubbleFormFields datakey={key} />}
+                            {geChartType(key) == 'waterfall' && <WaterfallFormFields datakey={key} />}
+                            {geChartType(key) == 'pie' && <PieFormFields datakey={key} />}
+                            {geChartType(key) == 'doughnut' && <DoughnutFormFields datakey={key} />}
+                           
+                           
+                        
                         </div>
                     </Card>
                 )}

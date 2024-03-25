@@ -49,7 +49,7 @@ const ColbyChartForm = () => {
             <form onSubmit={methods.handleSubmit(onSubmit)} className='w-full'>
                 <Tabs style="fullWidth" className='w-full'>
                     {/* global tab start */}
-                    <Tabs.Item title="Global" active icon={MdDashboard}>
+                    <Tabs.Item title="Global"  icon={MdDashboard}>
                         <GlobalTab keyLabels={keyLabels} />
                     </Tabs.Item>
                     {/* global tab end */}
@@ -64,11 +64,11 @@ const ColbyChartForm = () => {
                     </Tabs.Item>
                     {/* Y Axis tab end */}
                     {/* Style tab start */}
-                    <Tabs.Item title="Datasets" icon={HiAdjustments}>
+                    <Tabs.Item title="Datasets" active icon={HiAdjustments}>
                         <DatasetsTab />
                     </Tabs.Item>
                     {/* Annotations tab start */}
-                    <Tabs.Item  title="Annotations" icon={HiClipboardList}>
+                    <Tabs.Item  title="Annotations"  icon={HiClipboardList}>
                         {annotationSelected && <PropertiesTab />}
                         <AnnotationTab />
                     </Tabs.Item>

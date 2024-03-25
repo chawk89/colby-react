@@ -258,3 +258,14 @@ export function rgbaToRGBA(color, opacity) {
     // Create and return the RGBA object
     return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
 }
+
+
+export const isNonAxisChart = (chartType) => {
+
+    switch (chartType) {
+        case 'pie':
+        case 'doughnut':
+            return true;
+    }
+    return false;
+}

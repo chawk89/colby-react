@@ -1,7 +1,7 @@
 // ChartContext.js
 import React, { createContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { md5 } from 'js-md5';
-import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets, generateAnnotationId, getFontStyle, colorToRGBA, getGradientColor, getBackgroundColor } from '../utils/utils';
+import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets, generateAnnotationId, getFontStyle, colorToRGBA, getGradientColor, getBackgroundColor, isNonAxisChart } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_CURVE, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
 // Initial state
 const initState = {
@@ -315,12 +315,12 @@ const validateMinMaxValue = (v) => {
     return false
 }
 
-const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
+const updateAxisRangeValue = (oldOptions, { xAxis, yAxis, chartType }) => {
     const newOptions = { ...oldOptions }
 
+    const isNonAxis = isNonAxisChart(chartType)
     // xAxis Value
     {
-
         const {
             showGrid,
             showAxis,
@@ -336,7 +336,8 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
         newOptions.scales.x.min = validateMinMaxValue(min) ? min : undefined;
         newOptions.scales.x.max = validateMinMaxValue(max) ? max : undefined;
         newOptions.scales.x.title.text = label ?? "";
-        newOptions.scales.x.display = showAxis == '1';
+
+        newOptions.scales.x.display = isNonAxis ? false : showAxis == '1';
         newOptions.scales.x.border = {
             display: true
         }
@@ -378,7 +379,7 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis }) => {
         newOptions.scales.y.min = validateMinMaxValue(min) ? min : undefined;
         newOptions.scales.y.max = validateMinMaxValue(max) ? max : undefined;
         newOptions.scales.y.title.text = label ?? "";
-        newOptions.scales.y.display = showAxis == '1';
+        newOptions.scales.y.display = isNonAxis ? false : showAxis == '1';
 
 
         let yAxisFont = {}
@@ -798,11 +799,12 @@ const updateAnnotation = (oldOptions, param, datasets, state) => {
 const updateChartOptions = (oldOptions, forms, state) => {
     // chart title
     const { annotationTemp, global, xAxis, yAxis, datasets } = forms
+    const { chartType } = state
 
     // global options
     let newOptions = updateGlobalOption(oldOptions, global, state)
     // axis options
-    newOptions = updateAxisRangeValue(newOptions, { xAxis, yAxis })
+    newOptions = updateAxisRangeValue(newOptions, { xAxis, yAxis, chartType })
 
     // updateAnnotation
     newOptions = updateAnnotation(newOptions, annotationTemp, forms, state)
@@ -1325,12 +1327,21 @@ const onAdditionalUpdates = (state, { chartType, chartRef }) => {
     }
     state.options.scales.x.ticks = {
         ...state.options.scales.x.ticks,
-
     }
     state.options.scales.y.ticks = {
         ...state.options.scales.y.ticks,
         callback: (value) => calcYAxisTickCallback(value, state)
     }
+    
+    const isNonAxis = isNonAxisChart(chartType)
+    
+    if (isNonAxis) {
+        state.options.scales.x.display = false
+        state.options.scales.y.display = false
+    }
+
+
+
 
     const xAxis = getXAxisDatafield(state)
     if (xAxis) {

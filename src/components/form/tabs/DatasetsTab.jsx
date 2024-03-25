@@ -13,6 +13,7 @@ import ScatterFormFields from '../elements/datasets/ScatterFormFields';
 import LineFormFields from '../elements/datasets/LineFormFields';
 import BarFormFields from '../elements/datasets/BarFormFields';
 import BubbleFormFields from '../elements/datasets/BubbleFormFields';
+import PieFormFields from '../elements/datasets/PieFormFields';
 
 const BackgroundTab = () => {
     const { control, register, watch } = useFormContext()

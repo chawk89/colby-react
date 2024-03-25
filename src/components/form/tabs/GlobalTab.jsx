@@ -6,6 +6,7 @@ import ColbyTextInput from '../elements/ColbyTextInput';
 import { useChartContext } from '../../../hooks/useChartContext';
 import { FETCH_DATA_RANGE } from '../../../context/ChartContext';
 import { PopoverPicker } from '../../common/PopoverPicker';
+import useIsNonAxisChart from '../../../hooks/useIsNonAxisChart';
 
 const GlobalTab = ({ keyLabels }) => {
     const { control, register, watch } = useFormContext()
@@ -13,6 +14,8 @@ const GlobalTab = ({ keyLabels }) => {
     const dataRange = watch('dataRange')
     const { dispatch } = useChartContext()
     const [pastDataRange, setPastDataRange] = useState(dataRange)
+    const { state } = useChartContext()
+    const { chartType } = state
 
 
     useEffect(() => {
@@ -26,6 +29,7 @@ const GlobalTab = ({ keyLabels }) => {
 
     }, [dataRange, dispatch])
 
+    const isNonAxis = useIsNonAxisChart(chartType)
     return (
         <div className="w-full">
             <Card className="w-full mb-2">
@@ -46,26 +50,16 @@ const GlobalTab = ({ keyLabels }) => {
                         </div>
                     </div>
 
-                    <div className="col-span-1">
+                    {!isNonAxis && <div className="col-span-2">
                         <div className="flex items-center">
                             <Label className="inline mr-2 shrink-0" htmlFor="global stacking" value="Stacked:" />
                             <Select id="global stacking" {...register('global.stacked')}>
                                 <option value='none'>None</option>
                                 <option value='stacked'>Stacked</option>
-                                <option value='100-stacked'>100% Stacked</option>                                
-                            </Select>                            
+                                <option value='100-stacked'>100% Stacked</option>
+                            </Select>
                         </div>
-                    </div>
-                    <div className="col-span-1">
-                        <div className="flex items-center">
-                            <Label className="inline mr-2 shrink-0" htmlFor="global stacking" value="Stacked:" />
-                            <Select id="global stacking" {...register('global.stacked')}>
-                                <option value='none'>None</option>
-                                <option value='stacked'>Stacked</option>
-                                <option value='100-stacked'>100% Stacked</option>                                
-                            </Select>                            
-                        </div>
-                    </div>
+                    </div>}
                     <div className="col-span-1">
                         <div className="flex items-center">
                             <Controller
@@ -90,9 +84,6 @@ const GlobalTab = ({ keyLabels }) => {
                             />
                         </div>
                     </div>
-
-
-
                 </div>
             </Card>
             <Card className="w-full">

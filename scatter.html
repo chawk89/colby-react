@@ -39,19 +39,7 @@
         loadingStatus: 'loading'
       }
       await fetchData()
-      const data = [['Date',
-        'Q1 FY2013',
-        'Q2 FY2013',
-        'Q3 FY2013',
-        'Q4 FY2013',
-        'Q1 FY2014',
-        'Q2 FY2014',
-        'Q3 FY2014',
-        'Q4 FY2014',
-        'Q1 FY2015',
-        'Q2 FY2015',
-        'Q3 FY2015',
-        'Q4 FY2015'],
+      const data = [
       ['Online Sales',
         '237',
         '492',
@@ -94,10 +82,9 @@
 
     }
     async function init() {
-      const testKey = await (() => { console.log('init'); return 'test-key' })();
+      const testKey = await (() => { console.log('init'); return 'scatter-key' })();
       window.ColbyChartInfo = {
-        // chartType: 'bar',
-        chartType: 'bar',
+        chartType: 'scatter',
         createDatasets,
         storageKey: `appState-${testKey}`,
         loadingStatus: 'none',

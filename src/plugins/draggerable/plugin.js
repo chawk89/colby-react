@@ -68,4 +68,5 @@ export class ChartjsDraggablePlugin {
 				.on('end', getDispatcher(subjectPicker, 'onDragEnd'))
 		);
 	}
+	
 }

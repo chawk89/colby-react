@@ -1362,7 +1362,7 @@ export const ChartProvider = ({ children }) => {
         throw Error('ColbyChartInfo is missing')
     }
 
-    console.log(`[loadingStatus]`, loadingStatus)
+    // console.log(`[loadingStatus]`, loadingStatus)
 
     if (loadingStatus == 'none' || loadingStatus == 'loading') {
         if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')

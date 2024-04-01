@@ -76,7 +76,7 @@ const LineAnnotation = () => {
                 <div className="flex items-center">
                     <Label className="inline mr-2 shrink-0" htmlFor="anno-linestyle" value="Line Style:" />
                     <Select id="anno-linestyle" {...register("annotationTemp.line.style")} >
-                        <option value='none'>None</option>
+                        <option value='none'>Solid</option>
                         <option value='dashed'>Dashed</option>
                         <option value='wave'>Wave</option>
                     </Select>

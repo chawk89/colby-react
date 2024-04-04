@@ -269,3 +269,16 @@ export const isNonAxisChart = (chartType) => {
     }
     return false;
 }
+export const updateChartMouseCursorStyle = (chart, cursor) => {
+    // console.trace('[updateChartMouseCursorStyle]', chart.canvas, )
+    if(chart?.canvas) {
+        chart.canvas.style.cursor = cursor
+    }
+}
+
+export const updateChartEleemntStyle = (chart, cursor) => {
+    if(chart?.canvas) {
+        chart.canvas.style.cursor = cursor
+    }
+}
+

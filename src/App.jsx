@@ -12,7 +12,7 @@ import { useState } from 'react'
 import './App.scss'
 
 function App() {
-  const [isFirstLoading, setIsFirstLoading] = useState(true);
+  const [isFirstLoading, setIsFirstLoading] = useState(false);
 
 
   const loadingStatus = useLoadingStatus()

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chart.js with Interactive Curved Arrow Line and Highlighted Circles</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1"></script>
+</head>
+<body>
+
+<canvas id="myChart" width="400" height="400"></canvas>
+
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var startCircleClicked = false;
+    var endCircleClicked = false;
+    var isCursorNearLine = false;
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                annotation: {
+                    annotations: {
+                        arrowLine: {
+                            type: 'line',
+                            xMin: 1,
+                            xMax: 3,
+                            yMin: 12,
+                            yMax: 5,
+                            borderColor: 'grey',
+                            borderWidth: 2,
+                            curve: false,
+                            arrowHeads: {
+                                end: {
+                                    display: true
+                                }
+                            },
+                            label: {
+                                display: true,
+                                content: 'CAGR',
+                                position: 'center'
+                            }
+                        },
+                        startCircle: {
+                            type: 'point',
+                            xValue: 1,
+                            yValue: 12,
+                            radius: 0,
+                            backgroundColor: 'blue',
+                            borderColor: 'blue',
+                            borderWidth: 2
+                        },
+                        endCircle: {
+                            type: 'point',
+                            xValue: 3,
+                            yValue: 5,
+                            radius: 0,
+                            backgroundColor: 'blue',
+                            borderColor: 'blue',
+                            borderWidth: 2
+                        }
+                    }
+                }
+            }
+        },
+        plugins: [{
+            id: 'clickPlugin',
+            beforeEvent(chart, args, options) {
+                const event = args.event;
+                console.log('[clickPlugin]', event.type)
+                if (event.type === 'click') {
+                    const xValue = chart.scales.x.getValueForPixel(event.x);
+                    var annotations = chart.options.plugins.annotation.annotations;
+                    var arrowLine = annotations.arrowLine;
+                    var startCircle = annotations.startCircle;
+                    var endCircle = annotations.endCircle;
+
+                    // Check if start circle was clicked
+                    const clickThreshold = 10; // pixels
+                    const startX = chart.scales.x.getPixelForValue(startCircle.xValue);
+                    const endX = chart.scales.x.getPixelForValue(endCircle.xValue);
+
+                    if (Math.abs(event.x - startX) < clickThreshold || Math.abs(event.x - endX) < clickThreshold) {
+                        highlightLine(arrowLine);
+                        chart.update();
+                    } else {
+                        resetLineAndCircles(chart);
+                    }
+
+                    // Move start circle if it was previously clicked
+                    if (startCircleClicked) {
+                        moveAnnotationEnd(chart, arrowLine, startCircle, xValue, 'start');
+                        startCircleClicked = false;
+                        chart.update();
+                    }
+
+                    // Move end circle if it was previously clicked
+                    if (endCircleClicked) {
+                        moveAnnotationEnd(chart, arrowLine, endCircle, xValue, 'end');
+                        endCircleClicked = false;
+                        chart.update();
+                    }
+
+                    // Toggle circle clicked status
+                    if (Math.abs(event.x - startX) < clickThreshold) {
+                        startCircleClicked = !startCircleClicked;
+                        endCircleClicked = false;
+                    } else if (Math.abs(event.x - endX) < clickThreshold) {
+                        endCircleClicked = !endCircleClicked;
+                        startCircleClicked = false;
+                    }
+                }
+            }
+        }]
+    });
+
+    function moveAnnotationEnd(chart, arrowLine, circle, xValue, end) {
+        const nearestValue = findNearestDataPoint(chart, xValue, 'x');
+        const barHeight = chart.data.datasets[0].data[nearestValue];
+        circle.xValue = nearestValue;
+        circle.yValue = barHeight;
+
+        if (end === 'start') {
+            arrowLine.xMin = nearestValue;
+            arrowLine.yMin = barHeight;
+        } else {
+            arrowLine.xMax = nearestValue;
+            arrowLine.yMax = barHeight;
+        }
+
+        var startValue = chart.data.datasets[0].data[arrowLine.xMin];
+        var endValue = chart.data.datasets[0].data[arrowLine.xMax];
+        var periods = Math.abs(arrowLine.xMax - arrowLine.xMin);
+        var cagr = calculateCAGR(startValue, endValue, periods);
+        arrowLine.label.content = 'CAGR: ' + cagr;
+        chart.update();
+    }
+
+    function findNearestDataPoint(chart, value, axis) {
+        let minDiff = Number.MAX_VALUE;
+        let nearestValue = value;
+
+        chart.data.labels.forEach((label, index) => {
+            const chartValue = axis === 'x' ? index : chart.data.datasets[0].data[index];
+            const diff = Math.abs(chartValue - value);
+            if (diff < minDiff) {
+                minDiff = diff;
+                nearestValue = chartValue;
+            }
+        });
+
+        return nearestValue;
+    }
+
+    function updateCircleStyle(circle, selected) {
+        if (selected) {
+            circle.backgroundColor = 'green';
+            circle.borderColor = 'green';
+        } else {
+            circle.backgroundColor = 'blue';
+            circle.borderColor = 'blue';
+        }
+    }
+
+    function calculateCAGR(startValue, endValue, periods) {
+        if (startValue === 0 || periods === 0) return 'N/A';
+        return ((Math.pow(endValue / startValue, 1 / periods) - 1) * 100).toFixed(2) + '%';
+    }
+
+    // Mousemove event for circle display and cursor change
+    myChart.canvas.addEventListener('mousemove', function(event) {
+    var arrowLine = myChart.options.plugins.annotation.annotations.arrowLine;
+    var startCircle = myChart.options.plugins.annotation.annotations.startCircle;
+    var endCircle = myChart.options.plugins.annotation.annotations.endCircle;
+
+    var nearLine = checkIfNearLine(myChart, event, arrowLine, 10);
+    if (nearLine && !isCursorNearLine) {
+        showCircles(startCircle, endCircle);
+        highlightLine(arrowLine, 'yellow'); // Highlight line in yellow
+        isCursorNearLine = true;
+        myChart.canvas.style.cursor = 'move';
+        myChart.update();
+    } else if (!nearLine && isCursorNearLine && !startCircleClicked && !endCircleClicked) {
+        hideCircles(startCircle, endCircle);
+        normalizeLine(arrowLine);
+        isCursorNearLine = false;
+        myChart.canvas.style.cursor = 'default';
+        myChart.update();
+    }
+}, false);
+
+    function resetLineAndCircles(chart) {
+        var arrowLine = chart.options.plugins.annotation.annotations.arrowLine;
+        var startCircle = chart.options.plugins.annotation.annotations.startCircle;
+        var endCircle = chart.options.plugins.annotation.annotations.endCircle;
+
+        normalizeLine(arrowLine);
+        hideCircles(startCircle, endCircle);
+        chart.update();
+    }
+
+    function showCircles(startCircle, endCircle) {
+        startCircle.radius = 5; // Show the circle
+        endCircle.radius = 5;    // Show the circle
+    }
+
+    function hideCircles(startCircle, endCircle) {
+        startCircle.radius = 0; // Hide the circle
+        endCircle.radius = 0;   // Hide the circle
+    }
+
+    function highlightLine(line, color) {
+        line.borderWidth = 3;
+        line.borderColor = 'color';
+    }
+
+    function normalizeLine(line) {
+        line.borderWidth = 2;
+        line.borderColor = 'grey';
+    }
+
+    function checkIfNearLine(chart, event, line, proximity) {
+        var x = chart.scales.x.getPixelForValue(line.xMin);
+        var y = chart.scales.y.getPixelForValue(line.yMin);
+        var xEnd = chart.scales.x.getPixelForValue(line.xMax);
+        var yEnd = chart.scales.y.getPixelForValue(line.yMax);
+
+        var distance = distanceToLineSegment(x, y, xEnd, yEnd, event.offsetX, event.offsetY);
+        return distance < proximity;
+    }
+
+    function distanceToLineSegment(x1, y1, x2, y2, x0, y0) {
+        var A = x0 - x1;
+        var B = y0 - y1;
+        var C = x2 - x1;
+        var D = y2 - y1;
+
+        var dot = A * C + B * D;
+        var len_sq = C * C + D * D;
+        var param = -1;
+        if (len_sq != 0) {
+            param = dot / len_sq;
+        }
+
+        var xx, yy;
+
+        if (param < 0) {
+            xx = x1;
+            yy = y1;
+        } else if (param > 1) {
+            xx = x2;
+            yy = y2;
+        } else {
+            xx = x1 + param * C;
+            yy = y1 + param * D;
+        }
+
+        var dx = x0 - xx;
+        var dy = y0 - yy;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+</script>
+
+</body>
+</html>

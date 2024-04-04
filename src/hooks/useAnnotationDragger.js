@@ -6,7 +6,7 @@
 
 
 import { useEffect } from 'react'
-import { SELECTED_COLOR, copySimpleObject, findNearestDataPoint, getArrowSubtypeById, getLeftElementId, getMainElementId, getRightElementId, getXValueForMultiDataset, highlightLine, isArrowElement, unhighlightLine, wait } from '../utils/utils';
+import { SELECTED_COLOR, copySimpleObject, findNearestDataPoint, getArrowSubtypeById, getLeftElementId, getMainElementId, getRightElementId, getXValueForMultiDataset, highlightLine, isArrowElement, unhighlightLine, updateChartMouseCursorStyle, wait } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
 
 
@@ -112,6 +112,18 @@ const checkMovableIfElement = (elementId) => {
     // console.log('[checkMovableIfElement]', elementId)
     return true
 }
+const updateAnnotationCursor = (mode, ctx, event) => {
+    const { element } = ctx
+    console.log(`[updateAnnotationCursor] ${mode}`, element)
+    if (mode == 'enter') {
+        // if (element) {
+        //     element.options.backgroundColor = 'blue'
+        // }
+        updateChartMouseCursorStyle(event?.chart, 'move')
+    } else if (mode == 'leave') {
+        updateChartMouseCursorStyle(event?.chart, 'default')
+    }
+}
 
 export const markColbyChartOptions = (options, dispatch) => ({
     ...options,
@@ -119,13 +131,15 @@ export const markColbyChartOptions = (options, dispatch) => ({
         ...options.plugins,
         annotation: {
             ...options.plugins.annotation,
-            enter(ctx) {
+            enter(ctx, event) {
                 const { element } = ctx
+                updateAnnotationCursor('enter', ctx, event,)
                 if (checkMovableIfElement(element.options.id)) {
                     window.colbyAnnotation.element = element
                 }
             },
-            leave() {
+            leave(ctx, event) {
+                updateAnnotationCursor('leave', ctx, event)
             },
             click(ctx, event) {
                 // window.colbyAnnotation.element = null
@@ -203,9 +217,10 @@ const useAnnotationDragger = (dispatch, state) => {
         }
     }, [])
 
-    const handleElementDragging = function (event) {
+    const handleElementDragging = function (event, chart) {
         const { lastEvent, element } = window.colbyAnnotation
         if (!lastEvent || !element) {
+            // updateChartMouseCursorStyle(chart, 'default')
             return;
         }
         let moveX = event.x - lastEvent.x;
@@ -220,23 +235,45 @@ const useAnnotationDragger = (dispatch, state) => {
         }
 
         onDrag(element, moveX, moveY);
+        // updateChartMouseCursorStyle(chart, 'move')
         window.colbyAnnotation.lastEvent = event
 
         return true;
     };
+    const highlightLine = (element) => {
 
-    const handleDrag = function (event, element) {
+    }
+    const handleMouseMove = function (event, { element, chart }) {
+        console.trace('[handleDrag]', window.colbyAnnotation.lastEvent)
+
+        switch (event.type) {
+            case 'mousemove':
+                // if (!window.colbyAnnotation.lastEvent) {
+                //     updateChartMouseCursorStyle(chart, 'default')
+                // } else {
+                //     updateChartMouseCursorStyle(chart, 'move')
+                // }
+                break;
+            case 'mouseout':
+            case 'mouseup':
+                // updateChartMouseCursorStyle(chart, 'default')
+                break;
+            case 'mousedown':
+                break;
+        }
+    };
+
+    const handleDrag = function (event, { element, chart }) {
         if (element) {
             switch (event.type) {
                 case 'mousemove':
-                    return handleElementDragging(event);
+                    return handleElementDragging(event, chart);
                 case 'mouseout':
                 case 'mouseup':
                     window.colbyAnnotation.element = null
                     window.colbyAnnotation.lastEvent = null
                     break;
                 case 'mousedown':
-
                     window.colbyAnnotation.lastEvent = event
                     break;
                 default:
@@ -251,9 +288,7 @@ const useAnnotationDragger = (dispatch, state) => {
         if (colbyAnnotationTemp.arrowElement) {
             console.log('[colbyAnnotationTemp.arrowElement]', colbyAnnotationTemp.arrowElement)
             const element = colbyAnnotationTemp.arrowElement
-
             updateArrowLine(chart, element, eventX, dispatch)
-
         }
     };
 
@@ -264,12 +299,13 @@ const useAnnotationDragger = (dispatch, state) => {
         beforeEvent: (chart, args, options) => {
             const event = args.event;
             // console.log('[event type]', event.type)
+
             if (event.type === 'click') {
                 handleClick(chart, args)
             } else {
-
                 const { element } = window.colbyAnnotation
-                if (handleDrag(args.event, element)) {
+                // handleMouseMove(args.event, { element, chart })
+                if (handleDrag(args.event, { element, chart })) {
                     args.changed = true;
                     return;
                 }
@@ -287,6 +323,12 @@ const useAnnotationDragger = (dispatch, state) => {
             ctx.fillStyle = options.bgcolor || '#ffffff';
             ctx.fillRect(0, 0, chart.width, chart.height);
             ctx.restore();
+        },
+        // update the Init additional style
+        afterUpdate(chart, args, options) {
+
+            // Reuse the built-in legendItems generator
+
         }
     })
 }

@@ -18,7 +18,7 @@ import { Chart as ReactChart } from 'react-chartjs-2';
 import { useChartContext } from '../hooks/useChartContext'
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import AnnotationPlugin from 'chartjs-plugin-annotation';
-import useAnnotationDragger, { hideColbyMenu, markColbyChartOptions } from '../hooks/useAnnotationDragger';
+import useAnnotationDragger, { hideColbyMenu, useMarkColbyChartOptions } from '../hooks/useAnnotationDragger';
 import ChartMenu from './common/ChartMenu';
 import { findNearestDataPoint, getDatasetIndexWithoutXAxis } from '../utils/utils';
 
@@ -49,7 +49,7 @@ const ColbyChart = () => {
     const { state: { options, forms, data, chartType, getChart }, chartRef, dispatch } = context
 
     const colbyDraggerPlugin = useAnnotationDragger(dispatch, context.state)
-    const chartOptions = markColbyChartOptions(options, dispatch)
+    const chartOptions = useMarkColbyChartOptions(options, dispatch)
     const handleClick = (event, data) => {
         // document.querySelector
         console.log('[handleClick]', event.target, data);

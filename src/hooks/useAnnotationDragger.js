@@ -5,7 +5,7 @@
 
 
 
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { SELECTED_COLOR, copySimpleObject, findNearestDataPoint, getArrowSubtypeById, getLeftElementId, getMainElementId, getRightElementId, getXValueForMultiDataset, highlightLine, isArrowElement, unhighlightLine, updateChartMouseCursorStyle, wait } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
 
@@ -113,65 +113,83 @@ const checkMovableIfElement = (elementId) => {
     return true
 }
 const updateAnnotationCursor = (mode, ctx, event) => {
-    const { element } = ctx
-    console.log(`[updateAnnotationCursor] ${mode}`, element)
     if (mode == 'enter') {
-        // if (element) {
-        //     element.options.backgroundColor = 'blue'
-        // }
-        updateChartMouseCursorStyle(event?.chart, 'move')
+        updateChartMouseCursorStyle(event?.chart, 'move');
     } else if (mode == 'leave') {
         updateChartMouseCursorStyle(event?.chart, 'default')
     }
 }
 
-export const markColbyChartOptions = (options, dispatch) => ({
-    ...options,
-    plugins: {
-        ...options.plugins,
-        annotation: {
-            ...options.plugins.annotation,
-            enter(ctx, event) {
-                const { element } = ctx
-                updateAnnotationCursor('enter', ctx, event,)
-                if (checkMovableIfElement(element.options.id)) {
-                    window.colbyAnnotation.element = element
+const handleAnnotationHover = (mode, element) => {
+    if (element) {
+        element.options.borderWidth = mode == 'enter' ? 5 : 1;
+        element.options.borderColor = mode == 'enter' ? 'blue' : 'red';
+    }    
+}
+
+export const useMarkColbyChartOptions = (optionsOrig, dispatch) => {
+    const [hoverElem, setHoverElem] = useState(false)
+    const [hoverState, setHoverState] = useState(false)
+    const [options, setOptions] = useState(optionsOrig)
+    useEffect(() => {
+        handleAnnotationHover(hoverState ? 'enter' : 'leave', hoverElem)
+        const annotation = options.plugins.annotation.annotations[hoverElem?.options?.id];
+        if (annotation) {
+            annotation.borderColor = hoverState ? hoverElem.options.borderColor : 'red';
+            annotation.borderWidth = hoverState ? hoverElem.options.borderWidth : 1;
+            setOptions({...options})
+        }
+    }, [hoverElem, hoverState])
+    return {
+        ...options,
+        plugins: {
+            ...options.plugins,
+            annotation: {
+                ...options.plugins.annotation,
+                enter(ctx, event) {
+                    const { element } = ctx
+                    setHoverElem(element)
+                    setHoverState(true)
+                    updateAnnotationCursor('enter', ctx, event,)
+                    if (checkMovableIfElement(element.options.id)) {
+                        window.colbyAnnotation.element = element
+                    }
+                },
+                leave(ctx, event) {
+                    const { element } = ctx
+                    setHoverState(false)
+                    updateAnnotationCursor('leave', ctx, event)
+                },
+                click(ctx, event) {
+                    const colbyAnnotationTemp = window?.colbyAnnotationTemp
+                    const colbyAnnotation = window.colbyAnnotation
+                    if (!colbyAnnotationTemp) return;
+                    colbyAnnotationTemp.clickCount = colbyAnnotationTemp.clickCount + 1;
+                    const { chart } = event
+
+                    const { idx, type, element } = ctx
+                    if (colbyAnnotationTemp.clickCount == 1) {
+
+                        // Single click action
+                        colbyAnnotationTemp.clickTimer = setTimeout(() => {
+                            if (colbyAnnotationTemp.clickCount == 1) {
+                                handleSingleClick(ctx, event)
+                            }
+                            colbyAnnotationTemp.clickCount = 0
+                            clearTimeout(colbyAnnotationTemp.clickTimer)
+                        }, CLICK_TIMEOUT)
+                    } else if (colbyAnnotationTemp.clickCount == 2) {
+                        // Double click action
+                        onSelectClick(element, colbyAnnotation, chart, dispatch)
+
+                        colbyAnnotationTemp.clickCount = 0;
+                        clearTimeout(colbyAnnotationTemp.clickCount)
+                    }
                 }
             },
-            leave(ctx, event) {
-                updateAnnotationCursor('leave', ctx, event)
-            },
-            click(ctx, event) {
-                // window.colbyAnnotation.element = null
-                // window.colbyAnnotation.lastEvent = null
-                const colbyAnnotationTemp = window?.colbyAnnotationTemp
-                const colbyAnnotation = window.colbyAnnotation
-                if (!colbyAnnotationTemp) return;
-                colbyAnnotationTemp.clickCount = colbyAnnotationTemp.clickCount + 1;
-                const { chart } = event
-
-                const { idx, type, element } = ctx
-                if (colbyAnnotationTemp.clickCount == 1) {
-
-                    // Single click action
-                    colbyAnnotationTemp.clickTimer = setTimeout(() => {
-                        if (colbyAnnotationTemp.clickCount == 1) {
-                            handleSingleClick(ctx, event)
-                        }
-                        colbyAnnotationTemp.clickCount = 0
-                        clearTimeout(colbyAnnotationTemp.clickTimer)
-                    }, CLICK_TIMEOUT)
-                } else if (colbyAnnotationTemp.clickCount == 2) {
-                    // Double click action
-                    onSelectClick(element, colbyAnnotation, chart, dispatch)
-
-                    colbyAnnotationTemp.clickCount = 0;
-                    clearTimeout(colbyAnnotationTemp.clickCount)
-                }
-            }
-        },
+        }
     }
-})
+}
 
 function showColbyMenu(x, y) {
     const menu = document.querySelector('.colby-menu');

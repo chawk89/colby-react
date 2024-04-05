@@ -122,7 +122,7 @@ const updateAnnotationCursor = (mode, ctx, event) => {
 
 const handleAnnotationHover = (mode, element) => {
     if (element) {
-        element.options.borderWidth = mode == 'enter' ? 5 : 1;
+        element.options.borderWidth = mode == 'enter' ? 3 : 1;
         element.options.borderColor = mode == 'enter' ? 'blue' : 'red';
     }    
 }
@@ -131,12 +131,16 @@ export const useMarkColbyChartOptions = (optionsOrig, dispatch) => {
     const [hoverElem, setHoverElem] = useState(false)
     const [hoverState, setHoverState] = useState(false)
     const [options, setOptions] = useState(optionsOrig)
+    console.log('[useMarkColbyChartOptions]', options)
     useEffect(() => {
-        handleAnnotationHover(hoverState ? 'enter' : 'leave', hoverElem)
         const annotation = options.plugins.annotation.annotations[hoverElem?.options?.id];
         if (annotation) {
-            annotation.borderColor = hoverState ? hoverElem.options.borderColor : 'red';
-            annotation.borderWidth = hoverState ? hoverElem.options.borderWidth : 1;
+            if (hoverState) {
+                annotation.borderColorOrig = hoverElem.options.borderColor;
+            }
+            // handleAnnotationHover(hoverState ? 'enter' : 'leave', hoverElem)
+            annotation.borderColor = hoverState ? 'blue' : annotation.borderColorOrig;
+            annotation.borderWidth = hoverState ? 3 : 1;
             setOptions({...options})
         }
     }, [hoverElem, hoverState])

@@ -39,7 +39,6 @@ const LabelAnnotation = () => {
         state.forms.annotationTemp.label,
         triggerFlag
     ])
-    console.log('[labelEnabled]', labelEnabled)
 
     return (
         <Card className="w-full">

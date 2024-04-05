@@ -27,6 +27,7 @@ const PropertiesTab = () => {
         const { properties } = data
         // const list = Object.keys(selected)
         // if (checkValidateValueSame(isEqualObject, list, { preValues: selected, curValues: properties })) return;
+        console.log(properties);
         dispatch({ type: UPDATE_ANNOTATION_ITEM, data: properties })
     }, [dispatch, selected])
     useFormValue(watch, handleUpdate, FormPropertyValues)

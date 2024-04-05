@@ -52,7 +52,6 @@ const ColbyChart = () => {
     const chartOptions = useMarkColbyChartOptions(options, dispatch)
     const handleClick = (event, data) => {
         // document.querySelector
-        console.log('[handleClick]', event.target, data);
         const chart = getChart()
         const rect = chart.canvas.getBoundingClientRect();
         const x = event.clientX - rect.left;

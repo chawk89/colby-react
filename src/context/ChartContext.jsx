@@ -411,9 +411,6 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis, chartType }) => {
 
 const updateDatasetsStyles = (oldOptions, datasets) => {
     const newOptions = { ...oldOptions }
-    // styles
-    console.log('[newOptions]', newOptions)
-    // datasets
 
     // colbyDraggerPlugin.bgcolor = bgColor
     return newOptions
@@ -423,7 +420,7 @@ const getLineAnnotation = (line, state) => {
     if (line.id == 'lineTemp' && !line.enabled) return null
 
 
-    const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel } = line
+    const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel, labelBgOpacity } = line
 
     const isSelected = state.annotationSelected == line.id
     const unit = calcYAxisUnit(state)
@@ -450,6 +447,8 @@ const getLineAnnotation = (line, state) => {
             display: true,
             textAlign: 'center',
             drawTime: 'afterDatasetsDraw',
+            backgroundColor: 'rgba(0, 0, 0, ' + labelBgOpacity / 100 + ')',
+            color: labelBgOpacity > 30 ? 'white' : 'black'
         }
     }
 
@@ -812,8 +811,6 @@ const updateChartOptions = (oldOptions, forms, state) => {
     // updateDatasetsStyles
     newOptions = updateDatasetsStyles(newOptions, datasets)
 
-    // console.log('[newOptions]', newOptions)
-
     return newOptions
 }
 const onMoveAnnotation = (data, state) => {
@@ -853,7 +850,6 @@ const onMoveAnnotation = (data, state) => {
         case 'line': {
             const { axis } = rest
             const { dx, dy } = data
-            console.log('[onMoveAnnotation]', data, selected)
             if (axis == "x") {
                 selected.position = +selected.position + dy
             } else if (axis == "y") {
@@ -936,7 +932,6 @@ const addNewAnnotationByContextMenu = (data, state) => {
             break;
         }
     }
-    console.log('[handlDoubleClick]', x, y)
     if (anno.enabled) {
         const newState = { ...state, annotation: { ...state.annotation, [id]: anno }, annotationSelected: id }
         return newState
@@ -974,7 +969,6 @@ const reducer = (state, action) => {
         }
         case ADD_ANNOTATION_ITEM: {
             const { type: annotationType, id } = payload.data
-            console.log('[ADD_ANNOTATION_ITEM]', payload.data)
 
             let newState = {
                 ...state,
@@ -1173,7 +1167,6 @@ const getYAxisDatafield = (data) => {
 }
 
 const getFilteredDatasets = (data) => {
-    console.log('[getFilteredDatasets]', data)
     const { forms } = data
     const { axes: { datasets: axesDatasets } } = forms
     const xAxis = getXAxisDatafield(data)
@@ -1210,7 +1203,6 @@ const calcYAxisUnit = (state) => {
     return resultMaxValue
 }
 const calcYAxisTickCallback = (value, state) => {
-    // console.log(value)
 
     // if (typeof value === 'number' && value == Math.floor(value)) return Math.floor(value)
     if (state.forms.global.stacked == '100-stacked') {
@@ -1234,11 +1226,9 @@ const updateChartDatasets = (state) => {
 
         // bubble chart
         if (parentChartType == 'bubble') {
-            // console.log('[resultMaxValue]', resultMaxValue)
             result.datasets = result.datasets.map(d => {
                 const { key, data, backgroundColor } = d
                 const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, markerType } = datasets[key]
-                console.log('[datasets[key]]', datasets[key])
                 const borderColor = colorToRGBA(color, +opacity)
                 const dataset = {
                     ...d,
@@ -1253,7 +1243,6 @@ const updateChartDatasets = (state) => {
                 state.options.scales.x.title.text = xAxisLabel
             }
         } else if (parentChartType == 'doughnut' || parentChartType == 'pie') {
-            // console.log('[resultMaxValue]', resultMaxValue)
             result.datasets = result.datasets.map(d => {
                 const dataset = {
                     ...d,
@@ -1267,11 +1256,9 @@ const updateChartDatasets = (state) => {
             // }
         } else {
             const resultMaxValue = calcYAxisUnit(state)
-            console.log('[resultMaxValue]', resultMaxValue)
             result.datasets = result.datasets.map(d => {
                 const { key, data, backgroundColor } = d
                 const { barPadding, color, gradient, opacity, fill, chartType, lineStyle, thickness, pointRadius, markerType } = datasets[key]
-                console.log('[datasets[key]]', key, datasets[key])
                 const borderColor = colorToRGBA(color, +opacity)
                 const barPercentage = (!!barPadding) ? 1 - barPadding : 0.9
 
@@ -1362,8 +1349,6 @@ export const ChartProvider = ({ children }) => {
         throw Error('ColbyChartInfo is missing')
     }
 
-    // console.log(`[loadingStatus]`, loadingStatus)
-
     if (loadingStatus == 'none' || loadingStatus == 'loading') {
         if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
         return <></>
@@ -1387,7 +1372,6 @@ export const ChartProvider = ({ children }) => {
         const canvas = chartRef.current.canvas;
 
         if (canvas) {
-            console.log('chartRef.current', canvas)
             const newCanvas = canvas
 
             // Convert canvas to data URL
@@ -1409,16 +1393,14 @@ export const ChartProvider = ({ children }) => {
             const dataURL = newCanvas.toDataURL('image/jpeg');
             if (window.onInsertImage) {
                 const result = await window.onInsertImage(dataURL)
-                console.log('[onInsertImage] - success newCanvas', result)
+                console.log(result);
             }
         } catch (error) {
-            console.log('[onInsertImage] - failed')
+            console.log(error);
         }
-
     }
     const onClearCache = () => {
         localStorage.removeItem(storageKey)
-        // console.log('[initialState.forms]', initialState.forms)
         // const state = getInitialState({ state: initialState, info: ColbyChartInfo })
         // onAdditionalUpdates(state)        
         // dispatch({ type: RELOAD_FORM, data: state })

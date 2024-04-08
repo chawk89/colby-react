@@ -470,7 +470,8 @@ const getBoxAnnotation = (box, state) => {
     const active = box.id && state.annotationSelected == box.id
     const unit = calcYAxisUnit(state)
 
-    const { xMin, xMax, yMin, yMax, label } = box
+    const { xMin, xMax, yMin, yMax, label, bgOpacity } = box
+    const { annotationSelected } = state
     const boxAnnotation = {
         type: "box",
         id: box.id ?? 'boxTemp',
@@ -478,7 +479,9 @@ const getBoxAnnotation = (box, state) => {
         xMax,
         yMin: yMin / unit,
         yMax: yMax / unit,
-        backgroundColor: active ? SELECTED_COLOR : 'rgba(255, 99, 132, 0.25)'
+        // backgroundColor: active ? SELECTED_COLOR : 'rgba(255, 99, 132, 0.25)'
+        backgroundColor: 'rgba(255, 99, 132, ' + (bgOpacity || 100) / 100 + ')',
+        borderColor: annotationSelected == box.id ? 'blue' : 'rgb(0, 0, 0)',
     };
 
 
@@ -660,7 +663,7 @@ const getLabelAnnotation = (label, state) => {
     if (!label.id) return null
     if (label.id == 'labelTemp' && !label.enabled) return null
 
-    const { datasetKey, dataIndex, caption: labelText, fontName: labelFont, fontSize, color: labelColor } = label
+    const { datasetKey, dataIndex, caption: labelText, fontName: labelFont, fontSize, color: labelColor, labelBgOpacity } = label
 
     if (!datasetKey || !dataIndex) return null
 
@@ -688,9 +691,12 @@ const getLabelAnnotation = (label, state) => {
 
     const labelAnnotation = {
         type: "label",
-        backgroundColor: annotationSelected == label.id ? SELECTED_COLOR : 'rgba(245,245,245)',
+        // backgroundColor: annotationSelected == label.id ? SELECTED_COLOR : 'rgba(245,245,245)',
+        backgroundColor: 'rgba(0, 0, 0, ' + labelBgOpacity / 100 + ')',
+        color: labelBgOpacity > 30 ? 'white' : 'black',
+        borderColor: annotationSelected == label.id ? SELECTED_COLOR : 'rgb(0, 0, 0)',
         borderRadius: 6,
-        borderWidth: 1,
+        borderWidth: annotationSelected ? 4 : 1,
         content: [labelText],
         position: {
             x: 'end',
@@ -702,7 +708,7 @@ const getLabelAnnotation = (label, state) => {
             margin: 0,
         },
         font: {
-            family: labelFont,
+            family: labelFont || 'Lora',
             size: labelSize,
         },
         xValue,

@@ -70,7 +70,12 @@ const BoxAnnotation = () => {
                         <TextInput id="annotationBoxYMax" type="text" placeholder="10" {...register('annotationTemp.box.yMax')} />
                     </div>
                 </div>
-
+                <div className="col-span-3">
+                    <div className="flex items-center">
+                        <Label className="inline mr-2 shrink-0" htmlFor="annotationBoxBgOpacity" value="Bg Opacity:" />
+                        <TextInput id="annotationBoxBgOpacity" type="text" placeholder="10" {...register("annotationTemp.box.bgOpacity")} />
+                    </div>
+                </div>
                 <div className="col-span-1">
                     <div className="flex items-center">
                         <Button onClick={handleAddClick}> Add </Button>

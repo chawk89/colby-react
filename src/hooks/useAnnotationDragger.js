@@ -8,6 +8,7 @@
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { SELECTED_COLOR, copySimpleObject, findNearestDataPoint, getArrowSubtypeById, getLeftElementId, getMainElementId, getRightElementId, getXValueForMultiDataset, highlightLine, isArrowElement, unhighlightLine, updateChartMouseCursorStyle, wait } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
+import { useChartContext } from './useChartContext';
 
 
 export const CLICK_TIMEOUT = 250
@@ -34,21 +35,12 @@ export const onDrag = function (element, moveX, moveY) {
     }
 };
 function highlightLineByDoubleClicked(element, alreadySelected, selected) {
-    // console.log('[updateLine]', element)
-    // const { options } = element
-
     if (alreadySelected) {
-        // options.borderColor = selected.borderColor
-        // options.borderWidth = selected.borderWidth
         return {}
     } else {
         const result = copySimpleObject({
             id: options.id,
-            // borderColor: options.borderColor,
-            // borderWidth: options.borderWidth
         })
-        // options.borderColor = SELECTED_COLOR
-        // options.borderWidth = +options.borderWidth + 2
         return result;
     }
 }
@@ -120,18 +112,18 @@ const updateAnnotationCursor = (mode, ctx, event) => {
     }
 }
 
-const handleAnnotationHover = (mode, element) => {
+const handleAnnotationHover = (mode, element, annotationSelected) => {
     if (element) {
-        element.options.borderWidth = mode == 'enter' ? 3 : 1;
+        element.options.borderWidth = mode == 'enter' ? 3 : (annotationSelected ? 3 : 1);
         element.options.borderColor = mode == 'enter' ? 'blue' : 'red';
     }    
 }
 
 export const useMarkColbyChartOptions = (optionsOrig, dispatch) => {
+    const { state: { annotationSelected } } = useChartContext()
     const [hoverElem, setHoverElem] = useState(false)
     const [hoverState, setHoverState] = useState(false)
     const [options, setOptions] = useState(optionsOrig)
-    console.log('[useMarkColbyChartOptions]', options)
     useEffect(() => {
         const annotation = options.plugins.annotation.annotations[hoverElem?.options?.id];
         if (annotation) {
@@ -139,8 +131,8 @@ export const useMarkColbyChartOptions = (optionsOrig, dispatch) => {
                 annotation.borderColorOrig = hoverElem.options.borderColor;
             }
             // handleAnnotationHover(hoverState ? 'enter' : 'leave', hoverElem)
-            annotation.borderColor = hoverState ? 'blue' : annotation.borderColorOrig;
-            annotation.borderWidth = hoverState ? 3 : 1;
+            annotation.borderColor = hoverState ? 'blue' : (annotationSelected ? 'blue' : annotation.borderColorOrig);
+            annotation.borderWidth = hoverState ? 4 : (annotationSelected ? 4 : 1);
             setOptions({...options})
         }
     }, [hoverElem, hoverState])
@@ -356,10 +348,3 @@ const useAnnotationDragger = (dispatch, state) => {
 }
 
 export default useAnnotationDragger
-
-
-
-
-
-
-

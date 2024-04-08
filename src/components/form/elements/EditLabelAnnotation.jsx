@@ -87,6 +87,12 @@ const EditLabelAnnotation = () => {
                 <TextInput id="annotation-label-fontSize" type="number" placeholder="10" {...register('properties.fontSize')} />
             </div>
         </div>
+        <div className="col-span-3">
+            <div className="flex items-center">
+                <Label className="inline mr-2 shrink-0" htmlFor="anno-label-bg-opacity" value="Label Bg Opacity:" />
+                <TextInput id="anno-label-bg-opacity" type="text" placeholder="10" {...register("properties.labelBgOpacity")} />
+            </div>
+        </div>
         <div className="col-span-1">
             <div className="flex items-center">
                 <Button onClick={handleConfirmClick}> ok </Button>

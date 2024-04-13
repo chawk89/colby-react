@@ -657,7 +657,10 @@ const getArrowAnnotation = (arrow, state) => {
     return null;
 }
 
-
+//recognize whether content is an image file
+const isImageUrl = (url) => {
+    return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
+};
 
 const getLabelAnnotation = (label, state) => {
     if (!label.id) return null
@@ -716,6 +719,15 @@ const getLabelAnnotation = (label, state) => {
         xAdjust: adjustValueX,
         yAdjust: adjustValueY,
     };
+
+    // Check if the caption is an image URL and adjust the content
+    if (isImageUrl(labelText)) {
+        const img = new Image();
+        img.src = labelText;
+        img.width = 10 * fontSize;
+        img.height = 10 * fontSize;
+        labelAnnotation.content = img;
+    }
 
     return { [label.id]: labelAnnotation };
 }

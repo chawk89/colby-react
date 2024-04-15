@@ -9,12 +9,13 @@ import { useEffect, useLayoutEffect, useState } from 'react'
 import { SELECTED_COLOR, copySimpleObject, findNearestDataPoint, getArrowSubtypeById, getLeftElementId, getMainElementId, getRightElementId, getXValueForMultiDataset, highlightLine, isArrowElement, unhighlightLine, updateChartMouseCursorStyle, wait } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
 import { useChartContext } from './useChartContext';
+import { UPDATE_ANNOTATION_POSITION } from '../context/ChartContext';
 
 
 export const CLICK_TIMEOUT = 250
 
 export const onDrag = function (element, moveX, moveY) {
-
+    console.log('onDrag');
     element.x += moveX;
     element.y += moveY;
     element.x2 += moveX;
@@ -133,6 +134,14 @@ export const useMarkColbyChartOptions = (optionsOrig, dispatch) => {
             // handleAnnotationHover(hoverState ? 'enter' : 'leave', hoverElem)
             annotation.borderColor = hoverState ? 'blue' : (annotationSelected ? 'blue' : annotation.borderColorOrig);
             annotation.borderWidth = hoverState ? 4 : (annotationSelected ? 4 : 1);
+            if (window.colbyAnnotation.element) {
+                annotation.centerX = window.colbyAnnotation.element.centerX;
+                annotation.centerY = window.colbyAnnotation.element.centerY;
+                annotation.x = window.colbyAnnotation.element.x;
+                annotation.x2 = window.colbyAnnotation.element.x2;
+                annotation.y = window.colbyAnnotation.element.y;
+                annotation.y2 = window.colbyAnnotation.element.y2;
+            }
             setOptions({...options})
         }
     }, [hoverElem, hoverState])
@@ -155,6 +164,7 @@ export const useMarkColbyChartOptions = (optionsOrig, dispatch) => {
                     const { element } = ctx
                     setHoverState(false)
                     updateAnnotationCursor('leave', ctx, event)
+                    // dispatch({type: UPDATE_ANNOTATION_POSITION});
                 },
                 click(ctx, event) {
                     const colbyAnnotationTemp = window?.colbyAnnotationTemp
@@ -254,38 +264,18 @@ const useAnnotationDragger = (dispatch, state) => {
 
         return true;
     };
-    const highlightLine = (element) => {
-
-    }
-    const handleMouseMove = function (event, { element, chart }) {
-        console.trace('[handleDrag]', window.colbyAnnotation.lastEvent)
-
-        switch (event.type) {
-            case 'mousemove':
-                // if (!window.colbyAnnotation.lastEvent) {
-                //     updateChartMouseCursorStyle(chart, 'default')
-                // } else {
-                //     updateChartMouseCursorStyle(chart, 'move')
-                // }
-                break;
-            case 'mouseout':
-            case 'mouseup':
-                // updateChartMouseCursorStyle(chart, 'default')
-                break;
-            case 'mousedown':
-                break;
-        }
-    };
 
     const handleDrag = function (event, { element, chart }) {
         if (element) {
             switch (event.type) {
                 case 'mousemove':
+                    console.log('mousemove');
                     return handleElementDragging(event, chart);
                 case 'mouseout':
                 case 'mouseup':
-                    window.colbyAnnotation.element = null
-                    window.colbyAnnotation.lastEvent = null
+                    window.colbyAnnotation.element = null;
+                    window.colbyAnnotation.lastEvent = null;
+                    dispatch({type: UPDATE_ANNOTATION_POSITION})
                     break;
                 case 'mousedown':
                     window.colbyAnnotation.lastEvent = event
@@ -318,7 +308,6 @@ const useAnnotationDragger = (dispatch, state) => {
                 handleClick(chart, args)
             } else {
                 const { element } = window.colbyAnnotation
-                // handleMouseMove(args.event, { element, chart })
                 if (handleDrag(args.event, { element, chart })) {
                     args.changed = true;
                     return;

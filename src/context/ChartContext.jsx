@@ -1016,19 +1016,6 @@ const reducer = (state, action) => {
             updateChartDatasets(newState);
             return newState;
         }
-        case UPDATE_ANNOTATION_POSITION: {
-            const { id: annotationId } = payload
-
-            let newState = { ...state };
-            if (annotationId) {
-                const annotation = onMoveAnnotation(payload, state)
-                newState.annotation = {
-                    ...newState.annotation,
-                    [annotationId]: { ...annotation }
-                }
-            }
-            return newState;
-        }
         case UPDATE_ANNOTATION_ARROW_DATA: {
             const { id: annotationId, side, data } = payload
             let newState = { ...state };
@@ -1106,6 +1093,23 @@ const reducer = (state, action) => {
             const options = updateChartOptions(newState.options, newState.forms, newState)
             newState = { ...newState, options };
             updateChartDatasets(newState);
+            return newState;
+        }
+        case UPDATE_ANNOTATION_POSITION: {
+            let newState = { ...state };
+            if (window.colbyAnnotation?.element) {
+                const annotation = newState.options.plugins.annotation.annotations[window.colbyAnnotation.element.options.id];
+                if (annotation) {
+                    annotation.centerX = window.colbyAnnotation.element.centerX;
+                    annotation.centerY = window.colbyAnnotation.element.centerY;
+                    annotation.x = window.colbyAnnotation.element.x;
+                    annotation.x2 = window.colbyAnnotation.element.x2;
+                    annotation.y = window.colbyAnnotation.element.y;
+                    annotation.y2 = window.colbyAnnotation.element.y2;
+                }
+            }
+            window.colbyAnnotation.element = null
+            window.colbyAnnotation.lastEvent = null
             return newState;
         }
         default:

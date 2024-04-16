@@ -8,6 +8,7 @@
 </head>
 
 <body>
+
   <script>
     function createDatasets(data) {
       const { labels, datasets } = data
@@ -120,10 +121,13 @@
         const test = data
         return true;
       }
+
+
     }
-    init();
+    window.colbyInit = init
 
   </script>
+
   <div id="root-waterfall"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

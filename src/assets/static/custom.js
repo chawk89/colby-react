@@ -88,8 +88,7 @@ async function init() {
                 .insertImageToCurrentTab(data);
         });
     }
-    console.log('colby init succesfuly', window.ColbyChartInfo)
-
+    console.log('colby init succesfuly', window.ColbyChartInfo)    
 }
 
 const fetchDataRange = async (range) => {
@@ -111,4 +110,5 @@ const fetchDataRange = async (range) => {
     }
 }
 
-init();    
+
+window.colbyInit = init;    

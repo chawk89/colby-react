@@ -1359,7 +1359,7 @@ export const ChartProvider = ({ children }) => {
 
 
     if (!ColbyChartInfo) {
-        throw Error('ColbyChartInfo is missing')
+        throw Error('ColbyChartInfo is missing context')
     }
 
     console.log(`[loadingStatus]`, loadingStatus)

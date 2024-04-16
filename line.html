@@ -79,7 +79,7 @@
         '5719',
         '4442']
       ]
-     
+
       const rawDatasets = {
         colCount: data.length,
         header: data.map(r => r[0]),
@@ -108,9 +108,9 @@
         const test = data
         return true;
       }
+      
     }
-    init();
-
+    window.colbyInit = init
   </script>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>

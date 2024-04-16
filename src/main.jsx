@@ -4,6 +4,7 @@ import App from './App.jsx'
 import DoughnutApp from './DoughnutApp.jsx'
 import './index.css'
 
+
 const loadElement = (id, Element) => {
   const root = document.getElementById(id)
   if (root) {
@@ -12,8 +13,19 @@ const loadElement = (id, Element) => {
     )
   }
 }
-loadElement('root', App)
-loadElement('root-bubble', App)
-loadElement('root-waterfall', App)
-loadElement('root-doughnut', DoughnutApp)
-loadElement('root-pie', DoughnutApp)
+const loadReactElements = async () => {
+  
+  if (!window.colbyInit) {
+    throw Error('window.colbyInit is null')
+  }
+  await window.colbyInit()
+
+  console.log('[loadReactElements] start')
+  loadElement('root', App)
+  loadElement('root-bubble', App)
+  loadElement('root-waterfall', App)
+  loadElement('root-doughnut', DoughnutApp)
+  loadElement('root-pie', DoughnutApp)
+  console.log('[loadReactElements] done')
+}
+loadReactElements();

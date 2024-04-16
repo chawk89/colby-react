@@ -20,7 +20,7 @@
         const radiusSet = datasets[1]
         return {
           datasets: [{
-            data: labelSet.values.map((label, index) => ({ x: label, y: dataset.values[index], r: radiusSet.values[index] })),      
+            data: labelSet.values.map((label, index) => ({ x: label, y: dataset.values[index], r: radiusSet.values[index] })),
             backgroundColor: colorArray[0],
             key: dataset.key,
             id: dataset.key,
@@ -99,8 +99,10 @@
         const test = data
         return true;
       }
+
+      
     }
-    init();
+    window.colbyInit = init
 
   </script>
   <div id="root-bubble"></div>

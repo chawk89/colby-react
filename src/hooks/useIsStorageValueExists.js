@@ -4,7 +4,7 @@ const useIsStorageValueExists = () => {
     const ColbyChartInfo = window?.ColbyChartInfo
 
     if (!ColbyChartInfo) {
-        throw Error('ColbyChartInfo is missing')
+        throw Error('ColbyChartInfo is missing test')
     }
 
     const { storageKey } = ColbyChartInfo

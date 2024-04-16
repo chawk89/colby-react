@@ -88,6 +88,7 @@ async function init() {
                 .insertImageToCurrentTab(data);
         });
     }
+    console.log('colby init succesfuly', window.ColbyChartInfo)
 
 }
 

@@ -58,6 +58,7 @@ function createDatasets(data) {
     const result = {
         labels: labels.values,
         datasets: datasets.map(({ key, values, label }, index) => ({
+            key,
             data: values,
             label,
             backgroundColor: colorArray[index]
@@ -111,4 +112,5 @@ const fetchDataRange = async (range) => {
 }
 
 
-window.colbyInit = init;    
+window.colbyInit = init; 
+console.log('[window.colbyInit]')   

@@ -65,6 +65,12 @@ const EditLabelAnnotation = () => {
         </div>
         <div className="col-span-1">
             <div className="flex items-center">
+                <Label className="inline mr-2" htmlFor="annotation-label-fontSize" value="Line Opacity:" />
+                <TextInput id="annotation-label-fontSize" type="number" placeholder="0.8" {...register('properties.opacity')} />
+            </div>
+        </div>
+        <div className="col-span-1">
+            <div className="flex items-center">
                 <Label className="inline mr-2" htmlFor="style-color" value="Color:" />
                 <Controller
                     name="properties.color"

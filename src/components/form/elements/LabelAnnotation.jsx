@@ -77,6 +77,12 @@ const LabelAnnotation = () => {
                     </div>
                     <div className="col-span-1">
                         <div className="flex items-center">
+                            <Label className="inline mr-2 shrink-0" htmlFor="series-name" value="Line Opacity:" />
+                            <TextInput id="series-name" type="number" placeholder="0.8" {...register("annotationTemp.label.opacity")} />
+                        </div>
+                    </div>
+                    <div className="col-span-1">
+                        <div className="flex items-center">
                             <Label className="inline mr-2" htmlFor="style-color" value="Color:" />
                             <Controller
                                 name="annotationTemp.label.color"

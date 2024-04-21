@@ -33,6 +33,7 @@ const initState = {
                 datasetKey: "",
                 dataIndex: 0,
                 caption: "",
+                opacity: 1,
                 fontName: "",
                 fontSize: "",
                 anchor: "",
@@ -655,13 +656,16 @@ const getArrowAnnotation = (arrow, state) => {
     return null;
 }
 
-
+//recognize whether content is an image file
+const isImageUrl = (url) => {
+    return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
+};
 
 const getLabelAnnotation = (label, state) => {
     if (!label.id) return null
     if (label.id == 'labelTemp' && !label.enabled) return null
 
-    const { datasetKey, dataIndex, caption: labelText, fontName: labelFont, fontSize, color: labelColor } = label
+    const { datasetKey, dataIndex, opacity, caption: labelText, fontName: labelFont, fontSize, color: labelColor } = label
 
     if (!datasetKey || !dataIndex) return null
 
@@ -701,6 +705,7 @@ const getLabelAnnotation = (label, state) => {
             display: true,
             position: "center",
             margin: 0,
+            borderColor: `rgba(245, 245, 245, ${opacity})`,
         },
         font: {
             family: labelFont,
@@ -711,6 +716,16 @@ const getLabelAnnotation = (label, state) => {
         xAdjust: adjustValueX,
         yAdjust: adjustValueY,
     };
+
+    // Check if the caption is an image URL and adjust the content
+    if (isImageUrl(labelText)) {
+        const img = new Image();
+        img.src = labelText;
+        img.width = 10 * fontSize;
+        img.height = 10 * fontSize;
+        labelAnnotation.content = img;
+        
+    }
 
     return { [label.id]: labelAnnotation };
 }

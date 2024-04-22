@@ -31,7 +31,7 @@ const ChartMenu = ({ onClick }) => {
                     <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'box', subtype: 'box' })}>Box Annotation</span>
                 </li>
                 <li>
-                    <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'label', subtype: 'label' })}>Label Annotation</span>
+                    <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'label', subtype: 'label' })}>Callout Annotation</span>
                 </li>
                 <li className='relative group'>
                     <span className="block hover:cursor-pointer px-4 py-2 hover:bg-gray-200 flex justify-between items-center"><span>Arrow Annotation</span>

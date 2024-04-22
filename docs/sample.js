@@ -40,7 +40,7 @@ const annotation2 = {
   backgroundColor: 'rgba(255, 99, 132, 0.25)',
   borderWidth: 3,
   borderColor: 'black',
-  content: ['Label annotation', 'to drag'],
+  content: ['Callout annotation', 'to drag'],
   callout: {
     display: true,
     borderColor: 'black',

@@ -282,7 +282,8 @@ const updateGlobalOption = (oldOptions, global, state) => {
     // show datalabels
     newOptions.plugins.datalabels.display = showLabels
     // switch RowColumn
-    // newOptions.indexAxis = switchRowColumn ? 'y' : 'x'
+    newOptions.indexAxis = switchRowColumn ? 'y' : 'x'
+    console.log('[newOptions] indexAxis', newOptions.indexAxis)
 
     let font = {}
     newOptions.plugins.title.color = titleColor
@@ -423,7 +424,7 @@ const getLineAnnotation = (line, state) => {
     if (line.id == 'lineTemp' && !line.enabled) return null
 
 
-    const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel } = line
+    const { axis: lineAxis, position: linePosition, style: lineStyle, thickness: lineThickness, color: lineColor, label: lineLabel, labelBgOpacity } = line
 
     const isSelected = state.annotationSelected == line.id
     const unit = calcYAxisUnit(state)
@@ -450,6 +451,8 @@ const getLineAnnotation = (line, state) => {
             display: true,
             textAlign: 'center',
             drawTime: 'afterDatasetsDraw',
+            backgroundColor: 'rgba(0, 0, 0, ' + labelBgOpacity / 100 + ')',
+            color: labelBgOpacity > 30 ? 'white' : 'black'
         }
     }
 
@@ -471,7 +474,8 @@ const getBoxAnnotation = (box, state) => {
     const active = box.id && state.annotationSelected == box.id
     const unit = calcYAxisUnit(state)
 
-    const { xMin, xMax, yMin, yMax, label } = box
+    const { xMin, xMax, yMin, yMax, label, bgOpacity } = box
+    const { annotationSelected } = state
     const boxAnnotation = {
         type: "box",
         id: box.id ?? 'boxTemp',
@@ -479,7 +483,9 @@ const getBoxAnnotation = (box, state) => {
         xMax,
         yMin: yMin / unit,
         yMax: yMax / unit,
-        backgroundColor: active ? SELECTED_COLOR : 'rgba(255, 99, 132, 0.25)'
+        // backgroundColor: active ? SELECTED_COLOR : 'rgba(255, 99, 132, 0.25)'
+        backgroundColor: 'rgba(255, 99, 132, ' + (bgOpacity || 100) / 100 + ')',
+        borderColor: annotationSelected == box.id ? 'blue' : 'rgb(0, 0, 0)',
     };
 
 
@@ -655,13 +661,16 @@ const getArrowAnnotation = (arrow, state) => {
     return null;
 }
 
-
+//recognize whether content is an image file
+const isImageUrl = (url) => {
+    return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
+};
 
 const getLabelAnnotation = (label, state) => {
     if (!label.id) return null
     if (label.id == 'labelTemp' && !label.enabled) return null
 
-    const { datasetKey, dataIndex, caption: labelText, fontName: labelFont, fontSize, color: labelColor } = label
+    const { datasetKey, dataIndex, caption: labelText, fontName: labelFont, fontSize, color: labelColor, labelBgOpacity } = label
 
     if (!datasetKey || !dataIndex) return null
 
@@ -689,9 +698,12 @@ const getLabelAnnotation = (label, state) => {
 
     const labelAnnotation = {
         type: "label",
-        backgroundColor: annotationSelected == label.id ? SELECTED_COLOR : 'rgba(245,245,245)',
+        // backgroundColor: annotationSelected == label.id ? SELECTED_COLOR : 'rgba(245,245,245)',
+        backgroundColor: 'rgba(0, 0, 0, ' + labelBgOpacity / 100 + ')',
+        color: labelBgOpacity > 30 ? 'white' : 'black',
+        borderColor: annotationSelected == label.id ? SELECTED_COLOR : 'rgb(0, 0, 0)',
         borderRadius: 6,
-        borderWidth: 1,
+        borderWidth: annotationSelected ? 4 : 1,
         content: [labelText],
         position: {
             x: 'end',
@@ -703,7 +715,7 @@ const getLabelAnnotation = (label, state) => {
             margin: 0,
         },
         font: {
-            family: labelFont,
+            family: labelFont || 'Lora',
             size: labelSize,
         },
         xValue,
@@ -711,6 +723,14 @@ const getLabelAnnotation = (label, state) => {
         xAdjust: adjustValueX,
         yAdjust: adjustValueY,
     };
+    // Check if the caption is an image URL and adjust the content
+    if (isImageUrl(labelText)) {
+        const img = new Image();
+        img.src = labelText;
+        img.width = 10 * fontSize;
+        img.height = 10 * fontSize;
+        labelAnnotation.content = img;
+    }
 
     return { [label.id]: labelAnnotation };
 }
@@ -810,9 +830,9 @@ const updateChartOptions = (oldOptions, forms, state) => {
     newOptions = updateAnnotation(newOptions, annotationTemp, forms, state)
 
     // updateDatasetsStyles
-    newOptions = updateDatasetsStyles(newOptions, datasets)
-
-    // console.log('[newOptions]', newOptions)
+    newOptions = updateDatasetsStyles(newOptions, datasets)   
+    
+  
 
     return newOptions
 }
@@ -853,7 +873,6 @@ const onMoveAnnotation = (data, state) => {
         case 'line': {
             const { axis } = rest
             const { dx, dy } = data
-            console.log('[onMoveAnnotation]', data, selected)
             if (axis == "x") {
                 selected.position = +selected.position + dy
             } else if (axis == "y") {
@@ -1308,8 +1327,9 @@ const updateChartDatasets = (state) => {
 
     }
 }
-const onAdditionalUpdates = (state, { chartType, chartRef }) => {
+const onAdditionalUpdates = (state, { chartType, chartRef, storageKey }) => {
     state.chartType = chartType
+    state.chartKey = storageKey 
 
 
     state.onChartRefresh = () => {
@@ -1318,6 +1338,10 @@ const onAdditionalUpdates = (state, { chartType, chartRef }) => {
     state.getChart = () => {
         return chartRef.current
     }
+    state.getChartKey = () => {
+        // return `${state.chartKey}-${state.options.indexAxis}`
+    }
+    
 
 
     state.options.plugins.annotation = {
@@ -1375,11 +1399,10 @@ export const ChartProvider = ({ children }) => {
         throw Error('ColbyChartInfo is insufficient')
     }
 
-
     const chartRef = useRef(null);
     const storedState = initializeState({ state: storageValue || initState, info: ColbyChartInfo });
 
-    onAdditionalUpdates(storedState, { chartRef, chartType })
+    onAdditionalUpdates(storedState, { chartRef, chartType, storageKey })
 
     const [state, dispatch] = useReducer(reducer, storedState);
 

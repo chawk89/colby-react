@@ -198,9 +198,9 @@ export const getGradientColor = ({ chart, color, opacity }) => {
     const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
     // Create the gradient because this is either the first render
     // or the size of the chart has changed
-    gradient.addColorStop(0, colorToRGBA(color, +opacity));
-    gradient.addColorStop(0.1, colorToRGBA(color, +opacity * 0.5));
-    gradient.addColorStop(0.7, colorToRGBA(color, 0));
+    gradient.addColorStop(0, colorToRGBA(color, 0));
+    gradient.addColorStop(0.3, colorToRGBA(color, +opacity * 0.5));
+    gradient.addColorStop(1, colorToRGBA(color, +opacity));
     return gradient;
 }
 export const getBackgroundColor = ({ chart, color, opacity }) => {
@@ -268,4 +268,18 @@ export const isNonAxisChart = (chartType) => {
             return true;
     }
     return false;
+}
+export const updateChartMouseCursorStyle = (chart, cursor) => {
+    if(chart?.canvas) {
+        chart.canvas.style.cursor = cursor
+    }
+}
+export const updateChartEleemntStyle = (chart, cursor) => {
+    if(chart?.canvas) {
+        chart.canvas.style.cursor = cursor
+    }
+}
+
+export const getChartKey = (state) => {
+    return `${state.chartKey}-${state.options.indexAxis}`
 }

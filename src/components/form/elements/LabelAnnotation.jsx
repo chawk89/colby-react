@@ -47,7 +47,7 @@ const LabelAnnotation = () => {
                 name="annotationTemp.label.enabled"
                 control={control}
                 render={({ field: { value, onChange } }) => {
-                    return <ToggleSwitch label="Label Annotation" checked={value} onChange={onChange} />
+                    return <ToggleSwitch label="Callout Annotation" checked={value} onChange={onChange} />
                 }}
             />
             {labelEnabled &&

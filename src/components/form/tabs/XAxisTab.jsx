@@ -10,7 +10,7 @@ const XAxisTab = () => {
 
     return (
         <div className="w-full min-h-32 grid grid-cols-3 gap-4">
-            <div className="col-span-1">
+            {/* <div className="col-span-1">
                 <div className="flex items-center">
                     <Label className="inline mr-2" htmlFor="xMin" value="X-Min:" />
                     <ColbyTextInput id="xMin" type="number" placeholder="xMin" control={control} name='xAxis.min' />
@@ -21,7 +21,7 @@ const XAxisTab = () => {
                     <Label className="inline mr-2" htmlFor="xMax" value="X-Max:" />
                     <ColbyTextInput id="xMax" type="number" placeholder="xMax" control={control} name='xAxis.max' />
                 </div>
-            </div>
+            </div> */}
             <div className="col-span-1">
                 <div className="flex items-center">
                     <Label className="inline mr-2" htmlFor="xLabel" value="Label:" />

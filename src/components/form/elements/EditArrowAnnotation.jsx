@@ -22,7 +22,7 @@ const EditArrowAnnotation = () => {
     const { state: { annotationSelected } } = useChartContext()
 
     const xAxis = watch('global.xAxis')
-
+    const selected = watch('global.yAxis')
     const startDatasetKey = watch('properties.startDatasetKey')
     const endDatasetKey = watch('properties.endDatasetKey')
     const lineType = watch('properties.lineType')
@@ -55,7 +55,7 @@ const EditArrowAnnotation = () => {
             <div className="flex items-center">
                 <Label className="inline mr-2 shrink-0" htmlFor="arrow-start-datasetIndex" value="Start Dataset Index:" />
                 <Select id="arrow-start-datasetIndex" {...register('properties.startDatasetKey')}>
-                    {keyLabels.map(({ key, label }) => <option value={key} key={key}>{label}</option>)}
+                {keyLabels.map(({ key, label }) => selected[key] ? <option value={key} key={key}>{label}</option> : null)}
                 </Select>
             </div>
         </div>
@@ -72,7 +72,7 @@ const EditArrowAnnotation = () => {
                 <Label className="inline mr-2 shrink-0" htmlFor="arrow-end-dataindex" value="End Dataset Index:" />
                 {/* <TextInput id="arrow-end-dataindex" type="text" placeholder="10" {...register("properties.yMin")} /> */}
                 <Select id="arrow-end-dataindex" {...register('properties.endDatasetKey')}>
-                    {keyLabels.map(({ key, label }) => <option value={key} key={key}>{label}</option>)}
+                {keyLabels.map(({ key, label }) => selected[key] ? <option value={key} key={key}>{label}</option> : null)}
                 </Select>
             </div>
         </div>

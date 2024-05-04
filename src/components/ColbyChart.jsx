@@ -21,6 +21,7 @@ import AnnotationPlugin from 'chartjs-plugin-annotation';
 import useAnnotationDragger, { hideColbyMenu, markColbyChartOptions } from '../hooks/useAnnotationDragger';
 import ChartMenu from './common/ChartMenu';
 import { findNearestDataPoint, getDatasetIndexWithoutXAxis } from '../utils/utils';
+import ChartjsPluginStacked100 from "chartjs-plugin-stacked100";
 
 ChartJS.register(
     CategoryScale,
@@ -36,12 +37,10 @@ ChartJS.register(
     Legend,
     ChartDataLabels,
     AnnotationPlugin,
+        ChartjsPluginStacked100,
     // ChartjsDraggablePlugin,
     ...registerables
 );
-
-
-
 
 
 const ColbyChart = () => {

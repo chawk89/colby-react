@@ -39,7 +39,9 @@ const initState = {
                 anchor: "",
                 color: "#000000",
                 type: 'label',
-                id: 'labelTemp'
+                id: 'labelTemp',
+                imageHeight: '20%', 
+                imageWidth: '20%',
             },
             arrow: {
                 enabled: false,
@@ -53,6 +55,28 @@ const initState = {
                 endDataIndex: "",
                 lineType: ARROW_LINE_TYPE_GENERAL,
                 id: 'arrowTemp'
+            },
+            emphasis: {
+                enabled: false,
+                datasetKey: "",
+                dataIndex: 0,
+                darken: "#D3D3D3",
+                highlight: '#BCE9FE',
+            },
+            image: {
+                enabled: false,
+                datasetKey: "",
+                dataIndex: 0,
+                caption: "",
+                opacity: 1,
+                fontName: "",
+                fontSize: "",
+                anchor: "",
+                color: "#000000",
+                type: 'label',
+                id: 'labelTemp',
+                imageHeight: '20%', 
+                imageWidth: '20%',
             }
         },
         global: {
@@ -75,6 +99,7 @@ const initState = {
             max: "",
             labelStyle: "normal",
             labelColor: "#000000",
+            ticksColor: "#000000", 
             labelSize: "10",
             showAxis: "1",
             showGrid: "1"
@@ -84,6 +109,7 @@ const initState = {
             max: "",
             labelStyle: "normal",
             labelColor: "#000000",
+            ticksColor: "#000000", 
             labelSize: "10",
             showAxis: "1",
             showGrid: "1"
@@ -173,6 +199,7 @@ const initState = {
                 display: false,
                 align: "end",
                 anchor: "end",
+                color: "#3e1818", 
                 formatter: (value) => value,
             },
             annotation: {
@@ -253,7 +280,8 @@ const updateGlobalOption = (oldOptions, global, state) => {
         titleColor,
         titleStyle,
         bgColor,
-        legendPosition
+        legendPosition,
+        labelsColor,
     } = global
     // title
     newOptions.plugins.title.text = title
@@ -261,14 +289,13 @@ const updateGlobalOption = (oldOptions, global, state) => {
     switch (stacked) {
         case '100-stacked':
             newOptions.scales.y.stacked = true
-            newOptions.scales.y.max = '150'
-            newOptions.scales.y.min = '100'
             newOptions.scales.x.stacked = true
-
+            newOptions.plugins.stacked100 = { enable: true}; 
             break;
         case 'stacked':
             newOptions.scales.y.stacked = true
             newOptions.scales.x.stacked = true
+            newOptions.plugins.stacked100 = { enable: false}; 
             break;
         case 'none':
         default:
@@ -282,8 +309,9 @@ const updateGlobalOption = (oldOptions, global, state) => {
     newOptions.plugins.legend.display = showLegend
     // show datalabels
     newOptions.plugins.datalabels.display = showLabels
+    newOptions.plugins.datalabels.color = labelsColor
     // switch RowColumn
-    // newOptions.indexAxis = switchRowColumn ? 'y' : 'x'
+    newOptions.rowSwitch = switchRowColumn ? true : false
 
     let font = {}
     newOptions.plugins.title.color = titleColor
@@ -305,7 +333,6 @@ const updateGlobalOption = (oldOptions, global, state) => {
     if (legendPosition) {
         newOptions.plugins.legend.position = legendPosition
     }
-
     return newOptions
 }
 
@@ -332,6 +359,7 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis, chartType }) => {
             min,
             max,
             label,
+            ticksColor,
         } = xAxis
 
         newOptions.scales.x.min = validateMinMaxValue(min) ? min : undefined;
@@ -351,6 +379,7 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis, chartType }) => {
 
         let xAxisFont = {}
         newOptions.scales.x.title.color = labelColor
+        newOptions.scales.x.ticks.color = ticksColor
         if (labelFont) {
             xAxisFont.family = labelFont
         }
@@ -375,6 +404,7 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis, chartType }) => {
             min,
             max,
             label,
+            ticksColor, 
         } = yAxis
 
         newOptions.scales.y.min = validateMinMaxValue(min) ? min : undefined;
@@ -385,6 +415,7 @@ const updateAxisRangeValue = (oldOptions, { xAxis, yAxis, chartType }) => {
 
         let yAxisFont = {}
         newOptions.scales.y.title.color = labelColor
+        newOptions.scales.y.ticks.color = ticksColor
         if (labelFont) {
             yAxisFont.family = labelFont
         }
@@ -661,11 +692,18 @@ const isImageUrl = (url) => {
     return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
 };
 
+const getImageAnnotation = (image, state) => {
+    const data = getLabelAnnotation(image, state); 
+    return data; 
+}
+
 const getLabelAnnotation = (label, state) => {
     if (!label.id) return null
-    if (label.id == 'labelTemp' && !label.enabled) return null
+    if (label.id == 'labelTemp' && (!label.enabled)) return null
+    const { datasetKey, dataIndex, opacity, caption: labelText, fontName: labelFont, fontSize, color: 
+        labelColor, imageUrl, imageWidth, imageHeight } = label 
 
-    const { datasetKey, dataIndex, opacity, caption: labelText, fontName: labelFont, fontSize, color: labelColor } = label
+    
 
     if (!datasetKey || !dataIndex) return null
 
@@ -686,17 +724,14 @@ const getLabelAnnotation = (label, state) => {
         adjustValueY = -5
     }
 
-
-
     let xValue = getXValueForMultiDataset(datasetIndex, +dataIndex, { datasets: state.data.datasets, isStacked: state.forms.global.stacked })
-
 
     const labelAnnotation = {
         type: "label",
         backgroundColor: annotationSelected == label.id ? SELECTED_COLOR : 'rgba(245,245,245)',
         borderRadius: 6,
         borderWidth: 1,
-        content: [labelText],
+        content: labelText ? [labelText] : imageUrl,
         position: {
             x: 'end',
             y: 'end'
@@ -708,8 +743,8 @@ const getLabelAnnotation = (label, state) => {
             borderColor: `rgba(245, 245, 245, ${opacity})`,
         },
         font: {
-            family: labelFont,
-            size: labelSize,
+            family: labelFont ? labelFont : '',
+            size: labelSize ? labelSize : '',
         },
         xValue,
         yValue,
@@ -717,15 +752,27 @@ const getLabelAnnotation = (label, state) => {
         yAdjust: adjustValueY,
     };
 
-    // Check if the caption is an image URL and adjust the content
-    if (isImageUrl(labelText)) {
+    const getImage = () => {
         const img = new Image();
-        img.src = labelText;
-        img.width = 10 * fontSize;
-        img.height = 10 * fontSize;
-        labelAnnotation.content = img;
-        
+        img.src = `${imageUrl}`;
+        console.log("image src?", imageUrl)
+        return img;
     }
+
+    try {
+        if (isImageUrl(imageUrl)) {
+            labelAnnotation.content = getImage();
+            labelAnnotation.drawTime = 'afterDatasetsDraw';
+            labelAnnotation.backgroundColor = 'white',
+            labelAnnotation.width = imageWidth ? `${imageWidth}%` : '20%', 
+            labelAnnotation.height = imageHeight ? `${imageHeight}%` :'20%',
+            console.log("Image processed");
+        } 
+        } catch (error) {
+        console.error("Error processing image URL:", error);
+    }
+
+    console.log("label annotatino?", labelAnnotation)
 
     return { [label.id]: labelAnnotation };
 }
@@ -748,13 +795,17 @@ const getAnnotation = (item, state) => {
         return getArrowAnnotation(item, state)
     }
 
+    if (item.type == 'image') {
+        return getLabelAnnotation(item, state)
+    }
+
     return null;
 
 }
 const updateAnnotation = (oldOptions, param, datasets, state) => {
     const newOptions = { ...oldOptions }
 
-    const { line, box, label, arrow } = param
+    const { line, box, label, arrow, image } = param
     const annotation = {
         annotations: {},
     }
@@ -796,6 +847,14 @@ const updateAnnotation = (oldOptions, param, datasets, state) => {
         }
     }
 
+    const imageTemp = getImageAnnotation(image, state)
+    if (imageTemp) {
+        annotation.annotations = {
+            ...annotation.annotations,
+            ...imageTemp
+        }
+    }
+    
     const arrowTemp = getArrowAnnotation(arrow, state)
     if (arrowTemp) {
         annotation.annotations = {
@@ -803,7 +862,6 @@ const updateAnnotation = (oldOptions, param, datasets, state) => {
             ...arrowTemp
         }
     }
-
 
     newOptions.plugins.annotation = {
         ...newOptions.plugins.annotation, ...annotation
@@ -1191,8 +1249,8 @@ const getFilteredDatasets = (data) => {
     console.log('[getFilteredDatasets]', data)
     const { forms } = data
     const { axes: { datasets: axesDatasets } } = forms
-    const xAxis = getXAxisDatafield(data)
-    const yAxis = getYAxisDatafield(data)
+    let xAxis = getXAxisDatafield(data)
+    let yAxis = getYAxisDatafield(data)
 
 
     if (!xAxis) return {
@@ -1201,13 +1259,22 @@ const getFilteredDatasets = (data) => {
         xAxisLabel: 'test'
     };
 
+    if (data.options.rowSwitch) {
+        let newXAxis = Object.keys(yAxis).find(key => yAxis[key] === true);
+        let newYAxis = {}
+        newYAxis[`${xAxis}`] = true; 
+        xAxis = newXAxis; 
+        yAxis = newYAxis; 
+    }
+
     const labels = axesDatasets[xAxis]
     const filteredKeys = Object.keys(axesDatasets).filter(k => (k != xAxis && yAxis[k]))
     const datasets = filteredKeys.length > 0 ? filteredKeys.map(key => axesDatasets[key]) : []
     return {
         labels,
         datasets,
-        xAxisLabel: axesDatasets[xAxis].label
+        xAxisLabel: axesDatasets[xAxis].label,
+        forms
     }
 }
 const calcYAxisUnit = (state) => {
@@ -1215,18 +1282,13 @@ const calcYAxisUnit = (state) => {
     // title      
     let resultMaxValue = 1
     if (stacked == '100-stacked') {
-        const filteredDatasets = getFilteredDatasets(state);
-
-        if (!filteredDatasets?.datasets) return resultMaxValue;
-
-        resultMaxValue = Math.max(...filteredDatasets.datasets.map(d => Math.max(...d.values))) / 100
-
+        // const filteredDatasets = getFilteredDatasets(state);
+        // if (!filteredDatasets?.datasets) return resultMaxValue;
+        // resultMaxValue = Math.max(...filteredDatasets.datasets.map(d => Math.max(...d.values))) / 100
     }
     return resultMaxValue
 }
 const calcYAxisTickCallback = (value, state) => {
-    // console.log(value)
-
     // if (typeof value === 'number' && value == Math.floor(value)) return Math.floor(value)
     if (state.forms.global.stacked == '100-stacked') {
         return value + '%';
@@ -1238,7 +1300,6 @@ const updateChartDatasets = (state) => {
     const filteredDatasets = getFilteredDatasets(state);
 
     if (!filteredDatasets) return;
-
     const { xAxisLabel, ...data } = filteredDatasets
     const createDatasets = window?.ColbyChartInfo?.createDatasets
     if (!createDatasets || !xAxisLabel) return;
@@ -1289,14 +1350,22 @@ const updateChartDatasets = (state) => {
                 console.log('[datasets[key]]', key, datasets[key])
                 const borderColor = colorToRGBA(color, +opacity)
                 const barPercentage = (!!barPadding) ? 1 - barPadding : 0.9
-
+                const chartData = data.map(d => Array.isArray(d) ? d.map(v => +v / resultMaxValue) : +d / resultMaxValue); 
 
                 const dataset = {
                     ...d,
-                    data: data.map(d => Array.isArray(d) ? d.map(v => +v / resultMaxValue) : +d / resultMaxValue),
-                    borderColor,
+                    data: chartData,
+                    borderColor: state.forms.annotationTemp.emphasis.darken ? state.forms.annotationTemp.emphasis.darken : borderColor,
                     backgroundColor: ({ chart }) => {
-                        return (gradient == 'yes') ? getGradientColor({ chart, color, opacity }) : getBackgroundColor({ chart, color: borderColor, opacity: 0.3 })
+                        if (state.forms.annotationTemp.emphasis.datasetKey === d.key) {
+                            return chartData.map((dataPoint, index) =>
+                            index === parseInt(state.forms.annotationTemp.emphasis.dataIndex)
+                                ? (state.forms.annotationTemp.emphasis.highlight ? state.forms.annotationTemp.emphasis.highlight : '#BCE9FE')
+                                : (state.forms.annotationTemp.emphasis.highlight ? state.forms.annotationTemp.emphasis.darken : '#D3D3D3')
+                        );
+                        } else {
+                            return (gradient == 'yes') ? getGradientColor({ chart, color, opacity }) : getBackgroundColor({ chart, color: borderColor, opacity: 0.3 })
+                        }
                     },
                     barPercentage,
                     fill: fill == 'true',

@@ -45,6 +45,16 @@ const XAxisTab = () => {
                         }}
                     />
                 </div>
+                <div className="flex items-center">
+                    <Label className="inline mr-2" htmlFor="xAixs-ticksColor" value="Ticks Color:" />
+                    <Controller
+                        name="xAxis.ticksColor"
+                        control={control}
+                        render={({ field: { value, onChange } }) => {
+                            return <PopoverPicker color={value} onChange={onChange} />;
+                        }}
+                    />
+                </div>
             </div>
             <div className="col-span-1">
                 <div className="flex items-center">

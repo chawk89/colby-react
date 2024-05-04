@@ -73,7 +73,7 @@
 
       const rawDatasets = {
         colCount: data.length,
-        header: data.map(r => r[0]),
+        header: data.map((r, index) => r[0] ? r[0] : `Column #${index + 1}`),
         cols: data.map(r => r.slice(1))
       }
 

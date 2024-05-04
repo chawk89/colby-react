@@ -51,6 +51,9 @@ const ChartMenu = ({ onClick }) => {
                         </li>
                     </ul>
                 </li>
+                <li>
+                    <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'emphasis', subtype: 'emphasis' })}>Emphasis Annotation</span>
+                </li>
             </ul>
         </div>
     )

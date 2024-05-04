@@ -16,6 +16,7 @@ const ArrowAnnotation = () => {
     const [triggerFlag, setTriggerFlag] = useState(false)
 
     const xAxis = watch('global.xAxis')
+    const selected = watch('global.yAxis')
     const startDatasetKey = watch('annotationTemp.arrow.startDatasetKey')
     const endDatasetKey = watch('annotationTemp.arrow.endDatasetKey')
     const lineType = watch('annotationTemp.arrow.lineType')
@@ -57,7 +58,7 @@ const ArrowAnnotation = () => {
                     <div className="flex items-center">
                         <Label className="inline mr-2 shrink-0" htmlFor="arrow-start-datasetIndex" value="Start Dataset Index:" />
                         <Select id="arrow-start-datasetIndex" {...register('annotationTemp.arrow.startDatasetKey')}>
-                            {keyLabels.map(({ key, label }) => <option value={key} key={key}>{label}</option>)}
+                            {keyLabels.map(({ key, label }) => selected[key] ? <option value={key} key={key}>{label}</option> : null)}
                         </Select>
                     </div>
                 </div>
@@ -74,7 +75,7 @@ const ArrowAnnotation = () => {
                         <Label className="inline mr-2 shrink-0" htmlFor="arrow-end-dataindex" value="End Dataset Index:" />
                         {/* <TextInput id="arrow-end-dataindex" type="text" placeholder="10" {...register("annotationTemp.arrow.yMin")} /> */}
                         <Select id="arrow-end-dataindex" {...register('annotationTemp.arrow.endDatasetKey')}>
-                            {keyLabels.map(({ key, label }) => <option value={key} key={key}>{label}</option>)}
+                            {keyLabels.map(({ key, label }) => selected[key] ? <option value={key} key={key}>{label}</option> : null)}
                         </Select>
                     </div>
                 </div>

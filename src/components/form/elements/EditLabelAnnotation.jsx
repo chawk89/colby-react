@@ -15,6 +15,7 @@ const EditLabelAnnotation = () => {
     const { state: { annotationSelected } } = useChartContext()
     
     const xAxis = watch('global.xAxis')
+    const selected = watch('global.yAxis')
     const datasetKey = watch('properties.datasetKey')
 
     const keyLabels = useChartDatasetKeys(state, xAxis)
@@ -45,7 +46,7 @@ const EditLabelAnnotation = () => {
                 <Label className="inline mr-2 shrink-0" htmlFor="index-of-dimension" value="Index of Datasets:" />
                 {/* <TextInput id="index-of-dimension" type="text" placeholder="10" {...register("properties.datasetKey")} /> */}
                 <Select id="annotation-label-anchor" {...register('properties.datasetKey')}>
-                    {keyLabels.map(({ key, label }) => <option value={key} key={key}>{label}</option>)}
+                {keyLabels.map(({ key, label }) => selected[key] ? <option value={key} key={key}>{label}</option> : null)}
                 </Select>
             </div>
         </div>

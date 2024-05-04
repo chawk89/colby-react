@@ -84,6 +84,20 @@ const GlobalTab = ({ keyLabels }) => {
                             />
                         </div>
                     </div>
+
+                    <div className="col-span-1">
+                        <div className="flex items-center">
+                        <Label className="inline mr-2" htmlFor="labelsColor" value="Labels Color:" />
+                            <Controller
+                                    name="global.labelsColor"
+                                    control={control}
+                                    render={({ field: { value, onChange } }) => {
+                                        return <PopoverPicker color={value} onChange={onChange} />;
+                                    }}
+                                />
+                        </div>
+                    </div>
+
                 </div>
             </Card>
             <Card className="w-full">

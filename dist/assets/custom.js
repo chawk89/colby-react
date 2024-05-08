@@ -138,10 +138,7 @@ const fetchDefaults = async () => {
 
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo,
-<<<<<<< HEAD
             defaultValues: defaultValues, 
-=======
->>>>>>> 4e181e63d20c54b9223db7b0a6649d1d076fc4cd
             loadingStatus: 'loaded'
         }
     } catch (ex) {

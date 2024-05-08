@@ -134,7 +134,6 @@ const fetchDefaults = async () => {
     }
     try {
         const defaultValues = await fetchDefaultValues()
-        console.log("defaults fetched!", defaultValues)
 
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo,

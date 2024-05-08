@@ -1304,7 +1304,6 @@ const calcYAxisTickCallback = (value, state) => {
 }
 const updateChartDatasets = (state) => {
     const filteredDatasets = getFilteredDatasets(state);
-    const defaults = fetchDefaults(); 
 
     if (!filteredDatasets) return;
     const { xAxisLabel, ...data } = filteredDatasets

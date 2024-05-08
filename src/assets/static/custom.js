@@ -26,6 +26,21 @@ function fetchData(range) {
     })
 }
 
+function fetchDefaultValues() {
+    return new Promise((res, rej) => {
+        try {
+            google.script.run
+                .withSuccessHandler(function (defaultValues) {
+                    res(defaultValues)
+                })
+                .getDefaultValues(); 
+        } catch (ex) {
+            rej(`failed fetching values ${ex.message}`)
+        }
+    })
+}
+
+
 function rotateSheetData(sheetData) {
     const data = []
     const rLen = sheetData.length
@@ -77,6 +92,7 @@ async function init() {
         chartType,
         createDatasets,
         fetchDataRange,
+        fetchDefaults,
         loadingStatus: 'none',
         storageKey: `appState-${uuid}-${chartType}`,
     }
@@ -111,6 +127,23 @@ const fetchDataRange = async (range) => {
     }
 }
 
+const fetchDefaults = async () => {
+    window.ColbyChartInfo = {
+        ...window.ColbyChartInfo,
+        loadingStatus: 'loading',
+    }
+    try {
+        const defaultValues = await fetchDefaultValues()
+        console.log("defaults fetched!", defaultValues)
+
+        window.ColbyChartInfo = {
+            ...window.ColbyChartInfo,
+            loadingStatus: 'loaded'
+        }
+    } catch (ex) {
+        console.log(ex)
+    }
+}
 
 window.colbyInit = init; 
 console.log('[window.colbyInit]')   

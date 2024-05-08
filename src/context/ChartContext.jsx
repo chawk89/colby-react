@@ -963,6 +963,12 @@ const fetchDataRange = (range) => {
     }
 }
 
+const fetchDefaults = () => {
+    if (window?.ColbyChartInfo?.fetchDefaults) {
+        window.ColbyChartInfo.fetchDefaults()
+    }
+}
+
 const addNewAnnotationByContextMenu = (data, state) => {
     const { type, subtype, x, y, nearestData } = data
     const annoInit = initState.forms.annotationTemp[type]
@@ -1433,7 +1439,7 @@ export const ChartProvider = ({ children }) => {
 
     if (!ColbyChartInfo) return <></>
 
-    const { storageKey, fetchDataRange, loadingStatus } = ColbyChartInfo
+    const { storageKey, fetchDataRange, loadingStatus, fetchDefaults } = ColbyChartInfo
 
     if (!storageKey || !fetchDataRange || !loadingStatus) {
         throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange--4`)

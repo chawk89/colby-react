@@ -1206,8 +1206,7 @@ const getChartDataObj = (labels, cols) => {
     return result
 }
 const initializeState = ({ state, info }) => {
-
-    const { chartType, rawDatasets } = info
+    const { chartType, rawDatasets} = info
     const chartData = rawDatasets
 
     const keyLabels = chartData.header.map(h => ({ key: md5.base64(h), label: h }))
@@ -1303,8 +1302,7 @@ const calcYAxisTickCallback = (value, state) => {
     }
 }
 const updateChartDatasets = (state) => {
-    const filteredDatasets = getFilteredDatasets(state);
-    const defaults = fetchDefaults(); 
+    const filteredDatasets = getFilteredDatasets(state); 
 
     if (!filteredDatasets) return;
     const { xAxisLabel, ...data } = filteredDatasets
@@ -1437,6 +1435,7 @@ const onAdditionalUpdates = (state, { chartType, chartRef }) => {
 
 export const ChartProvider = ({ children }) => {
     const ColbyChartInfo = window.ColbyChartInfo
+    console.log("colby?", ColbyChartInfo)
 
     if (!ColbyChartInfo) return <></>
 
@@ -1457,10 +1456,11 @@ export const ChartProvider = ({ children }) => {
 
     if (loadingStatus == 'none' || loadingStatus == 'loading') {
         if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
+        fetchDefaults()
         return <></>
     }
 
-    const { chartType, createDatasets, rawDatasets } = ColbyChartInfo
+    const { chartType, createDatasets, rawDatasets, defaults } = ColbyChartInfo
 
     if (!chartType || !createDatasets || !storageKey || !rawDatasets) {
         throw Error('ColbyChartInfo is insufficient')

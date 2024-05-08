@@ -29,9 +29,22 @@
       return result
     }
 
+    async function fetchDefaults() {
+      const defaults = {
+        title: "testing title",
+      }
+
+      window.ColbyChartInfo = {
+        ...window.ColbyChartInfo,
+        defaults, 
+      }
+
+    }
+
     async function fetchData() {
       return new Promise(res => setTimeout(res, 3000))
     }
+
     async function fetchDataRange(range) {
       console.log('[fetchDataRange]', !!range)
       window.ColbyChartInfo = {
@@ -93,15 +106,17 @@
       }
 
     }
+
     async function init() {
       const testKey = await (() => { console.log('init'); return 'bar' })();
+      await fetchDefaults(); 
       window.ColbyChartInfo = {
-        // chartType: 'bar',
         chartType: 'bar',
         createDatasets,
         storageKey: `appState-${testKey}`,
         loadingStatus: 'none',
-        fetchDataRange
+        fetchDataRange,
+        fetchDefaults,
       }
       window.onInsertImage = function (data) {
         console.log('[onInsertImage] window', data)

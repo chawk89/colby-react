@@ -36,7 +36,7 @@ const BackgroundTab = () => {
         <div className="w-full px-8 py-4">
             <div className="w-full flex flex-col gap-2">
                 {keyLabels.map(({ key, label }) => (
-                    <>
+                    <React.Fragment key={key}> 
                     {selected[key] ? (
                     <Card key={key} className="w-full">
                     <h4 className="w-full text-lg font-bold mb-2 col-span-3" >
@@ -103,7 +103,7 @@ const BackgroundTab = () => {
                     </Card>
                     ): null}
 
-                </>))}
+            </React.Fragment>))}
             </div>
         </div>
 

@@ -1211,14 +1211,12 @@ const initializeState = ({ state, info }) => {
     let chartData = rawDatasets
 
     if (defaultValues) {
-        const { defaultYAxis, defaultXAxis, title, legend, data } = defaultValues; 
+        const { defaultYAxis, defaultXAxis, title, legend, data, rowSwitch, stacked } = defaultValues; 
 
         if (rotateSheetData) {
             const sheetData = rotateSheetData(data);
             chartData = sheetData;  
-            
         }
-
         function applyAxisSettings(state, axisConfig, axisName) {
             const formsAxisName = axisName === 'x' ? 'xAxis' : 'yAxis'
 
@@ -1238,6 +1236,10 @@ const initializeState = ({ state, info }) => {
 
         state.options.plugins.title = title; 
         state.options.plugins.legend = legend; 
+        state.options.rowSwitch = rowSwitch;
+        if (rowSwitch) {
+            state.forms.global.switchRowColumn = true; 
+        }
 
         applyAxisSettings(state, defaultXAxis, 'x');
         applyAxisSettings(state, defaultYAxis, 'y');
@@ -1245,6 +1247,27 @@ const initializeState = ({ state, info }) => {
         state.forms.global.title = title.text; 
         state.forms.global.titleColor = title.color; 
         state.forms.global.titleStyle = title.style; 
+
+        switch (stacked) {
+            case '100-stacked':
+                state.options.scales.y.stacked = true
+                state.options.scales.x.stacked = true
+                state.options.plugins.stacked100 = { enable: true}; 
+                state.forms.global.stacked = '100-stacked'
+                break;
+            case 'stacked':
+                state.options.scales.y.stacked = true
+                state.options.scales.x.stacked = true
+                state.options.plugins.stacked100 = { enable: false}; 
+                state.forms.global.stacked = 'stacked'
+                break;
+            case 'none':
+            default:
+                state.options.scales.y.stacked = false
+                state.options.scales.x.stacked = false
+                state.forms.global.stacked = 'none'
+                break;
+        }
         
     }
 
@@ -1263,13 +1286,21 @@ const initializeState = ({ state, info }) => {
     }, {});
 
     if (defaultValues) {
-        const { arrowAnnotation, emphasisAnnotation } = defaultValues; 
+        const { arrowAnnotation, emphasisAnnotation, plottedDatasets } = defaultValues; 
         state.forms.annotationTemp.arrow = arrowAnnotation; 
         state.forms.annotationTemp.arrow.startDatasetKey = globalDatasets[0]
         state.forms.annotationTemp.arrow.endDatasetKey = globalDatasets[1]
 
         state.forms.annotationTemp.emphasis = emphasisAnnotation; 
         state.forms.annotationTemp.emphasis.datasetKey = globalDatasets[2]
+
+        if (plottedDatasets && plottedDatasets.length > 0) {
+            Object.keys(yAxis).forEach((key, index) => {
+                if (!plottedDatasets.includes(index)) {
+                    yAxis[key] = false;
+                }
+            });
+        }
     }
 
 
@@ -1307,21 +1338,26 @@ const getYAxisDatafield = (data) => {
 
 const getFilteredDatasets = (data) => {
     const { forms } = data
-    const { axes: { datasets: axesDatasets } } = forms
+
+    const axesDatasets = forms?.axes?.datasets || {};
     let xAxis = getXAxisDatafield(data)
     let yAxis = getYAxisDatafield(data)
 
 
-    if (!xAxis) return {
+    if (!xAxis) {
+        console.log("No xAxis found");
+        return {
         labels: [],
         datasets: [],
         xAxisLabel: 'test'
-    };
+    }};
 
-    if (data.options.rowSwitch) {
+    if (data.options.rowSwitch ) {
+
         let newXAxis = Object.keys(yAxis).find(key => yAxis[key] === true);
         let newYAxis = {}
-        newYAxis[`${xAxis}`] = true; 
+        newYAxis[xAxis] = true;
+
         xAxis = newXAxis; 
         yAxis = newYAxis; 
     }

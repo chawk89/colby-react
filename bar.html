@@ -30,13 +30,75 @@
     }
 
     async function fetchDefaults() {
-      const defaults = {
-        title: "testing title",
+      const defaultValues = {
+        chartType: 'bar', 
+        legend: {
+          display: 'true',
+          position: 'top'
+        },
+        title: {
+          color: '#496A6D', 
+          display: 'true',
+          font: {
+            family: 'Lora',
+            size: '18',
+            style: 'none',
+            weight: 'bold',
+          },
+          text: 'Testing Defaults!'
+        },
+        // xAxis dataset 
+        defaultXAxis: {
+          min: "0",
+          max: "100",
+          stacked: false, 
+          ticks: {
+            color: '#317D6B'
+          },
+          title: {
+            color: '#317D6B',
+            display: true,
+            text: 'Testing X axis'
+          }
+        },
+        // yAxis dataset 
+        defaultYAxis: {
+          min: "0",
+          max: "100",
+          stacked: false, 
+          ticks: {
+            color: '#5E7E81'
+          },
+          title: {
+            color: '#355558',
+            display: true,
+            text: 'Testing Y axis'
+          }
+        },
+        // emphasis annotation 
+        emphasisAnnotation: {
+          enabled: false, 
+          dataIndex: 0,
+          seriesName:'emphasis series anme',
+          highlightColor: '#BCE9FE',
+          otherColor:'#D3D3D3',
+        },
+        // arrow annotation 
+        arrowAnnotation: {
+          enabled: false, 
+          startDataset: '',
+          startDataIndex: '',
+          endDataset: '',
+          endDataIndex: '',
+          arrowLabel: "arrow label",
+          arrowColor: "#000000",
+          lineType: 'global'
+        }
       }
 
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
-        defaults, 
+        defaultValues, 
       }
 
     }
@@ -109,7 +171,6 @@
 
     async function init() {
       const testKey = await (() => { console.log('init'); return 'bar' })();
-      await fetchDefaults(); 
       window.ColbyChartInfo = {
         chartType: 'bar',
         createDatasets,

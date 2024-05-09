@@ -1295,7 +1295,7 @@ const initializeState = ({ state, info }) => {
     let globalDatasets = keyLabels.reduce((obj, keyLabel, index) => {
         obj[keyLabel.key] = formDatasets[keyLabel.key] || {
             barPadding: 0.1,
-            color: defaultValues ? defaultValues.datasetColor[index] :  DEFAULT_COLORS[index % DEFAULT_COLORS.length],
+            color: DEFAULT_COLORS[index % DEFAULT_COLORS.length],
             gradient: "no",
             opacity: 0.5
         };

@@ -1211,20 +1211,35 @@ const initializeState = ({ state, info }) => {
     const chartData = rawDatasets
 
     if (defaultValues) {
-        const { defaultYAxis:{ stacked: yAxisStacked, ticks: yAxisTicks, title: yAxisTitle}, 
-            defaultXAxis:{ stacked: xAxisStacked, ticks: xAxisTicks, title: xAxisTitle}, 
-            title, legend } = defaultValues; 
+        const { defaultYAxis, defaultXAxis, title, legend } = defaultValues; 
+
+        function applyAxisSettings(state, axisConfig, axisName) {
+            const formsAxisName = axisName === 'x' ? 'xAxis' : 'yAxis'
+
+            state.options.scales[axisName].title = axisConfig.title;
+            state.options.scales[axisName].ticks = axisConfig.ticks;
+            state.options.scales[axisName].stacked = axisConfig.stacked;
+
+            if (axisConfig.title) {
+                state.forms[formsAxisName].label = axisConfig.title.text;
+                state.forms[formsAxisName].labelColor = axisConfig.title.color;
+                state.forms[formsAxisName].labelSize = axisConfig.title.fontSize;
+            }
+            if (axisConfig.ticks) {
+                state.forms[formsAxisName].ticksColor = axisConfig.ticks.color;
+            }
+        }
 
         state.options.plugins.title = title; 
         state.options.plugins.legend = legend; 
 
-        state.options.scales.x.title = xAxisTitle; 
-        state.options.scales.x.ticks = xAxisTicks; 
-        state.options.scales.x.stacked = xAxisStacked; 
+        applyAxisSettings(state, defaultXAxis, 'x');
+        applyAxisSettings(state, defaultYAxis, 'y');
 
-        state.options.scales.y.title = yAxisTitle; 
-        state.options.scales.y.ticks = yAxisTicks;
-        state.options.scales.y.stacked = yAxisStacked;  
+        state.forms.global.title = title.text; 
+        state.forms.global.titleColor = title.color; 
+        state.forms.global.titleStyle = title.style; 
+        
     }
 
     const keyLabels = chartData.header.map(h => ({ key: md5.base64(h), label: h }))

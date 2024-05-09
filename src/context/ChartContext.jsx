@@ -1257,7 +1257,7 @@ const initializeState = ({ state, info }) => {
             },
             datasets: globalDatasets
         },
-        chartType  
+        chartType: defaultValues ? defaultValues.chartType : chartType 
     }
 
     console.log("data to initialize", dataToReturn)

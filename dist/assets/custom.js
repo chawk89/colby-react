@@ -128,17 +128,12 @@ const fetchDataRange = async (range) => {
 }
 
 const fetchDefaults = async () => {
-    window.ColbyChartInfo = {
-        ...window.ColbyChartInfo,
-        loadingStatus: 'loading',
-    }
     try {
         const defaultValues = await fetchDefaultValues()
 
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo,
             defaultValues, 
-            loadingStatus: 'loaded'
         }
     } catch (ex) {
         console.log(ex)

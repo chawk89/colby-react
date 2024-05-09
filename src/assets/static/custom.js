@@ -91,6 +91,7 @@ async function init() {
     window.ColbyChartInfo = {
         chartType,
         createDatasets,
+        rotateSheetData, 
         fetchDataRange,
         fetchDefaults,
         loadingStatus: 'none',

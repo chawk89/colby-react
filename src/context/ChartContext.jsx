@@ -1206,12 +1206,18 @@ const getChartDataObj = (labels, cols) => {
     return result
 }
 const initializeState = ({ state, info }) => {
-    const { chartType, rawDatasets, defaultValues} = info
+    const { chartType, rawDatasets, defaultValues, rotateSheetData } = info
 
-    const chartData = rawDatasets
+    let chartData = rawDatasets
 
     if (defaultValues) {
-        const { defaultYAxis, defaultXAxis, title, legend } = defaultValues; 
+        const { defaultYAxis, defaultXAxis, title, legend, data } = defaultValues; 
+
+        if (rotateSheetData) {
+            const sheetData = rotateSheetData(data);
+            chartData = sheetData;  
+            
+        }
 
         function applyAxisSettings(state, axisConfig, axisName) {
             const formsAxisName = axisName === 'x' ? 'xAxis' : 'yAxis'
@@ -1249,12 +1255,22 @@ const initializeState = ({ state, info }) => {
     const globalDatasets = keyLabels.reduce((obj, keyLabel, index) => {
         obj[keyLabel.key] = formDatasets[keyLabel.key] || {
             barPadding: 0.1,
-            color: DEFAULT_COLORS[index % DEFAULT_COLORS.length],
+            color: defaultValues ? defaultValues.defaultColors[index % defaultValues.defaultColors.length] : DEFAULT_COLORS[index % DEFAULT_COLORS.length],
             gradient: "no",
             opacity: 0.5
         };
         return obj;
     }, {});
+
+    if (defaultValues) {
+        const { arrowAnnotation, emphasisAnnotation } = defaultValues; 
+        state.forms.annotationTemp.arrow = arrowAnnotation; 
+        state.forms.annotationTemp.arrow.startDatasetKey = globalDatasets[0]
+        state.forms.annotationTemp.arrow.endDatasetKey = globalDatasets[1]
+
+        state.forms.annotationTemp.emphasis = emphasisAnnotation; 
+        state.forms.annotationTemp.emphasis.datasetKey = globalDatasets[2]
+    }
 
 
     const dataToReturn = {

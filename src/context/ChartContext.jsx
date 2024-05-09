@@ -1206,9 +1206,26 @@ const getChartDataObj = (labels, cols) => {
     return result
 }
 const initializeState = ({ state, info }) => {
+    const { chartType, rawDatasets, defaultValues} = info
 
-    const { chartType, rawDatasets } = info
     const chartData = rawDatasets
+
+    if (defaultValues) {
+        const { defaultYAxis:{ stacked: yAxisStacked, ticks: yAxisTicks, title: yAxisTitle}, 
+            defaultXAxis:{ stacked: xAxisStacked, ticks: xAxisTicks, title: xAxisTitle}, 
+            title, legend } = defaultValues; 
+
+        state.options.plugins.title = title; 
+        state.options.plugins.legend = legend; 
+
+        state.options.scales.x.title = xAxisTitle; 
+        state.options.scales.x.ticks = xAxisTicks; 
+        state.options.scales.x.stacked = xAxisStacked; 
+
+        state.options.scales.y.title = yAxisTitle; 
+        state.options.scales.y.ticks = yAxisTicks;
+        state.options.scales.y.stacked = yAxisStacked;  
+    }
 
     const keyLabels = chartData.header.map(h => ({ key: md5.base64(h), label: h }))
     const datasets = getChartDataObj(keyLabels, chartData.cols)
@@ -1224,7 +1241,8 @@ const initializeState = ({ state, info }) => {
         return obj;
     }, {});
 
-    return {
+
+    const dataToReturn = {
         ...state,
         forms: {
             ...state.forms,
@@ -1239,9 +1257,14 @@ const initializeState = ({ state, info }) => {
             },
             datasets: globalDatasets
         },
-        chartType
+        chartType  
     }
+
+    console.log("data to initialize", dataToReturn)
+
+    return dataToReturn
 }
+
 const getXAxisDatafield = (data) => {
     const { forms: { global: { xAxis } } } = data
     return xAxis
@@ -1252,7 +1275,6 @@ const getYAxisDatafield = (data) => {
 }
 
 const getFilteredDatasets = (data) => {
-    console.log('[getFilteredDatasets]', data)
     const { forms } = data
     const { axes: { datasets: axesDatasets } } = forms
     let xAxis = getXAxisDatafield(data)
@@ -1303,7 +1325,7 @@ const calcYAxisTickCallback = (value, state) => {
     }
 }
 const updateChartDatasets = (state) => {
-    const filteredDatasets = getFilteredDatasets(state);
+    const filteredDatasets = getFilteredDatasets(state); 
 
     if (!filteredDatasets) return;
     const { xAxisLabel, ...data } = filteredDatasets
@@ -1420,7 +1442,7 @@ const onAdditionalUpdates = (state, { chartType, chartRef }) => {
         ...state.options.scales.y.ticks,
         callback: (value) => calcYAxisTickCallback(value, state)
     }
-    
+
     const isNonAxis = isNonAxisChart(chartType)
     
     if (isNonAxis) {
@@ -1436,6 +1458,7 @@ const onAdditionalUpdates = (state, { chartType, chartRef }) => {
 
 export const ChartProvider = ({ children }) => {
     const ColbyChartInfo = window.ColbyChartInfo
+
 
     if (!ColbyChartInfo) return <></>
 
@@ -1456,10 +1479,13 @@ export const ChartProvider = ({ children }) => {
 
     if (loadingStatus == 'none' || loadingStatus == 'loading') {
         if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
+        if (fetchDefaults) {
+            fetchDefaults()
+        }
         return <></>
     }
 
-    const { chartType, createDatasets, rawDatasets } = ColbyChartInfo
+    const { chartType, createDatasets, rawDatasets, } = ColbyChartInfo
 
     if (!chartType || !createDatasets || !storageKey || !rawDatasets) {
         throw Error('ColbyChartInfo is insufficient')

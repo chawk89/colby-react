@@ -1211,18 +1211,22 @@ const initializeState = ({ state, info }) => {
     let chartData = rawDatasets
 
     if (defaultValues) {
-        const { defaultYAxis, defaultXAxis, title, legend, data, rowSwitch, stacked } = defaultValues; 
+        const { defaultYAxis, defaultXAxis, title, legend, data, rowSwitch, stacked,
+             backgroundColor, datalabels, labelsColor } = defaultValues; 
 
         if (rotateSheetData) {
             const sheetData = rotateSheetData(data);
             chartData = sheetData;  
         }
+
         function applyAxisSettings(state, axisConfig, axisName) {
             const formsAxisName = axisName === 'x' ? 'xAxis' : 'yAxis'
 
             state.options.scales[axisName].title = axisConfig.title;
             state.options.scales[axisName].ticks = axisConfig.ticks;
             state.options.scales[axisName].stacked = axisConfig.stacked;
+            state.options.scales[axisName].grid = { display : axisConfig.displayGridLine};
+            state.options.scales[axisName].display = axisConfig.displayAxisLine;
 
             if (axisConfig.title) {
                 state.forms[formsAxisName].label = axisConfig.title.text;
@@ -1235,7 +1239,15 @@ const initializeState = ({ state, info }) => {
         }
 
         state.options.plugins.title = title; 
+        state.options.plugins.title.font.family = title.font.family; 
         state.options.plugins.legend = legend; 
+
+        state.options.plugins.datalabels.display = datalabels; 
+        state.options.plugins.datalabels.color = labelsColor; 
+        state.forms.global.showLabels = datalabels; 
+        state.forms.global.labelsColor = labelsColor; 
+
+
         state.options.rowSwitch = rowSwitch;
         if (rowSwitch) {
             state.forms.global.switchRowColumn = true; 
@@ -1243,10 +1255,15 @@ const initializeState = ({ state, info }) => {
 
         applyAxisSettings(state, defaultXAxis, 'x');
         applyAxisSettings(state, defaultYAxis, 'y');
+        // state.options.scales.y.max = defaultYAxis.max;
+        // state.options.scales.y.max = defaultYAxis.min;
 
         state.forms.global.title = title.text; 
         state.forms.global.titleColor = title.color; 
         state.forms.global.titleStyle = title.style; 
+        state.options.plugins.colbyDraggerPlugin = {
+            bgcolor: backgroundColor
+        }
 
         switch (stacked) {
             case '100-stacked':
@@ -1275,10 +1292,10 @@ const initializeState = ({ state, info }) => {
     const datasets = getChartDataObj(keyLabels, chartData.cols)
     const yAxis = keyLabels.reduce((prev, current) => ({ ...prev, [current.key]: true }), {});
     const formDatasets = state.forms.datasets
-    const globalDatasets = keyLabels.reduce((obj, keyLabel, index) => {
+    let globalDatasets = keyLabels.reduce((obj, keyLabel, index) => {
         obj[keyLabel.key] = formDatasets[keyLabel.key] || {
             barPadding: 0.1,
-            color: defaultValues ? defaultValues.defaultColors[index % defaultValues.defaultColors.length] : DEFAULT_COLORS[index % DEFAULT_COLORS.length],
+            color: defaultValues ? defaultValues.datasetColor[index] :  DEFAULT_COLORS[index % DEFAULT_COLORS.length],
             gradient: "no",
             opacity: 0.5
         };
@@ -1286,7 +1303,7 @@ const initializeState = ({ state, info }) => {
     }, {});
 
     if (defaultValues) {
-        const { arrowAnnotation, emphasisAnnotation, plottedDatasets } = defaultValues; 
+        const { arrowAnnotation, emphasisAnnotation, plottedDatasets, chartTypes } = defaultValues; 
         state.forms.annotationTemp.arrow = arrowAnnotation; 
         state.forms.annotationTemp.arrow.startDatasetKey = globalDatasets[0]
         state.forms.annotationTemp.arrow.endDatasetKey = globalDatasets[1]
@@ -1300,6 +1317,14 @@ const initializeState = ({ state, info }) => {
                     yAxis[key] = false;
                 }
             });
+        }
+
+        if (chartTypes) {
+            Object.keys(globalDatasets).forEach((key, index) => {
+                let chartType = chartTypes[index]
+                globalDatasets[key] = {...globalDatasets[key], chartType}
+            })
+
         }
     }
 
@@ -1321,8 +1346,6 @@ const initializeState = ({ state, info }) => {
         },
         chartType: defaultValues ? defaultValues.chartType : chartType 
     }
-
-    console.log("data to initialize", dataToReturn)
 
     return dataToReturn
 }

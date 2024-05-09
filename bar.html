@@ -52,8 +52,12 @@
         chartType: 'bar', 
         rowSwitch: false, 
         stacked: 'none', 
-        plottedDatasets: [1,2,3],
+        plottedDatasets: [0,1,2],
+        datasetColor: ['rgba(135, 214, 116, 0.5)','rgba(39, 174, 239, 0.5)','rgba(179, 61, 198, 0.5)'], 
+        chartTypes: ['line', 'line', 'scatter'],
         backgroundColor: '#fff',
+        datalabels: true, 
+        labelsColor: 'green',
         legend: {
           display: 'true',
           position: 'top'
@@ -71,9 +75,9 @@
         },
         // xAxis dataset 
         defaultXAxis: {
-          min: "0",
-          max: "100",
           stacked: false, 
+          displayGridLine: true, 
+          displayAxisLine: true, 
           ticks: {
             color: 'rgba(126, 147, 100, 1)'
           },
@@ -87,8 +91,10 @@
         // yAxis dataset 
         defaultYAxis: {
           min: "0",
-          max: "100",
+          max: "50",
           stacked: false, 
+          displayGridLine: true, 
+          displayAxisLine: true,
           ticks: {
             color: 'rgba(143, 149, 136, 1)'
           },
@@ -121,8 +127,6 @@
           lineType: 'global',
           type: 'arrow',
         },
-        defaultColors: ['rgba(135, 214, 116, 0.5)','rgba(39, 174, 239, 0.5)','rgba(179, 61, 198, 0.5)', ]
-        // green,blue,purpls
       }
 
       window.ColbyChartInfo = {

@@ -44,7 +44,7 @@ function fetchBotResponse() {
     return new Promise((res, rej) => {
         try {
             google.script.run
-                .withSuccessHandler(function (botReponse) {
+                .withSuccessHandler(function (botResponse) {
                     const parsedResponse = JSON.parse(botResponse);
                     res(parsedResponse)
                 })

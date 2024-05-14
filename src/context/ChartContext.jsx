@@ -1206,9 +1206,13 @@ const getChartDataObj = (labels, cols) => {
     return result
 }
 const initializeState = ({ state, info }) => {
-    const { chartType, rawDatasets, defaultValues, rotateSheetData } = info
+    const { chartType, rawDatasets, defaultValues, rotateSheetData, botResponse } = info
 
     let chartData = rawDatasets
+
+    if (botResponse) {
+        console.log("bot response?", botResponse)
+    }
 
     if (defaultValues) {
         const { defaultYAxis, defaultXAxis, title, legend, data, rowSwitch, stacked,

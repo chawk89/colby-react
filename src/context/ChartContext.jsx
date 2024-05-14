@@ -1552,7 +1552,7 @@ export const ChartProvider = ({ children }) => {
 
     if (!ColbyChartInfo) return <></>
 
-    const { storageKey, fetchDataRange, loadingStatus, fetchDefaults } = ColbyChartInfo
+    const { storageKey, fetchDataRange, loadingStatus, fetchDefaults,  fetchBotRes } = ColbyChartInfo
 
     if (!storageKey || !fetchDataRange || !loadingStatus) {
         throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange--4`)
@@ -1569,9 +1569,8 @@ export const ChartProvider = ({ children }) => {
 
     if (loadingStatus == 'none' || loadingStatus == 'loading') {
         if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
-        if (fetchDefaults) {
-            fetchDefaults()
-        }
+        if (fetchDefaults) { fetchDefaults() }
+        if (fetchBotRes) { fetchBotRes() }
         return <></>
     }
 

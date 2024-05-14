@@ -1210,6 +1210,7 @@ const initializeState = ({ state, info }) => {
     const { chartType, rawDatasets, defaultValues, rotateSheetData, botResponse } = info
 
     let chartData = rawDatasets
+    let defaultChartType = null; 
 
     if (defaultValues) {
         console.log("bot response?", botResponse); 
@@ -1224,6 +1225,7 @@ const initializeState = ({ state, info }) => {
         const backgroundColor = botResponse?.backgroundColor ?? defaultValues.backgroundColor; 
         const datalabels = botResponse?.datalabels ?? defaultValues.datalabels; 
         const labelsColor = botResponse?.labelsColor ?? defaultValues.labelsColor; 
+        defaultChartType = botResponse?.chartType ?? defaultValues.chartType; 
 
         if (rotateSheetData) {
             const sheetData = rotateSheetData(data);
@@ -1360,7 +1362,7 @@ const initializeState = ({ state, info }) => {
             },
             datasets: globalDatasets
         },
-        chartType: defaultValues ? defaultValues.chartType : chartType 
+        chartType: defaultValues ? defaultChartType : chartType 
     }
 
     return dataToReturn

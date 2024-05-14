@@ -1212,7 +1212,7 @@ const initializeState = ({ state, info }) => {
     let chartData = rawDatasets
     let defaultChartType = null; 
 
-    if (defaultValues) {
+    if (defaultValues && botResponse) {
         console.log("bot response?", botResponse); 
 
         const defaultYAxis = botResponse?.defaultYAxis ?? defaultValues.defaultYAxis; 
@@ -1315,7 +1315,7 @@ const initializeState = ({ state, info }) => {
         return obj;
     }, {});
 
-    if (defaultValues) {
+    if (defaultValues && botResponse) {
 
         const arrowAnnotation = botResponse?.arrowAnnotation ?? defaultValues.arrowAnnotation;
         const emphasisAnnotation = botResponse?.emphasisAnnotation ?? defaultValues.emphasisAnnotation;
@@ -1592,9 +1592,9 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    const { chartType, createDatasets, rawDatasets, } = ColbyChartInfo
+    const { chartType, createDatasets, rawDatasets, defaultValues, botResponse} = ColbyChartInfo
 
-    if (!chartType || !createDatasets || !storageKey || !rawDatasets) {
+    if (!chartType || !createDatasets || !storageKey || !rawDatasets || !defaultValues || !botResponse) {
         throw Error('ColbyChartInfo is insufficient')
     }
 

@@ -870,6 +870,7 @@ const updateAnnotation = (oldOptions, param, datasets, state) => {
     return newOptions
 }
 const updateChartOptions = (oldOptions, forms, state) => {
+    console.log("update to state", state)
     // chart title
     const { annotationTemp, global, xAxis, yAxis, datasets } = forms
     const { chartType } = state
@@ -1211,6 +1212,8 @@ const initializeState = ({ state, info }) => {
     let chartData = rawDatasets
 
     if (defaultValues) {
+        console.log("bot response?", botResponse); 
+
         const defaultYAxis = botResponse?.defaultYAxis ?? defaultValues.defaultYAxis; 
         const defaultXAxis = botResponse?.defaultXAxis ?? defaultValues.defaultXAxis; 
         const title = botResponse?.title ?? defaultValues.title; 

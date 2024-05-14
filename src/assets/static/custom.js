@@ -46,9 +46,9 @@ function fetchBotResponse() {
             google.script.run
                 .withSuccessHandler(function (botReponse) {
                     const parsedResponse = JSON.parse(botResponse);
-                    res(botReponse)
+                    res(parsedResponse)
                 })
-                .getBotResponses(); 
+                .getBotResponse(); 
         } catch (ex) {
             rej(`failed fetching bot response ${ex.message}`)
         }

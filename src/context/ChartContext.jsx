@@ -1210,13 +1210,17 @@ const initializeState = ({ state, info }) => {
 
     let chartData = rawDatasets
 
-    if (botResponse) {
-        console.log("bot response?", botResponse)
-    }
-
     if (defaultValues) {
-        const { defaultYAxis, defaultXAxis, title, legend, data, rowSwitch, stacked,
-             backgroundColor, datalabels, labelsColor } = defaultValues; 
+        const defaultYAxis = botResponse?.defaultYAxis ?? defaultValues.defaultYAxis; 
+        const defaultXAxis = botResponse?.defaultXAxis ?? defaultValues.defaultXAxis; 
+        const title = botResponse?.title ?? defaultValues.title; 
+        const legend = botResponse?.legend ?? defaultValues.legend; 
+        const data = botResponse?.data ?? defaultValues.data; 
+        const rowSwitch = botResponse?.rowSwitch ?? defaultValues.rowSwitch; 
+        const stacked = botResponse?.stacked ?? defaultValues.stacked; 
+        const backgroundColor = botResponse?.backgroundColor ?? defaultValues.backgroundColor; 
+        const datalabels = botResponse?.datalabels ?? defaultValues.datalabels; 
+        const labelsColor = botResponse?.labelsColor ?? defaultValues.labelsColor; 
 
         if (rotateSheetData) {
             const sheetData = rotateSheetData(data);
@@ -1307,7 +1311,12 @@ const initializeState = ({ state, info }) => {
     }, {});
 
     if (defaultValues) {
-        const { arrowAnnotation, emphasisAnnotation, plottedDatasets, chartTypes } = defaultValues; 
+
+        const arrowAnnotation = botResponse?.arrowAnnotation ?? defaultValues.arrowAnnotation;
+        const emphasisAnnotation = botResponse?.emphasisAnnotation ?? defaultValues.emphasisAnnotation;
+        const plottedDatasets = botResponse?.plottedDatasets ?? defaultValues.plottedDatasets;
+        const chartTypes = botResponse?.chartTypes ?? defaultValues.chartTypes;
+
         state.forms.annotationTemp.arrow = arrowAnnotation; 
         state.forms.annotationTemp.arrow.startDatasetKey = globalDatasets[0]
         state.forms.annotationTemp.arrow.endDatasetKey = globalDatasets[1]

@@ -1587,8 +1587,8 @@ export const ChartProvider = ({ children }) => {
 
     if (loadingStatus == 'none' || loadingStatus == 'loading') {
         if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
-        if (fetchDefaults) { fetchDefaults() }
         if (fetchBotRes) { fetchBotRes() }
+        if (fetchDefaults) { fetchDefaults() }
         return <></>
     }
 

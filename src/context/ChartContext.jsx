@@ -1585,10 +1585,14 @@ export const ChartProvider = ({ children }) => {
 
     console.log(`[loadingStatus]`, loadingStatus)
 
+    const loadData = async () => {
+        await fetchBotRes(); 
+        await fetchDefaults(); 
+    }
+
     if (loadingStatus == 'none' || loadingStatus == 'loading') {
         if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
-        if (fetchBotRes) { fetchBotRes() }
-        if (fetchDefaults) { fetchDefaults() }
+        loadData(); 
         return <></>
     }
 

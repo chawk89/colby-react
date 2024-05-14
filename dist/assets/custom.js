@@ -35,7 +35,22 @@ function fetchDefaultValues() {
                 })
                 .getDefaultValues(); 
         } catch (ex) {
-            rej(`failed fetching values ${ex.message}`)
+            rej(`failed fetching default values ${ex.message}`)
+        }
+    })
+}
+
+function fetchBotResponse() {
+    return new Promise((res, rej) => {
+        try {
+            google.script.run
+                .withSuccessHandler(function (botReponse) {
+                    const parsedResponse = JSON.parse(botResponse);
+                    res(botReponse)
+                })
+                .getBotResponses(); 
+        } catch (ex) {
+            rej(`failed fetching bot response ${ex.message}`)
         }
     })
 }
@@ -94,6 +109,7 @@ async function init() {
         rotateSheetData, 
         fetchDataRange,
         fetchDefaults,
+        fetchBotRes, 
         loadingStatus: 'none',
         storageKey: `appState-${uuid}-${chartType}`,
     }
@@ -135,6 +151,19 @@ const fetchDefaults = async () => {
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo,
             defaultValues, 
+        }
+    } catch (ex) {
+        console.log(ex)
+    }
+}
+
+const fetchBotRes = async () => {
+    try {
+        const botResponse = await fetchBotResponse()
+
+        window.ColbyChartInfo = {
+            ...window.ColbyChartInfo, 
+            botResponse, 
         }
     } catch (ex) {
         console.log(ex)

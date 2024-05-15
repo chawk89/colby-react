@@ -145,12 +145,17 @@ const fetchDataRange = async (range) => {
 }
 
 const fetchDefaults = async () => {
+    window.ColbyChartInfo = {
+        ...window.ColbyChartInfo,
+        defaultsLoadingStatus: 'loading'
+      }
     try {
         const defaultValues = await fetchDefaultValues()
 
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo,
             defaultValues, 
+            defaultsLoadingStatus: 'loaded'
         }
     } catch (ex) {
         console.log(ex)
@@ -158,12 +163,17 @@ const fetchDefaults = async () => {
 }
 
 const fetchBotRes = async () => {
+    window.ColbyChartInfo = {
+        ...window.ColbyChartInfo,
+        botLoadingStatus: 'loading'
+      }
     try {
         const botResponse = await fetchBotResponse()
 
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo, 
             botResponse, 
+            botLoadingStatus: 'loaded'
         }
     } catch (ex) {
         console.log(ex)

@@ -1211,9 +1211,10 @@ const initializeState = ({ state, info }) => {
 
     let chartData = rawDatasets
     let defaultChartType = null; 
+    console.log("bot response 1?", botResponse); 
 
     if (defaultValues && botResponse) {
-        console.log("bot response?", botResponse); 
+        console.log("bot response 2?", botResponse); 
 
         const defaultYAxis = botResponse?.defaultYAxis ?? defaultValues.defaultYAxis; 
         const defaultXAxis = botResponse?.defaultXAxis ?? defaultValues.defaultXAxis; 
@@ -1570,7 +1571,8 @@ export const ChartProvider = ({ children }) => {
 
     if (!ColbyChartInfo) return <></>
 
-    const { storageKey, fetchDataRange, loadingStatus, fetchDefaults,  fetchBotRes } = ColbyChartInfo
+    const { storageKey, fetchDataRange, loadingStatus, fetchDefaults,  fetchBotRes, defaultsLoadingStatus, 
+    botLoadingStatus } = ColbyChartInfo
 
     if (!storageKey || !fetchDataRange || !loadingStatus) {
         throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange--4`)
@@ -1583,14 +1585,19 @@ export const ChartProvider = ({ children }) => {
         throw Error('ColbyChartInfo is missing context')
     }
 
-    console.log(`[loadingStatus]`, loadingStatus)
+    console.log(`[loadingStatus]`, loadingStatus, defaultsLoadingStatus, botLoadingStatus)
 
     const loadData = async () => {
-        await fetchBotRes(); 
-        await fetchDefaults(); 
+        try {
+            await fetchBotRes(); 
+            await fetchDefaults(); 
+            console.log("data fetched")
+        } catch (error) {
+            console.log("error", error)
+        } 
     }
 
-    if (loadingStatus == 'none' || loadingStatus == 'loading') {
+    if (loadingStatus == 'none' || loadingStatus == 'loading' || defaultsLoadingStatus == 'loading' || botLoadingStatus == 'loading') {
         if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
         loadData(); 
         return <></>

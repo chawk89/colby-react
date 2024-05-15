@@ -177,7 +177,7 @@ const fetchBotRes = async () => {
             ...window.ColbyChartInfo, 
             botResponse, 
             botLoadingStatus: 'loaded',
-            loadingStatus: 'none',
+            loadingStatus: 'loaded',
         }
     } catch (ex) {
         console.log(ex)

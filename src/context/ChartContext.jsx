@@ -1208,12 +1208,13 @@ const getChartDataObj = (labels, cols) => {
 }
 const initializeState = ({ state, info }) => {
     const { chartType, rawDatasets, defaultValues, rotateSheetData, botResponse } = info
+    console.log("bot response 1?", botResponse); 
 
     let chartData = rawDatasets
     let defaultChartType = null; 
 
     if (defaultValues && botResponse) {
-        console.log("bot response?", botResponse); 
+        console.log("bot response 2?", botResponse); 
 
         const defaultYAxis = botResponse?.defaultYAxis ?? defaultValues.defaultYAxis; 
         const defaultXAxis = botResponse?.defaultXAxis ?? defaultValues.defaultXAxis; 
@@ -1587,13 +1588,15 @@ export const ChartProvider = ({ children }) => {
     const loadDataAndInitialize = async () => {
        if (loadingStatus === 'none') {
         await fetchDataRange(storageValue?.forms?.dataRange ?? '')
+        console.log("fetched range")
        }
        try {
         await fetchBotRes(); 
         await fetchDefaults(); 
         if (ColbyChartInfo.defaultValues && ColbyChartInfo.botResponse) {
-        storedState = initializeState({ state: storageValue || {}, info: ColbyChartInfo });
+        storedState = initializeState({ state: storageValue || initState, info: ColbyChartInfo });
         setLoadingStatus('loaded'); 
+        console.log("fetched data!!")
     }
        } catch (error) {
         console.loe("error", error)

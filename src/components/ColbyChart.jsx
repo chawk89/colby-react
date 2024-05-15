@@ -70,12 +70,13 @@ const ColbyChart = () => {
 
     }
     return (
-        <>
-            <ReactChart ref={chartRef} type={chartType}
-                options={chartOptions}
-                data={data}
-                plugins={[colbyDraggerPlugin,]}
-            />
+        <>   
+                <ReactChart ref={chartRef} type={chartType}
+                    options={chartOptions}
+                    data={data}
+                    plugins={[colbyDraggerPlugin,]} 
+                    style={{marginTop: '50px'}}
+                />
             <ChartMenu onClick={handleClick} />
         </>
     )

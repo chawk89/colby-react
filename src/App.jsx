@@ -13,10 +13,11 @@ import './App.scss'
 
 function App() {
   const [isFirstLoading, setIsFirstLoading] = useState(true);
-
-
   const loadingStatus = useLoadingStatus()
   const [storageValueExists, clearStorageCache] = useIsStorageValueExists()
+  const ColbyChartInfo = window.ColbyChartInfo; 
+  const botResponse = ColbyChartInfo.botResponse ? ColbyChartInfo.botResponse : {}; 
+
   const handleConfirm = () => {
     clearStorageCache()
     setIsFirstLoading(false)
@@ -37,7 +38,7 @@ function App() {
               <div className="w-full xl:w-8/12 px-2">
                 <ColbyChart />
               </div>
-              <div className="w-full xl:w-4/12 px-2 hidden">
+              <div className={botResponse && botResponse.insights ? "w-full xl:w-4/12 px-2" : "w-full xl:w-4/12 px-2 hidden"}>
                 <NarrativeMessage />
               </div>
             </div>

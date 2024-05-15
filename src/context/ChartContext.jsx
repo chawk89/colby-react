@@ -1612,9 +1612,11 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
+    console.log(`[loadingStatus]`, loadingStatus, defaultsLoadingStatus, botLoadingStatus)
+
     const { chartType, createDatasets, rawDatasets} = ColbyChartInfo
 
-    if (!chartType || !createDatasets || !storageKey || !rawDatasets) {
+    if (!chartType || !createDatasets || !storageKey || !rawDatasets ) {
         throw Error('ColbyChartInfo is insufficient')
     }
 

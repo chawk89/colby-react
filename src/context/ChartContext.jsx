@@ -1587,19 +1587,28 @@ export const ChartProvider = ({ children }) => {
 
     console.log(`[loadingStatus]`, loadingStatus, defaultsLoadingStatus, botLoadingStatus)
 
-    const loadData = async () => {
-        try {
-            await fetchBotRes(); 
-            await fetchDefaults(); 
-            console.log("data fetched")
-        } catch (error) {
-            console.log("error", error)
-        } 
+    // const loadData = async () => {
+    //     try {
+    //         await fetchBotRes(); 
+    //         await fetchDefaults(); 
+    //         console.log("data fetched")
+    //     } catch (error) {
+    //         console.log("error", error)
+    //     } 
+    // }
+
+    if (loadingStatus == 'none' || loadingStatus == 'loading' ) {
+        if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
+        return <></>
     }
 
-    if (loadingStatus == 'none' || loadingStatus == 'loading' || defaultsLoadingStatus == 'loading' || botLoadingStatus == 'loading') {
-        if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
-        loadData(); 
+    if (defaultsLoadingStatus == 'none' || defaultsLoadingStatus == 'loading') {
+        if (defaultsLoadingStatus == 'none') fetchDefaults()
+        return <></>
+    }
+
+    if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
+        if (botLoadingStatus == 'none') fetchBotRes()
         return <></>
     }
 

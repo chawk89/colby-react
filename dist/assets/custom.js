@@ -111,6 +111,8 @@ async function init() {
         fetchDefaults,
         fetchBotRes, 
         loadingStatus: 'none',
+        defaultsLoadingStatus: 'none',
+        botLoadingStatus: 'none',
         storageKey: `appState-${uuid}-${chartType}`,
     }
     window.onInsertImage = (data) => {

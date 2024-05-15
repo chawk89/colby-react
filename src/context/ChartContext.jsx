@@ -1572,7 +1572,7 @@ export const ChartProvider = ({ children }) => {
     if (!ColbyChartInfo) return <></>
 
     const { storageKey, fetchDataRange, loadingStatus, fetchDefaults,  fetchBotRes, defaultsLoadingStatus, 
-    botLoadingStatus } = ColbyChartInfo
+    botLoadingStatus, rangeLoadingStatus } = ColbyChartInfo
 
     if (!storageKey || !fetchDataRange || !loadingStatus) {
         throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange--4`)
@@ -1585,7 +1585,7 @@ export const ChartProvider = ({ children }) => {
         throw Error('ColbyChartInfo is missing context')
     }
 
-    console.log(`[loadingStatus]`, loadingStatus, defaultsLoadingStatus, botLoadingStatus)
+    console.log(`[loadingStatus]`, rangeLoadingStatus, defaultsLoadingStatus, botLoadingStatus)
 
     // const loadData = async () => {
     //     try {
@@ -1597,8 +1597,8 @@ export const ChartProvider = ({ children }) => {
     //     } 
     // }
 
-    if (loadingStatus == 'none' || loadingStatus == 'loading' ) {
-        if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
+    if (rangeLoadingStatus == 'none' || rangeLoadingStatus == 'loading' ) {
+        if (rangeLoadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
         return <></>
     }
 

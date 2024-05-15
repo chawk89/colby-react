@@ -111,6 +111,7 @@ async function init() {
         fetchDefaults,
         fetchBotRes, 
         loadingStatus: 'none',
+        rangeLoadingStatus: 'none',
         defaultsLoadingStatus: 'none',
         botLoadingStatus: 'none',
         storageKey: `appState-${uuid}-${chartType}`,
@@ -130,7 +131,7 @@ async function init() {
 const fetchDataRange = async (range) => {
     window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
-        loadingStatus: 'loading',
+        rangeLoadingStatus: 'loading',
     }
 
     try {
@@ -139,7 +140,7 @@ const fetchDataRange = async (range) => {
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo,
             rawDatasets: rotateSheetData(sheetData),
-            loadingStatus: 'loaded'
+            rangeLoadingStatus: 'loaded'
         }
     } catch (ex) {
         console.log(ex)
@@ -175,7 +176,8 @@ const fetchBotRes = async () => {
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo, 
             botResponse, 
-            botLoadingStatus: 'loaded'
+            botLoadingStatus: 'loaded',
+            loadingStatus: 'none',
         }
     } catch (ex) {
         console.log(ex)

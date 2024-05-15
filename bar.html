@@ -229,7 +229,8 @@
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
         botResponse, 
-        botLoadingStatus: 'loaded'
+        botLoadingStatus: 'loaded',
+        loadingStatus: 'loaded',
       }
 
     }
@@ -269,7 +270,7 @@
       console.log('[fetchDataRange]', !!range)
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
-        loadingStatus: 'loading'
+        rangeLoadingStatus: 'loading'
       }
       await fetchData()
       const data = [['Date',
@@ -322,7 +323,7 @@
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
         rawDatasets,
-        loadingStatus: 'loaded'
+        rangeLoadingStatus: 'loaded'
       }
 
     }
@@ -334,7 +335,8 @@
         createDatasets,
         rotateSheetData, 
         storageKey: `appState-${testKey}`,
-        loadingStatus: 'none',
+        loadingStatus: 'loading',
+        rangeLoadingStatus: 'none',
         defaultsLoadingStatus: 'none',
         botLoadingStatus: 'none',
         fetchDataRange,

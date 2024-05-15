@@ -1567,73 +1567,48 @@ const onAdditionalUpdates = (state, { chartType, chartRef }) => {
 export const ChartProvider = ({ children }) => {
     const ColbyChartInfo = window.ColbyChartInfo
 
+
     if (!ColbyChartInfo) return <></>
 
-    const { storageKey, fetchDataRange, fetchDefaults,  fetchBotRes } = ColbyChartInfo
-    const [loadingStatus, setLoadingStatus] = useState(ColbyChartInfo.loadingStatus);
-    let storedState = {}
+    const { storageKey, fetchDataRange, loadingStatus, fetchDefaults,  fetchBotRes } = ColbyChartInfo
 
     if (!storageKey || !fetchDataRange || !loadingStatus) {
         throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange--4`)
     }
 
     const storageValue = JSON.parse(localStorage.getItem(storageKey))
-    const chartRef = useRef(null);
 
-    // if (!ColbyChartInfo) {
-    //     throw Error('ColbyChartInfo is missing context')
-    // }
 
-    const loadDataAndInitialize = async () => {
-       if (loadingStatus === 'none') {
-        await fetchDataRange(storageValue?.forms?.dataRange ?? '')
-       }
-       try {
+    if (!ColbyChartInfo) {
+        throw Error('ColbyChartInfo is missing context')
+    }
+
+    console.log(`[loadingStatus]`, loadingStatus)
+
+    const loadData = async () => {
         await fetchBotRes(); 
         await fetchDefaults(); 
-        if (ColbyChartInfo.defaultValues && ColbyChartInfo.botResponse) {
-        storedState = initializeState({ state: storageValue || {}, info: ColbyChartInfo });
-        setLoadingStatus('loaded'); 
-    }
-       } catch (error) {
-        console.loe("error", error)
-        setLoadingStatus('error'); 
-       }
     }
 
-    useEffect(() => {
-        if (ColbyChartInfo.loadingStatus !== loadingStatus) {
-            setLoadingStatus(ColbyChartInfo.loadingStatus);
-        }
-    }, [ColbyChartInfo.loadingStatus]);
-
-    useEffect(() => {
-        if (loadingStatus === 'none' || loadingStatus === 'loading') {
-            loadDataAndInitialize();
-        }
-    }, [loadingStatus]);
-
-    // if (loadingStatus == 'none' || loadingStatus == 'loading') {
-    //     if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
-    //     loadData(); 
-    //     return <></>
-    // }
-    if (loadingStatus === 'loading' || loadingStatus === 'none') {
-        return <div>fetching data...</div>;
+    if (loadingStatus == 'none' || loadingStatus == 'loading') {
+        if (loadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')
+        loadData(); 
+        return <></>
     }
 
     const { chartType, createDatasets, rawDatasets} = ColbyChartInfo
+
     if (!chartType || !createDatasets || !storageKey || !rawDatasets) {
         throw Error('ColbyChartInfo is insufficient')
     }
 
-    const [state, dispatch] = useReducer(reducer, storedState);
 
-
-    // const chartRef = useRef(null);
-    // const storedState = initializeState({ state: storageValue || initState, info: ColbyChartInfo });
+    const chartRef = useRef(null);
+    const storedState = initializeState({ state: storageValue || initState, info: ColbyChartInfo });
 
     onAdditionalUpdates(storedState, { chartRef, chartType })
+
+    const [state, dispatch] = useReducer(reducer, storedState);
 
     const onDownloadChart = () => {
         const canvas = chartRef.current.canvas;

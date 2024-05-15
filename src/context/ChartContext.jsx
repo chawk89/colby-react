@@ -1596,9 +1596,9 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    const { chartType, createDatasets, rawDatasets, defaultValues, botResponse} = ColbyChartInfo
+    const { chartType, createDatasets, rawDatasets} = ColbyChartInfo
 
-    if (!chartType || !createDatasets || !storageKey || !rawDatasets || !defaultValues || !botResponse) {
+    if (!chartType || !createDatasets || !storageKey || !rawDatasets) {
         throw Error('ColbyChartInfo is insufficient')
     }
 

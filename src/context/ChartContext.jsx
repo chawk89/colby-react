@@ -264,6 +264,7 @@ export const UPDATE_ANNOTATION_POSITION = 'UPDATE_ANNOTATION_POSITION';
 export const UPDATE_ANNOTATION_ARROW_DATA = 'UPDATE_ANNOTATION_ARROW_DATA';
 export const DELETE_ANNOTATION_ITEM = 'DELETE_ANNOTATION_ITEM';
 export const CREATE_ANNOTATION_ITEM_BY_CONTEXTMENU = 'CREATE_ANNOTATION_ITEM_BY_CONTEXTMENU';
+export const FETCH_BOT_RES = 'FETCH_BOT_RES'; 
 
 export const DEFAULT_COLORS = ['rgba(255, 99, 132, 0.5)', 'rgba(53, 162, 235, 0.5)']
 
@@ -285,10 +286,7 @@ const updateGlobalOption = (oldOptions, global, state) => {
         legendPosition,
         labelsColor,
     } = global
-    // message?
-    if (message !== '') {
-        fetchBotResWithInput(message); 
-    }
+
     // title
     newOptions.plugins.title.text = title
     // stacked
@@ -1063,6 +1061,18 @@ const reducer = (state, action) => {
             fetchDataRange(newDataRange);
             return newState
 
+        }
+        case FETCH_BOT_RES: {
+            const { data: { message } } = payload;
+            console.log("message?", message)
+            const newState = {
+                ...state, forms: {
+                    ...state.forms,
+                    botResponse: message
+                }
+            };
+            fetchBotResWithInput(message);
+            return newState
         }
         case ADD_ANNOTATION_ITEM: {
             const { type: annotationType, id } = payload.data

@@ -252,26 +252,26 @@
           insights: 'The chart illustrates the trend of monthly sales over the last year, showing an increase in revenue from 1998 to 2021. Confidence levels appear to have fluctuated throughout the period.',
           data: [
               ['Date', 'Revenue (Millions)', 'Confidence'],
-              [20, 31, 17],
-              [19, 34, 15],
-              [49, 14, 14],
-              [30, 16, 14],
-              [25, 21, 16],
-              [23, 26, 14],
-              [24, 25, 13],
-              [25, 29, 14],
-              [31, 33, 18],
-              [27, 32, 20],
-              [20, 18, 21],
-              [29, 21, 20],
-              [42, 23, 20],
-              [44, 29, 20],
-              [34, 45, 24]
+              [20, 301, 17],
+              [19, 340, 15],
+              [49, 140, 14],
+              [30, 160, 14],
+              [25, 210, 16],
+              [23, 260, 14],
+              [24, 250, 13],
+              [25, 290, 14],
+              [31, 330, 18],
+              [27, 320, 20],
+              [20, 180, 21],
+              [29, 210, 20],
+              [42, 203, 20],
+              [44, 209, 20],
+              [34, 405, 24]
           ],
           chartType: 'bar',
           backgroundColor: '#fff',
           datalabels: true,      
-          chartTypes: ['line', 'line', 'line'],
+          chartTypes: ['bar', 'bar', 'bar'],
           defaultXAxis: {
               displayAxisLine: true,
               displayGridLine: true,
@@ -308,7 +308,7 @@
               display: true,
               position: 'top'
           },
-          plottedDatasets: [2, 1],
+          plottedDatasets: [1, 2],
           title: {
               color: 'rgba(143, 149, 136, 1)',
               display: true,
@@ -318,7 +318,7 @@
                   style: 'none',
                   weight: 'bold'
               },
-              text: `${message}`
+              text: `Bot Title: ${message}`
           },
           message: message
     }

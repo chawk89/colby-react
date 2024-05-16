@@ -1,11 +1,10 @@
 import React, { useCallback } from 'react';
 import { useChartContext } from '../hooks/useChartContext'
 import { useForm, FormProvider, Controller } from "react-hook-form"
-import { UDPATE_FORM } from '../context/ChartContext'
+import { UDPATE_FORM, FETCH_BOT_RES } from '../context/ChartContext'
 import useFormValue from '../hooks/useFormValue';
 
 const ChatBox = () => {
-
     const { state: { forms }, dispatch, onClearCache } = useChartContext()
     const methods = useForm({ defaultValues: forms })
     const { control, watch, reset: resetForm } = methods
@@ -13,7 +12,7 @@ const ChatBox = () => {
     useFormValue(watch, ['message'])
 
     const onSubmit = useCallback((data) => {
-        dispatch({ type: UDPATE_FORM, data })
+        dispatch({ type: FETCH_BOT_RES, data: { message: data.message }})
         
     }, [dispatch]);
 

@@ -118,7 +118,8 @@ const initState = {
         axes: {
             keyLabels: [],
         },
-        dataRange: ''
+        dataRange: '',
+        message: '',
     },
     annotation: {
         // "line-1707320896272": {
@@ -269,6 +270,7 @@ export const DEFAULT_COLORS = ['rgba(255, 99, 132, 0.5)', 'rgba(53, 162, 235, 0.
 
 const updateGlobalOption = (oldOptions, global, state) => {
     const newOptions = { ...oldOptions }
+    const { message } = state.forms; 
     const {
         title,
         stacked,
@@ -283,6 +285,10 @@ const updateGlobalOption = (oldOptions, global, state) => {
         legendPosition,
         labelsColor,
     } = global
+    // message?
+    if (message !== '') {
+        fetchBotResWithInput(message); 
+    }
     // title
     newOptions.plugins.title.text = title
     // stacked
@@ -964,6 +970,12 @@ const fetchDataRange = (range) => {
     }
 }
 
+const fetchBotResWithInput = (message) => {
+    if (window?.ColbyChartInfo?.fetchBotResWithInput) {
+        window.ColbyChartInfo.fetchBotResWithInput(message)
+    }
+}
+
 const fetchDefaults = () => {
     if (window?.ColbyChartInfo?.fetchDefaults) {
         window.ColbyChartInfo.fetchDefaults()
@@ -1587,15 +1599,6 @@ export const ChartProvider = ({ children }) => {
 
     console.log(`[loadingStatus]`, rangeLoadingStatus, defaultsLoadingStatus, botLoadingStatus)
 
-    // const loadData = async () => {
-    //     try {
-    //         await fetchBotRes(); 
-    //         await fetchDefaults(); 
-    //         console.log("data fetched")
-    //     } catch (error) {
-    //         console.log("error", error)
-    //     } 
-    // }
 
     if (rangeLoadingStatus == 'none' || rangeLoadingStatus == 'loading' ) {
         if (rangeLoadingStatus == 'none') fetchDataRange(storageValue?.forms?.dataRange ?? '')

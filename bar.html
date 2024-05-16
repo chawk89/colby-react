@@ -29,6 +29,12 @@
       return result
     }
 
+    async function saveMessage(message) {
+      const latestMessage = message; 
+      console.log("message?", message)
+      return latestMessage; 
+    }
+
     async function fetchDefaults() {
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
@@ -221,7 +227,7 @@
                   style: 'none',
                   weight: 'bold'
               },
-              text: 'Monthly Sales Trend'
+              text: 'starting graph'
           }
       };
 
@@ -233,6 +239,96 @@
         loadingStatus: 'loaded',
       }
 
+    }
+
+    async function fetchBotResWithInput(message) {
+      window.ColbyChartInfo = {
+        ...window.ColbyChartInfo,
+        loadingStatus: 'loading',
+        botLoadingStatus: 'loading',
+      }
+      await fetchDelay()
+      const botResponse = {
+          insights: 'The chart illustrates the trend of monthly sales over the last year, showing an increase in revenue from 1998 to 2021. Confidence levels appear to have fluctuated throughout the period.',
+          data: [
+              ['Date', 'Revenue (Millions)', 'Confidence'],
+              [20, 31, 17],
+              [19, 34, 15],
+              [49, 14, 14],
+              [30, 16, 14],
+              [25, 21, 16],
+              [23, 26, 14],
+              [24, 25, 13],
+              [25, 29, 14],
+              [31, 33, 18],
+              [27, 32, 20],
+              [20, 18, 21],
+              [29, 21, 20],
+              [42, 23, 20],
+              [44, 29, 20],
+              [34, 45, 24]
+          ],
+          chartType: 'bar',
+          backgroundColor: '#fff',
+          datalabels: true,      
+          chartTypes: ['line', 'line', 'line'],
+          defaultXAxis: {
+              displayAxisLine: true,
+              displayGridLine: true,
+              stacked: false,
+              ticks: {
+                  color: 'rgba(126, 147, 100, 1)'
+              },
+              title: {
+                  color: 'rgba(126, 147, 100, 1)',
+                  display: true,
+                  text: 'Date',
+                  fontSize: '12',
+                  family: 'Lora',
+              }
+          },
+          defaultYAxis: {
+              displayAxisLine: true,
+              displayGridLine: true,
+              max: '100',
+              min: '0',
+              stacked: false,
+              ticks: {
+                  color: 'rgba(143, 149, 136, 1)'
+              },
+              title: {
+                  color: 'rgba(143, 149, 136, 1)',
+                  display: true,
+                  fontSize: '12',
+                  family: 'Lora',
+                  text: ''
+              }
+          },
+          legend: {
+              display: true,
+              position: 'top'
+          },
+          plottedDatasets: [2, 1],
+          title: {
+              color: 'rgba(143, 149, 136, 1)',
+              display: true,
+              font: {
+                  family: 'Lora',
+                  size: '18',
+                  style: 'none',
+                  weight: 'bold'
+              },
+              text: `${message}`
+          },
+          message: message
+    }
+
+    window.ColbyChartInfo = {
+        ...window.ColbyChartInfo,
+        botResponse, 
+        botLoadingStatus: 'loaded',
+        loadingStatus: 'loaded',
+      }
     }
 
     function rotateSheetData(sheetData) {
@@ -259,7 +355,7 @@
 }
 
     async function fetchDelay() {
-          return new Promise(res => setTimeout(res, 1000))
+          return new Promise(res => setTimeout(res, 4000))
         }
 
     async function fetchData() {
@@ -341,7 +437,8 @@
         botLoadingStatus: 'none',
         fetchDataRange,
         fetchDefaults,
-        fetchBotRes,  
+        fetchBotRes, 
+        fetchBotResWithInput,  
       }
       window.onInsertImage = function (data) {
         console.log('[onInsertImage] window', data)

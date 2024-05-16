@@ -55,6 +55,21 @@ function fetchBotResponse() {
     })
 }
 
+function fetchBotResponseWithInput(message) {
+    return new Promise((res, rej) => {
+        try {
+            google.script.run
+                .withSuccessHandler(function (botResponse) {
+                    const parsedResponse = JSON.parse(botResponse);
+                    res(parsedResponse)
+                })
+                .getBotResponseWithInput(message); 
+        } catch (ex) {
+            rej(`failed fetching bot response ${ex.message}`)
+        }
+    })
+}
+
 
 function rotateSheetData(sheetData) {
     const data = []
@@ -110,6 +125,7 @@ async function init() {
         fetchDataRange,
         fetchDefaults,
         fetchBotRes, 
+        fetchBotResWithinput,
         loadingStatus: 'none',
         rangeLoadingStatus: 'none',
         defaultsLoadingStatus: 'none',
@@ -172,6 +188,26 @@ const fetchBotRes = async () => {
       }
     try {
         const botResponse = await fetchBotResponse()
+
+        window.ColbyChartInfo = {
+            ...window.ColbyChartInfo, 
+            botResponse, 
+            botLoadingStatus: 'loaded',
+            loadingStatus: 'loaded',
+        }
+    } catch (ex) {
+        console.log(ex)
+    }
+}
+
+const fetchBotResWithinput = async (message) => {
+    window.ColbyChartInfo = {
+        ...window.ColbyChartInfo,
+        loadingStatus: 'loading',
+        botLoadingStatus: 'loading'
+      }
+    try {
+        const botResponse = await fetchBotResponse(message)
 
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo, 

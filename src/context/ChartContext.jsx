@@ -1623,7 +1623,7 @@ export const ChartProvider = ({ children }) => {
     }
 
     if (storageValue && storageValue?.forms?.botMessage && (chatBotLoadingStatus == 'none' || chatBotLoadingStatus == 'loading')) {
-        if (chatBotLoadingStatus == 'none') fetchBotResWithInput(storageValue.forms.botMessage)
+        if (chatBotLoadingStatus == 'none') fetchBotResWithInput(storageValue?.forms?.botMessage ?? '')
         return <></> 
     }
 

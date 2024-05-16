@@ -967,6 +967,12 @@ const fetchDataRange = (range) => {
     }
 }
 
+const fetchBotResWithInput = (message) => {
+    if (window?.ColbyChartInfo?.fetchBotResWithInput) {
+        window.ColbyChartInfo.fetchBotResWithInput(message)
+    } 
+}
+
 
 const fetchDefaults = () => {
     if (window?.ColbyChartInfo?.fetchDefaults) {
@@ -1058,14 +1064,13 @@ const reducer = (state, action) => {
         }
         case FETCH_BOT_RES: {
             const { data: { message } } = payload;
-            console.log("message?", message)
             const newState = {
                 ...state, forms: {
                     ...state.forms,
                     botMessage: message
                 }
             };
-            fetchBotResWithInput(message);
+            fetchBotResWithInput(message)
             return newState
         }
         case ADD_ANNOTATION_ITEM: {

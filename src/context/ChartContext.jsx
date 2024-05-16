@@ -973,7 +973,6 @@ const fetchBotResWithInput = (message) => {
     } 
 }
 
-
 const fetchDefaults = () => {
     if (window?.ColbyChartInfo?.fetchDefaults) {
         window.ColbyChartInfo.fetchDefaults()
@@ -1619,15 +1618,13 @@ export const ChartProvider = ({ children }) => {
     }
 
     if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
-        if (botLoadingStatus == 'none') fetchBotRes()
+        if (botLoadingStatus == 'none') fetchBotRes() 
         return <></>
     }
 
-    if (storageValue && storageValue?.forms?.botMessage) {
-        if (chatBotLoadingStatus == 'none' || chatBotLoadingStatus == 'loading') {
-            if (chatBotLoadingStatus == 'none') fetchBotResWithInput(storageValue.forms.botMessage)
-            return <></> 
-        }
+    if (storageValue && storageValue?.forms?.botMessage && (chatBotLoadingStatus == 'none' || chatBotLoadingStatus == 'loading')) {
+        if (chatBotLoadingStatus == 'none') fetchBotResWithInput(storageValue.forms.botMessage)
+        return <></> 
     }
 
     console.log(`[loadingStatus]`, loadingStatus, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus)

@@ -119,7 +119,6 @@ const initState = {
             keyLabels: [],
         },
         dataRange: '',
-        message: '',
     },
     annotation: {
         // "line-1707320896272": {
@@ -968,11 +967,6 @@ const fetchDataRange = (range) => {
     }
 }
 
-const fetchBotResWithInput = (message) => {
-    if (window?.ColbyChartInfo?.fetchBotResWithInput) {
-        window.ColbyChartInfo.fetchBotResWithInput(message)
-    }
-}
 
 const fetchDefaults = () => {
     if (window?.ColbyChartInfo?.fetchDefaults) {
@@ -1068,7 +1062,7 @@ const reducer = (state, action) => {
             const newState = {
                 ...state, forms: {
                     ...state.forms,
-                    botResponse: message
+                    botMessage: message
                 }
             };
             fetchBotResWithInput(message);
@@ -1229,6 +1223,7 @@ const getChartDataObj = (labels, cols) => {
     return result
 }
 const initializeState = ({ state, info }) => {
+    console.log("initializing?", info)
     const { chartType, rawDatasets, defaultValues, rotateSheetData, botResponse } = info
 
     let chartData = rawDatasets
@@ -1590,11 +1585,10 @@ const onAdditionalUpdates = (state, { chartType, chartRef }) => {
 export const ChartProvider = ({ children }) => {
     const ColbyChartInfo = window.ColbyChartInfo
 
-
     if (!ColbyChartInfo) return <></>
 
     const { storageKey, fetchDataRange, loadingStatus, fetchDefaults,  fetchBotRes, defaultsLoadingStatus, 
-    botLoadingStatus, rangeLoadingStatus } = ColbyChartInfo
+    botLoadingStatus, rangeLoadingStatus, fetchBotResWithInput, chatBotLoadingStatus } = ColbyChartInfo
 
     if (!storageKey || !fetchDataRange || !loadingStatus) {
         throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange--4`)
@@ -1602,12 +1596,11 @@ export const ChartProvider = ({ children }) => {
 
     const storageValue = JSON.parse(localStorage.getItem(storageKey))
 
-
     if (!ColbyChartInfo) {
         throw Error('ColbyChartInfo is missing context')
     }
 
-    console.log(`[loadingStatus]`, rangeLoadingStatus, defaultsLoadingStatus, botLoadingStatus)
+    console.log(`[loadingStatus]`, rangeLoadingStatus, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus) 
 
 
     if (rangeLoadingStatus == 'none' || rangeLoadingStatus == 'loading' ) {
@@ -1625,7 +1618,15 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    console.log(`[loadingStatus]`, loadingStatus, defaultsLoadingStatus, botLoadingStatus)
+    if (storageValue && storageValue?.forms?.botMessage) {
+        if (chatBotLoadingStatus == 'none' || chatBotLoadingStatus == 'loading') {
+            if (chatBotLoadingStatus == 'none') fetchBotResWithInput(storageValue.forms.botMessage)
+            return <></> 
+        }
+    }
+
+    console.log(`[loadingStatus]`, loadingStatus, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus)
+    console.log("all lodaded", ColbyChartInfo)
 
     const { chartType, createDatasets, rawDatasets} = ColbyChartInfo
 

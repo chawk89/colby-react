@@ -245,7 +245,7 @@
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
         loadingStatus: 'loading',
-        botLoadingStatus: 'loading',
+        chatBotLoadingStatus: 'loading'
       }
       await fetchDelay()
       const botResponse = {
@@ -319,14 +319,13 @@
                   weight: 'bold'
               },
               text: `Bot Title: ${message}`
-          },
-          message: message
+          }
     }
 
     window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
         botResponse, 
-        botLoadingStatus: 'loaded',
+        chatBotLoadingStatus: 'loaded',
         loadingStatus: 'loaded',
       }
     }
@@ -435,6 +434,7 @@
         rangeLoadingStatus: 'none',
         defaultsLoadingStatus: 'none',
         botLoadingStatus: 'none',
+        chatBotLoadingStatus: 'none',
         fetchDataRange,
         fetchDefaults,
         fetchBotRes, 

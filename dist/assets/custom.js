@@ -130,6 +130,7 @@ async function init() {
         rangeLoadingStatus: 'none',
         defaultsLoadingStatus: 'none',
         botLoadingStatus: 'none',
+        chatBotLoadingStatus: 'none',
         storageKey: `appState-${uuid}-${chartType}`,
     }
     window.onInsertImage = (data) => {
@@ -204,7 +205,7 @@ const fetchBotResWithinput = async (message) => {
     window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
         loadingStatus: 'loading',
-        botLoadingStatus: 'loading'
+        chatBotLoadingStatus: 'loading'
       }
     try {
         const botResponse = await fetchBotResponse(message)
@@ -212,7 +213,7 @@ const fetchBotResWithinput = async (message) => {
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo, 
             botResponse, 
-            botLoadingStatus: 'loaded',
+            chatBotLoadingStatus: 'loaded',
             loadingStatus: 'loaded',
         }
     } catch (ex) {

@@ -1618,10 +1618,10 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    if (lastMessageLoading == 'none' || lastMessageLoading == 'loading') {
-        if (lastMessageLoading == 'none') fetchLastMessageOfScript()
-        return <></>
-    }
+    // if (lastMessageLoading == 'none' || lastMessageLoading == 'loading') {
+    //     if (lastMessageLoading == 'none') fetchLastMessageOfScript()
+    //     return <></>
+    // }
 
     if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
         if (botLoadingStatus == 'none') fetchBotRes()

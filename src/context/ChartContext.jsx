@@ -1593,7 +1593,7 @@ export const ChartProvider = ({ children }) => {
 
     const { storageKey, fetchDataRange, loadingStatus, fetchDefaults,  fetchBotRes, defaultsLoadingStatus, 
     botLoadingStatus, rangeLoadingStatus, fetchBotResWithInput, chatBotLoadingStatus, fetchLastMessageOfScript,
-    lastMessageLoading, } = ColbyChartInfo
+    lastMessageLoading, lastMessage } = ColbyChartInfo
 
     if (!storageKey || !fetchDataRange || !loadingStatus) {
         throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange--4`)
@@ -1623,10 +1623,17 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
-        if (botLoadingStatus == 'none') fetchBotRes() 
-        return <></>
+    if (lastMessage !== 'N/A') {
+        if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
+            if (botLoadingStatus == 'none') fetchBotResWithInput(lastMessage); 
+            return <></>
+        }
     }
+
+    // if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
+        // if (botLoadingStatus == 'none') fetchBotRes() 
+        // return <></>
+    // }
 
     if (storageValue && storageValue?.forms?.botMessage && (chatBotLoadingStatus == 'none' || chatBotLoadingStatus == 'loading')) {
         if (chatBotLoadingStatus == 'none') fetchBotResWithInput(storageValue?.forms?.botMessage ?? '')

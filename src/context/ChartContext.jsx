@@ -1592,7 +1592,8 @@ export const ChartProvider = ({ children }) => {
     if (!ColbyChartInfo) return <></>
 
     const { storageKey, fetchDataRange, loadingStatus, fetchDefaults,  fetchBotRes, defaultsLoadingStatus, 
-    botLoadingStatus, rangeLoadingStatus, fetchBotResWithInput, chatBotLoadingStatus } = ColbyChartInfo
+    botLoadingStatus, rangeLoadingStatus, fetchBotResWithInput, chatBotLoadingStatus, fetchLastMessageOfScript,
+    lastMessageLoading, } = ColbyChartInfo
 
     if (!storageKey || !fetchDataRange || !loadingStatus) {
         throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange--4`)
@@ -1617,6 +1618,11 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
+    if (lastMessageLoading == 'none' || lastMessageLoading === 'loading') {
+        if (lastMessageLoading == 'none') fetchLastMessageOfScript()
+        return <></>
+    }
+
     if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
         if (botLoadingStatus == 'none') fetchBotRes() 
         return <></>
@@ -1627,7 +1633,7 @@ export const ChartProvider = ({ children }) => {
         return <></> 
     }
 
-    console.log(`[loadingStatus]`, loadingStatus, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus)
+    console.log(`[loadingStatus]`, loadingStatus, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus, lastMessageLoading)
     console.log("all lodaded", ColbyChartInfo)
 
     const { chartType, createDatasets, rawDatasets} = ColbyChartInfo

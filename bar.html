@@ -241,6 +241,23 @@
 
     }
 
+    async function fetchLastMessageOfScript() {
+      window.ColbyChartInfo = {
+        ...window.ColbyChartInfo,
+        lastMessageLoading: 'loading'
+      }
+
+      const lastMessage= "can I have a chart about ticket sales with blue data points?"
+
+      window.ColbyChartInfo = {
+        ...window.ColbyChartInfo,
+        lastMessage, 
+        lastMessageLoading: 'loaded'
+      }
+
+
+    }
+
     async function fetchBotResWithInput(message) {
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
@@ -435,10 +452,12 @@
         defaultsLoadingStatus: 'none',
         botLoadingStatus: 'none',
         chatBotLoadingStatus: 'none',
+        lastMessageLoading: 'none',
         fetchDataRange,
         fetchDefaults,
         fetchBotRes, 
         fetchBotResWithInput,  
+        fetchLastMessageOfScript, 
       }
       window.onInsertImage = function (data) {
         console.log('[onInsertImage] window', data)

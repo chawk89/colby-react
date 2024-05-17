@@ -65,6 +65,20 @@ function fetchBotResponseInput(message) {
                 })
                 .getBotResponseWithInput(message); 
         } catch (ex) {
+            rej(`failed fetching app script message ${ex.message}`)
+        }
+    })
+}
+
+function fetchLastMessage() {
+    return new Promise((res, rej) => {
+        try {
+            google.script.run
+                .withSuccessHandler(function (lastMessage) {
+                    res(lastMessage)
+                })
+                .getLastMessage(); 
+        } catch (ex) {
             rej(`failed fetching bot response ${ex.message}`)
         }
     })
@@ -126,11 +140,13 @@ async function init() {
         fetchDefaults,
         fetchBotRes, 
         fetchBotResWithInput,
+        fetchLastMessageOfScript,
         loadingStatus: 'none',
         rangeLoadingStatus: 'none',
         defaultsLoadingStatus: 'none',
         botLoadingStatus: 'none',
         chatBotLoadingStatus: 'none',
+        lastMessageLoading: 'none', 
         storageKey: `appState-${uuid}-${chartType}`,
     }
     window.onInsertImage = (data) => {
@@ -218,6 +234,25 @@ const fetchBotResWithInput = async (message) => {
         }
     } catch (ex) {
         console.log(ex)
+    }
+}
+
+const fetchLastMessageOfScript = async () => {
+    window.ColbyChartInfo = {
+        ...window.ColbyChartInfo,
+        lastMessageLoading: 'loading'
+      }
+    try {
+        const lastMessage = await fetchLastMessage()
+
+        window.ColbyChartInfo = {
+            ...window.ColbyChartInfo,
+            lastMessage, 
+            lastMessageLoading: 'loaded'
+          }
+
+    } catch (ex) {
+        console.log("error: ", ex)
     }
 }
 

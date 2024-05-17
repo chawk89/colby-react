@@ -1618,29 +1618,22 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    if (lastMessageLoading == 'none' || lastMessageLoading === 'loading') {
-        if (lastMessageLoading == 'none') fetchLastMessageOfScript()
+    // if (lastMessageLoading == 'none' || lastMessageLoading === 'loading') {
+    //     if (lastMessageLoading == 'none') fetchLastMessageOfScript()
+    //     return <></>
+    // }
+
+    if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
+        if (botLoadingStatus == 'none') fetchBotRes() 
         return <></>
     }
-
-    if (lastMessage !== 'N/A') {
-        if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
-            if (botLoadingStatus == 'none') fetchBotResWithInput(lastMessage); 
-            return <></>
-        }
-    }
-
-    // if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
-        // if (botLoadingStatus == 'none') fetchBotRes() 
-        // return <></>
-    // }
 
     if (storageValue && storageValue?.forms?.botMessage && (chatBotLoadingStatus == 'none' || chatBotLoadingStatus == 'loading')) {
         if (chatBotLoadingStatus == 'none') fetchBotResWithInput(storageValue?.forms?.botMessage ?? '')
         return <></> 
     }
 
-    console.log(`[loadingStatus]`, loadingStatus, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus, lastMessageLoading)
+    console.log(`[loadingStatus]`, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus, lastMessageLoading)
     console.log("all lodaded", ColbyChartInfo)
 
     const { chartType, createDatasets, rawDatasets} = ColbyChartInfo

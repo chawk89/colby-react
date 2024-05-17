@@ -42,7 +42,7 @@ function App() {
               <div className="w-full xl:w-8/12 px-2">
                 <ColbyChart />
               </div>
-              <div className={botResponse && botResponse.insights ? "w-full xl:w-4/12 px-2" : "w-full xl:w-4/12 px-2 hidden"}>
+              <div className={botResponse && botResponse.insights ? "w-full xl:w-4/12 px-2" : "w-full xl:w-4/12 px-2"}>
                 <button style={{marginTop:'120px', borderRadius: '7px', border:'1px solid rgb(209 213 219)', padding:'4px'}} onClick={() => setToggleBox(!toggleBox)}>{!toggleBox ? 'Get Chat Box' : 'Get Narrative'}</button>
                 {!toggleBox ? (
                   <NarrativeMessage />

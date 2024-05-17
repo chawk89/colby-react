@@ -1623,17 +1623,18 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    // if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
-    //     if (botLoadingStatus == 'none') fetchBotRes() 
-    //     return <></>
+    if (botLoadingStatus == 'none' ) {
+        if (botLoadingStatus == 'none') fetchBotRes()
+        return <></>
+    }
+
+    // if (lastMessageLoading === 'loaded') {
+    //     if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
+    //         if (botLoadingStatus == 'none') fetchBotRes() 
+    //         return <></>
+    //     }
     // }
 
-    console.log(`[loadingStatus] before last message`, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus, lastMessageLoading)
-
-    if (lastMessage && lastMessage !== 'N/A' && (lastMessageLoading ==  'none' || lastMessageLoading == 'loading' )) {
-        if (lastMessageLoading == 'none') fetchBotResWithInput(lastMessage)
-        return <></> 
-    }
     console.log(`[loadingStatus] after last message`, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus, lastMessageLoading)
 
     if (storageValue && storageValue?.forms?.botMessage && (chatBotLoadingStatus == 'none' || chatBotLoadingStatus == 'loading')) {

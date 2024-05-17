@@ -208,7 +208,7 @@ const fetchBotResWithInput = async (message) => {
         chatBotLoadingStatus: 'loading'
       }
     try {
-        const botResponse = await fetchBotResponse(message)
+        const botResponse = await fetchBotResWithInput(message)
 
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo, 

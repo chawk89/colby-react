@@ -154,6 +154,7 @@
     async function fetchBotRes() {
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
+        loadingStatus: 'loading',
         botLoadingStatus: 'loading'
       }
       await fetchDelay()
@@ -235,8 +236,8 @@
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
         botResponse, 
-        botLoadingStatus: 'loaded',
         loadingStatus: 'loaded',
+        botLoadingStatus: 'loaded',
       }
 
     }
@@ -247,7 +248,7 @@
         lastMessageLoading: 'loading'
       }
 
-      const lastMessage= "can I have a chart about ticket sales with blue data points?"
+      const lastMessage = "can I have a chart about ticket sales with blue data points?"
 
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
@@ -261,7 +262,6 @@
     async function fetchBotResWithInput(message) {
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
-        loadingStatus: 'loading',
         chatBotLoadingStatus: 'loading'
       }
       await fetchDelay()
@@ -343,7 +343,6 @@
         ...window.ColbyChartInfo,
         botResponse, 
         chatBotLoadingStatus: 'loaded',
-        loadingStatus: 'loaded',
       }
     }
 
@@ -447,7 +446,7 @@
         createDatasets,
         rotateSheetData, 
         storageKey: `appState-${testKey}`,
-        loadingStatus: 'loading',
+        loadingStatus: 'none',
         rangeLoadingStatus: 'none',
         defaultsLoadingStatus: 'none',
         botLoadingStatus: 'none',

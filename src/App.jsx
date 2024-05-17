@@ -17,9 +17,9 @@ function App() {
   const [isFirstLoading, setIsFirstLoading] = useState(true);
   const loadingStatus = useLoadingStatus()
   const [storageValueExists, clearStorageCache] = useIsStorageValueExists()
-  const [toggleBox, setToggleBox] = useState(false); 
   const ColbyChartInfo = window.ColbyChartInfo; 
   const botResponse = ColbyChartInfo.botResponse ? ColbyChartInfo.botResponse : {}; 
+  const [toggleBox, setToggleBox] = useState(botResponse.insights ? false : true); 
   const methods = useForm();
 
   const handleConfirm = () => {

@@ -55,7 +55,7 @@ function fetchBotResponse() {
     })
 }
 
-function fetchBotResponseWithInput(message) {
+function fetchBotResponseInput(message) {
     return new Promise((res, rej) => {
         try {
             google.script.run
@@ -208,7 +208,7 @@ const fetchBotResWithInput = async (message) => {
         chatBotLoadingStatus: 'loading'
       }
     try {
-        const botResponse = await fetchBotResWithInput(message)
+        const botResponse = await fetchBotResponseInput(message)
 
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo, 

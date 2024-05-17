@@ -1618,15 +1618,23 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    // if (lastMessageLoading == 'none' || lastMessageLoading === 'loading') {
-    //     if (lastMessageLoading == 'none') fetchLastMessageOfScript()
+    if (lastMessageLoading == 'none' || lastMessageLoading === 'loading') {
+        if (lastMessageLoading == 'none') fetchLastMessageOfScript()
+        return <></>
+    }
+
+    // if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
+    //     if (botLoadingStatus == 'none') fetchBotRes() 
     //     return <></>
     // }
 
-    if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
-        if (botLoadingStatus == 'none') fetchBotRes() 
-        return <></>
+    console.log(`[loadingStatus] before last message`, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus, lastMessageLoading)
+
+    if (lastMessage && lastMessage !== 'N/A' && (lastMessageLoading ==  'none' || lastMessageLoading == 'loading' )) {
+        if (lastMessageLoading == 'none') fetchBotResWithInput(lastMessage)
+        return <></> 
     }
+    console.log(`[loadingStatus] after last message`, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus, lastMessageLoading)
 
     if (storageValue && storageValue?.forms?.botMessage && (chatBotLoadingStatus == 'none' || chatBotLoadingStatus == 'loading')) {
         if (chatBotLoadingStatus == 'none') fetchBotResWithInput(storageValue?.forms?.botMessage ?? '')

@@ -125,7 +125,7 @@ async function init() {
         fetchDataRange,
         fetchDefaults,
         fetchBotRes, 
-        fetchBotResWithinput,
+        fetchBotResWithInput,
         loadingStatus: 'none',
         rangeLoadingStatus: 'none',
         defaultsLoadingStatus: 'none',
@@ -201,7 +201,7 @@ const fetchBotRes = async () => {
     }
 }
 
-const fetchBotResWithinput = async (message) => {
+const fetchBotResWithInput = async (message) => {
     window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
         loadingStatus: 'loading',

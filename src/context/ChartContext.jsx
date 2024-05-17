@@ -1623,16 +1623,9 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    if (botLoadingStatus == 'none' ) {
-        if (botLoadingStatus == 'none') fetchBotRes()
-        return <></>
-    }
-
-    // if (lastMessageLoading === 'loaded') {
-    //     if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
-    //         if (botLoadingStatus == 'none') fetchBotRes() 
-    //         return <></>
-    //     }
+    // if (botLoadingStatus == 'none' ) {
+    //     if (botLoadingStatus == 'none') fetchBotRes()
+    //     return <></>
     // }
 
     console.log(`[loadingStatus] after last message`, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus, lastMessageLoading)

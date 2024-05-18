@@ -19,7 +19,7 @@ function App() {
   const [storageValueExists, clearStorageCache] = useIsStorageValueExists()
   const ColbyChartInfo = window.ColbyChartInfo; 
   const botResponse = ColbyChartInfo.botResponse ? ColbyChartInfo.botResponse : {}; 
-  const [toggleBox, setToggleBox] = useState(botResponse.insights ? false : true); 
+  const [toggleBox, setToggleBox] = useState(botResponse.insights ? true : false); 
   const methods = useForm();
 
   const handleConfirm = () => {

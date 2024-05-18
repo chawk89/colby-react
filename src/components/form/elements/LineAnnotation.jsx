@@ -48,7 +48,7 @@ const LineAnnotation = () => {
         />
         {lineEnabled && <div className="w-full grid grid-cols-3 gap-3 my-4 p-2">
             <div className="col-span-3">
-                <h3 className='underline text-2xl uppercase font-bold'> {lineEnabled ? 'New Line' : 'Edit Line'}</h3>
+                <h4 className='w-full text-lg font-bold mb-2 col-span-3'> {lineEnabled ? 'New Line' : 'Edit Line'}</h4>
             </div>
             <div className="col-span-1">
                 <div className="flex items-center">

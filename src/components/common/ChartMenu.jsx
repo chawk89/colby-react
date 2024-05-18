@@ -12,19 +12,19 @@ const ChartMenu = ({ onClick }) => {
                     <hr className="h-px bg-gray-300 border-0"></hr>
                 </li>
                 <li className='relative group'>
-                    <span className="block hover:cursor-pointer px-4 py-2 hover:bg-gray-200 flex justify-between items-center"><span>Line Annotation</span>
-                        <svg className="w-3 h-3 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
+                    <span className="block hover:cursor-pointer px-4 py-2 hover:bg-gray-200 flex justify-between items-center" onClick={(e) => onClick(e, { type: 'line', subtype: 'vertical' })}><span>Line Annotation</span>
+                        {/* <svg className="w-3 h-3 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1"></path>
-                        </svg>
+                        </svg> */}
                     </span>
 
                     <ul className="hidden py-2 group-hover:block translate-x-full top-0 p-0 bg-[#f2f2f2] absolute right-0 text-sm text-gray-700 rounded-lg shadow" aria-labelledby="dropdownDelayButton">
-                        <li className='relative'>
+                        {/* <li className='relative'>
                             <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'line', subtype: 'horizontal' })}>Horizontal</span>
                         </li>
                         <li className='relative'>
                             <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'line', subtype: 'vertical' })}>Vertical</span>
-                        </li>
+                        </li> */}
                     </ul>
                 </li>
                 <li>
@@ -34,13 +34,13 @@ const ChartMenu = ({ onClick }) => {
                     <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'label', subtype: 'label' })}>Label Annotation</span>
                 </li>
                 <li className='relative group'>
-                    <span className="block hover:cursor-pointer px-4 py-2 hover:bg-gray-200 flex justify-between items-center"><span>Arrow Annotation</span>
-                        <svg className="w-3 h-3 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
+                    <span className="block hover:cursor-pointer px-4 py-2 hover:bg-gray-200 flex justify-between items-center" onClick={(e) => onClick(e, { type: 'arrow', subtype: ARROW_LINE_TYPE_GENERAL })}><span>Arrow Annotation</span>
+                        {/* <svg className="w-3 h-3 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1"></path>
-                        </svg>
+                        </svg> */}
                     </span>
-                    <ul className="hidden py-2 group-hover:block translate-x-full top-0 p-0 bg-[#f2f2f2] absolute right-0 text-sm text-gray-700 rounded-lg shadow" aria-labelledby="dropdownDelayButton">
-                        <li className='relative'>
+                    <ul className="hidden py-2 group-hover:block translate-x-full top-0 p-0 bg-[#f2f2f2] absolute right-0 text-sm text-gray-700 rounded-lg shadow" aria-labelledby="dropdownDelayButton" >
+                        {/* <li className='relative'>
                             <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'arrow', subtype: ARROW_LINE_TYPE_GENERAL })}>Global</span>
                         </li>
                         <li className='relative'>
@@ -48,7 +48,7 @@ const ChartMenu = ({ onClick }) => {
                         </li>
                         <li className='relative'>
                             <span className="block px-4 py-2 hover:bg-gray-200 hover:cursor-pointer" onClick={(e) => onClick(e, { type: 'arrow', subtype: ARROW_LINE_TYPE_CAGR })}>CAGR</span>
-                        </li>
+                        </li> */}
                     </ul>
                 </li>
                 <li>

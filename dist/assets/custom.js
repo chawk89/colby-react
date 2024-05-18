@@ -201,6 +201,7 @@ const fetchDefaults = async () => {
 const fetchBotRes = async () => {
     window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
+        loadingStatus: 'loading',
         botLoadingStatus: 'loading'
       }
     try {

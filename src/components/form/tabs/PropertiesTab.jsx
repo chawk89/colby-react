@@ -34,7 +34,7 @@ const PropertiesTab = () => {
     return (
         selected && <Card className="w-full">
             <div className="col-span-3">
-                <h3 className='text-2xl uppercase font-bold'> Edit Properties</h3>
+                <h4 className='w-full text-lg font-bold mb-2 col-span-3'> {`Edit Properties: ${selected.type} Annotation`} </h4>
             </div>
             {annotationSelected.startsWith('line') && <EditLineAnnotation />}
             {annotationSelected.startsWith('box') && <EditBoxAnnotation />}

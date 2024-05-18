@@ -1228,7 +1228,7 @@ const getChartDataObj = (labels, cols) => {
 }
 const initializeState = ({ state, info }) => {
     console.log("initializing?", info)
-    const { chartType, rawDatasets, defaultValues, rotateSheetData, botResponse } = info
+    const { chartType, rawDatasets, defaultValues, rotateSheetData, botResponse, lastMessage } = info
 
     let chartData = rawDatasets
     let defaultChartType = null; 
@@ -1236,7 +1236,9 @@ const initializeState = ({ state, info }) => {
 
     if (defaultValues && botResponse) {
         console.log("bot response 2?", botResponse); 
-
+        if (lastMessage) {
+            state.forms.lastMessage = lastMessage; 
+        }
         const defaultYAxis = botResponse?.defaultYAxis ?? defaultValues.defaultYAxis; 
         const defaultXAxis = botResponse?.defaultXAxis ?? defaultValues.defaultXAxis; 
         const title = botResponse?.title ?? defaultValues.title; 
@@ -1623,7 +1625,7 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    if (lastMessage && lastMessage !== 'N/A') {
+    if (lastMessage && lastMessage !== 'N/A' && (storageValue && storageValue?.forms?.lastMessage !== lastMessage)) {
         if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
             if (botLoadingStatus == 'none') fetchBotRes()
             return <></>

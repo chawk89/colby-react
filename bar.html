@@ -245,7 +245,8 @@
     async function fetchLastMessageOfScript() {
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
-        lastMessageLoading: 'loading'
+        lastMessageLoading: 'loading',
+        loadingStatus: 'loading',
       }
 
       const lastMessage = "can I have a chart about ticket sales with blue data points?"
@@ -253,7 +254,8 @@
       window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
         lastMessage, 
-        lastMessageLoading: 'loaded'
+        lastMessageLoading: 'loaded',
+        loadingStatus: 'loaded',
       }
 
 

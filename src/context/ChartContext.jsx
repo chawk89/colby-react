@@ -1634,7 +1634,7 @@ export const ChartProvider = ({ children }) => {
     }
 
     // conditionally using getBotResponse
-    if (lastMessage && lastMessage !== 'N/A' && (storageValue && storageValue?.forms?.lastMessage !== lastMessage)) {
+    if (lastMessage && lastMessage !== 'N/A') {
         if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
             if (botLoadingStatus == 'none') fetchBotRes()
             return <></>

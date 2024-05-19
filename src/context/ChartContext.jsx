@@ -1625,13 +1625,18 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    if (lastMessage && lastMessage !== 'N/A' && (storageValue && storageValue?.forms?.lastMessage !== lastMessage)) {
+    if (chartType === 'bar') {
         if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
             if (botLoadingStatus == 'none') fetchBotRes()
             return <></>
-        }
-    }
-    
+    }}
+
+    // if (lastMessage && lastMessage !== 'N/A' && (storageValue && storageValue?.forms?.lastMessage !== lastMessage)) {
+        // if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
+        //     if (botLoadingStatus == 'none') fetchBotRes()
+        //     return <></>
+    //     }
+    // }
     console.log(`[loadingStatus] after last message`, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus, lastMessageLoading)
 
     if (storageValue && storageValue?.forms?.botMessage && (chatBotLoadingStatus == 'none' || chatBotLoadingStatus == 'loading')) {

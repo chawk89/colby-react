@@ -165,6 +165,7 @@ const fetchDataRange = async (range) => {
     window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
         rangeLoadingStatus: 'loading',
+        loadingStatus: 'loading',
     }
 
     try {
@@ -173,7 +174,8 @@ const fetchDataRange = async (range) => {
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo,
             rawDatasets: rotateSheetData(sheetData),
-            rangeLoadingStatus: 'loaded'
+            rangeLoadingStatus: 'loaded',
+            loadingStatus: 'loaded',
         }
     } catch (ex) {
         console.log(ex)
@@ -183,7 +185,8 @@ const fetchDataRange = async (range) => {
 const fetchDefaults = async () => {
     window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
-        defaultsLoadingStatus: 'loading'
+        defaultsLoadingStatus: 'loading',
+        loadingStatus: 'loading',
       }
     try {
         const defaultValues = await fetchDefaultValues()
@@ -191,7 +194,8 @@ const fetchDefaults = async () => {
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo,
             defaultValues, 
-            defaultsLoadingStatus: 'loaded'
+            defaultsLoadingStatus: 'loaded',
+            loadingStatus: 'loaded',
         }
     } catch (ex) {
         console.log(ex)
@@ -241,7 +245,8 @@ const fetchBotResWithInput = async (message) => {
 const fetchLastMessageOfScript = async () => {
     window.ColbyChartInfo = {
         ...window.ColbyChartInfo,
-        lastMessageLoading: 'loading'
+        lastMessageLoading: 'loading',
+        loadingStatus: 'loading',
       }
     try {
         const lastMessage = await fetchLastMessage()
@@ -249,7 +254,8 @@ const fetchLastMessageOfScript = async () => {
         window.ColbyChartInfo = {
             ...window.ColbyChartInfo,
             lastMessage, 
-            lastMessageLoading: 'loaded'
+            lastMessageLoading: 'loaded',
+            loadingStatus: 'loaded',
           }
 
     } catch (ex) {

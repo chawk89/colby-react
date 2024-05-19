@@ -3,6 +3,7 @@ import React, { createContext, useEffect, useMemo, useReducer, useRef } from 're
 import { md5 } from 'js-md5';
 import { SELECTED_COLOR, ARROW_CAGR_NORMAL_BORDER_COLOR, calculateCAGR, calculatePercentageDifference, copySimpleObject, getArrowElementId, getDatasetIndex, getDatasetIndexFromKey, getDatasetIndexWithoutXAxis, getLeftElementId, getRightElementId, getXValueForMultiDataset, yOffset, yValue, ARROW_CAGR_NORMAL_BACKGROUND_COLOR, calMaxValueInDatasets, generateAnnotationId, getFontStyle, colorToRGBA, getGradientColor, getBackgroundColor, isNonAxisChart } from '../utils/utils';
 import { ARROW_LINE_TYPE_CAGR, ARROW_LINE_TYPE_CURVE, ARROW_LINE_TYPE_GENERAL, ARROW_LINE_TYPE_GROW_METRIC } from '../components/common/types';
+import ArrowAnnotation from '../components/form/elements/ArrowAnnotation';
 // Initial state
 const initState = {
     forms: {
@@ -1251,7 +1252,7 @@ const initializeState = ({ state, info }) => {
         const labelsColor = botResponse?.labelsColor ?? defaultValues.labelsColor; 
         defaultChartType = botResponse?.chartType ?? defaultValues.chartType; 
 
-        if (rotateSheetData) {
+        if (rotateSheetData && Array.isArray(data)) {
             const sheetData = rotateSheetData(data);
             chartData = sheetData;  
         }

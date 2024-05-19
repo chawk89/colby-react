@@ -19,7 +19,7 @@ function App() {
   const [storageValueExists, clearStorageCache] = useIsStorageValueExists()
   const ColbyChartInfo = window.ColbyChartInfo; 
   const botResponse = ColbyChartInfo.botResponse ? ColbyChartInfo.botResponse : {}; 
-  const [toggleBox, setToggleBox] = useState(botResponse.insights ? false : true); 
+  const [displayChartBox, setDisplayChartBox] = useState(botResponse.insights ? false : true); 
   const methods = useForm();
 
   const handleConfirm = () => {
@@ -43,13 +43,13 @@ function App() {
                 <ColbyChart />
               </div>
               <div className={botResponse && botResponse.insights ? "w-full xl:w-4/12 px-2" : "w-full xl:w-4/12 px-2"}>
-                <button style={{marginTop:'120px', borderRadius: '7px', border:'1px solid rgb(209 213 219)', padding:'4px'}} onClick={() => setToggleBox(!toggleBox)}>{!toggleBox ? 'Get Chat Box' : 'Get Narrative'}</button>
-                {!toggleBox ? (
-                  <NarrativeMessage />
-                ) : (
+                <button style={{marginTop:'120px', borderRadius: '7px', border:'1px solid rgb(209 213 219)', padding:'4px'}} onClick={() => setDisplayChartBox(!displayChartBox)}>{!displayChartBox ? 'Get Chat Box' : 'Get Narrative'}</button>
+                {displayChartBox ? (
                   <FormProvider {...methods}>
                   <ChatBox />
                   </FormProvider>
+                ) : (
+                  <NarrativeMessage />
                 )}
               </div>
             </div>

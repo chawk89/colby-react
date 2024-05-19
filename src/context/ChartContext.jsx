@@ -1628,10 +1628,10 @@ export const ChartProvider = ({ children }) => {
 
     const { chartType, createDatasets, rawDatasets} = ColbyChartInfo
 
-    if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
-        if (botLoadingStatus == 'none') fetchBotRes()
-        return <></>
-    }
+    // if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
+    //     if (botLoadingStatus == 'none') fetchBotRes()
+    //     return <></>
+    // }
 
     // conditionally using getBotResponse
     if (lastMessage && lastMessage !== 'N/A') {

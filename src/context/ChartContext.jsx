@@ -1244,7 +1244,7 @@ const initializeState = ({ state, info }) => {
         const defaultXAxis = botResponse?.defaultXAxis ?? defaultValues.defaultXAxis; 
         const title = botResponse?.title ?? defaultValues.title; 
         const legend = botResponse?.legend ?? defaultValues.legend; 
-        const data = botResponse?.data ?? defaultValues.data; 
+        const data = defaultValues.data; 
         const rowSwitch = botResponse?.rowSwitch ?? defaultValues.rowSwitch; 
         const stacked = botResponse?.stacked ?? defaultValues.stacked; 
         const backgroundColor = botResponse?.backgroundColor ?? defaultValues.backgroundColor; 

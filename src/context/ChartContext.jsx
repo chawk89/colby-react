@@ -1625,7 +1625,9 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    if (chartType === 'bar') {
+    const { chartType, createDatasets, rawDatasets} = ColbyChartInfo
+
+    if (chartType && chartType === 'bar') {
         if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
             if (botLoadingStatus == 'none') fetchBotRes()
             return <></>
@@ -1647,7 +1649,7 @@ export const ChartProvider = ({ children }) => {
     console.log(`[loadingStatus]`, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus, lastMessageLoading)
     console.log("all lodaded", ColbyChartInfo)
 
-    const { chartType, createDatasets, rawDatasets} = ColbyChartInfo
+    // const { chartType, createDatasets, rawDatasets} = ColbyChartInfo
 
     if (!chartType || !createDatasets || !storageKey || !rawDatasets ) {
         throw Error('ColbyChartInfo is insufficient')

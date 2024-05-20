@@ -1347,13 +1347,18 @@ const initializeState = ({ state, info }) => {
         const plottedDatasets = botResponse?.plottedDatasets ?? defaultValues.plottedDatasets;
         const chartTypes = botResponse?.chartTypes ?? defaultValues.chartTypes;
 
+
+
         if (arrowAnnotation.enabled) {
             arrowAnnotation.startDatasetKey = globalDatasets[0];
             arrowAnnotation.endDatasetKey = globalDatasets[1]; 
-        }
+            arrowAnnotation.startDataIndex = String(arrowAnnotation.startDataIndex); 
+            arrowAnnotation.endDataIndex = String(arrowAnnotation.endDataIndex)
+     }
 
         if (emphasisAnnotation.enabled) {
             emphasisAnnotation.datasetKey = globalDatasets[2]; 
+            emphasisAnnotation.dataIndex = String(emphasisAnnotation.dataIndex)
         }
 
         state.forms.annotationTemp.arrow = arrowAnnotation; 

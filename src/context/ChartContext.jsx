@@ -1347,6 +1347,15 @@ const initializeState = ({ state, info }) => {
         const plottedDatasets = botResponse?.plottedDatasets ?? defaultValues.plottedDatasets;
         const chartTypes = botResponse?.chartTypes ?? defaultValues.chartTypes;
 
+        if (arrowAnnotation.enabled) {
+            arrowAnnotation.startDatasetKey = globalDatasets[0];
+            arrowAnnotation.endDatasetKey = globalDatasets[1]; 
+        }
+
+        if (emphasisAnnotation.enabled) {
+            emphasisAnnotation.datasetKey = globalDatasets[2]; 
+        }
+
         state.forms.annotationTemp.arrow = arrowAnnotation; 
         state.forms.annotationTemp.arrow.startDatasetKey = globalDatasets[0]
         state.forms.annotationTemp.arrow.endDatasetKey = globalDatasets[1]

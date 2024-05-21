@@ -1340,6 +1340,7 @@ const initializeState = ({ state, info }) => {
         return obj;
     }, {});
 
+    console.log("Data?", datasets)
     if (defaultValues && botResponse) {
 
         const arrowAnnotation = botResponse?.arrowAnnotation ?? defaultValues.arrowAnnotation;
@@ -1348,22 +1349,43 @@ const initializeState = ({ state, info }) => {
         const chartTypes = botResponse?.chartTypes ?? defaultValues.chartTypes;
 
 
-
-        if (arrowAnnotation.enabled) {
-            arrowAnnotation.startDatasetKey = globalDatasets[0];
-            arrowAnnotation.endDatasetKey = globalDatasets[1]; 
-            arrowAnnotation.startDataIndex = String(arrowAnnotation.startDataIndex); 
-            arrowAnnotation.endDataIndex = String(arrowAnnotation.endDataIndex)
-     }
-
-        if (emphasisAnnotation.enabled) {
-            emphasisAnnotation.datasetKey = globalDatasets[2]; 
-            emphasisAnnotation.dataIndex = String(emphasisAnnotation.dataIndex)
-        }
-
         state.forms.annotationTemp.arrow = arrowAnnotation; 
         state.forms.annotationTemp.arrow.startDatasetKey = globalDatasets[0]
         state.forms.annotationTemp.arrow.endDatasetKey = globalDatasets[1]
+
+        if (arrowAnnotation.enabled) {
+            const defaultArrowAnnotation = {
+                type: "line",
+                id: 'defaultArrow',
+                borderWidth: 2,
+                borderColor: 'rgba(143, 149, 136, 1)',
+                label: {
+                    display: true,
+                    content: arrowAnnotation.label, 
+                },
+                arrowHeads: {
+                    start: {
+                        display: true,
+                        borderColor: 'rgba(143, 149, 136, 1)',
+                    },
+                    end: {
+                        display: true,
+                        borderColor: "rgba(143, 149, 136, 1)",
+                    },
+                },
+                xMin: arrowAnnotation.startDataIndex,
+                xMax: arrowAnnotation.endDataIndex,
+                yMin: datasets[Object.keys(datasets)[1]].values[arrowAnnotation.startDataIndex],
+                yMax: datasets[Object.keys(datasets)[1]].values[arrowAnnotation.endDataIndex],
+            };
+
+            state.options.plugins.annotation.annotations = {
+                'defaultArrow': defaultArrowAnnotation, 
+            }
+           
+        }
+
+        console.log("Data?", datasets)
 
         state.forms.annotationTemp.emphasis = emphasisAnnotation; 
         state.forms.annotationTemp.emphasis.datasetKey = globalDatasets[2]
@@ -1569,8 +1591,6 @@ const updateChartDatasets = (state) => {
 }
 const onAdditionalUpdates = (state, { chartType, chartRef }) => {
     state.chartType = chartType
-
-
     state.onChartRefresh = () => {
         if (!chartRef || !chartRef.current) return;
     }
@@ -1676,7 +1696,6 @@ export const ChartProvider = ({ children }) => {
     const storedState = initializeState({ state: storageValue || initState, info: ColbyChartInfo });
 
     onAdditionalUpdates(storedState, { chartRef, chartType })
-
     const [state, dispatch] = useReducer(reducer, storedState);
 
     const onDownloadChart = () => {

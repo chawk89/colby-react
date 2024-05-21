@@ -147,7 +147,7 @@ async function init() {
         botLoadingStatus: 'none',
         chatBotLoadingStatus: 'none',
         lastMessageLoading: 'none', 
-        storageKey: `appState-${uuid}-${chartType}`,
+        storageKey: `appState-${uuid}-${chartType === 'custom' ? 'bar' : chartType}`,
     }
     window.onInsertImage = (data) => {
         return new Promise((res, rej) => {

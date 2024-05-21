@@ -1233,7 +1233,6 @@ const initializeState = ({ state, info }) => {
 
     let chartData = rawDatasets
     let defaultChartType = null; 
-    console.log("bot response 1?", botResponse); 
 
     if (defaultValues && botResponse) {
         console.log("bot response 2?", botResponse); 
@@ -1630,7 +1629,7 @@ export const ChartProvider = ({ children }) => {
 
     const { storageKey, fetchDataRange, loadingStatus, fetchDefaults,  fetchBotRes, defaultsLoadingStatus, 
     botLoadingStatus, rangeLoadingStatus, fetchBotResWithInput, chatBotLoadingStatus, fetchLastMessageOfScript,
-    lastMessageLoading, lastMessage } = ColbyChartInfo
+    lastMessageLoading, lastMessage, chartType } = ColbyChartInfo
 
     if (!storageKey || !fetchDataRange || !loadingStatus) {
         throw Error(`ColbyChartInfo is insufficient: loadingStatus, storageKey or fetchDataRange--4`)
@@ -1655,25 +1654,27 @@ export const ChartProvider = ({ children }) => {
         return <></>
     }
 
-    if (lastMessageLoading == 'none' || lastMessageLoading == 'loading') {
-        if (lastMessageLoading == 'none') fetchLastMessageOfScript()
-        return <></>
-    }
-
-    const { chartType, createDatasets, rawDatasets} = ColbyChartInfo
-
-    // if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
-    //     if (botLoadingStatus == 'none') fetchBotRes()
+    // if (lastMessageLoading == 'none' || lastMessageLoading == 'loading') {
+    //     if (lastMessageLoading == 'none') fetchLastMessageOfScript()
     //     return <></>
     // }
 
-    // conditionally using getBotResponse
-    if (lastMessage && lastMessage !== 'N/A') {
+    const { createDatasets, rawDatasets} = ColbyChartInfo
+
+    if (chartType === 'custom') {
         if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
             if (botLoadingStatus == 'none') fetchBotRes()
             return <></>
         }
     }
+
+    // conditionally using getBotResponse
+    // if (lastMessage && lastMessage !== 'N/A') {
+    //     if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
+    //         if (botLoadingStatus == 'none') fetchBotRes()
+    //         return <></>
+    //     }
+    // }
 
     console.log(`[loadingStatus] after last message`, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus, lastMessageLoading)
 

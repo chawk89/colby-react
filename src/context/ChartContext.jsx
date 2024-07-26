@@ -1434,7 +1434,7 @@ const initializeState = ({ state, info }) => {
             },
             datasets: globalDatasets
         },
-        chartType: defaultValues ? defaultChartType : chartType 
+        chartType: defaultValues ? defaultChartType : (chartType === 'custom' ? 'bar' : chartType) 
     }
 
     return dataToReturn
@@ -1674,6 +1674,7 @@ export const ChartProvider = ({ children }) => {
     const { createDatasets, rawDatasets} = ColbyChartInfo
 
     if (chartType === 'custom') {
+        console.log("updated chart type?", chartType)
         if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
             if (botLoadingStatus == 'none') fetchBotRes()
             return <></>
@@ -1696,7 +1697,7 @@ export const ChartProvider = ({ children }) => {
     }
 
     console.log(`[loadingStatus]`, defaultsLoadingStatus, botLoadingStatus, chatBotLoadingStatus, lastMessageLoading)
-    console.log("all lodaded", ColbyChartInfo)
+    console.log("all loaded", ColbyChartInfo)
 
     // const { chartType, createDatasets, rawDatasets} = ColbyChartInfo
 

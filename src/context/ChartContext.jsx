@@ -1566,7 +1566,7 @@ const updateChartDatasets = (state) => {
                     barPercentage,
                     fill: fill == 'true',
                     borderWidth: thickness ? +thickness : 1,
-                    type: chartType == 'default' ? parentChartType : chartType,
+                    type: chartType == 'default' ? parentChartType : (chartType === 'custom' ? 'bar' : chartType),
                     pointRadius: pointRadius && +pointRadius > 2 ? pointRadius : 2,
                     pointStyle: markerType ?? 'circle'
                 }

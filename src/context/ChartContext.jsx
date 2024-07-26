@@ -1566,7 +1566,7 @@ const updateChartDatasets = (state) => {
                     barPercentage,
                     fill: fill == 'true',
                     borderWidth: thickness ? +thickness : 1,
-                    type: chartType == 'default' ? parentChartType : (chartType === 'custom' ? 'bar' : chartType),
+                    type: chartType == 'default' ? parentChartType : chartType,
                     pointRadius: pointRadius && +pointRadius > 2 ? pointRadius : 2,
                     pointStyle: markerType ?? 'circle'
                 }
@@ -1662,7 +1662,7 @@ export const ChartProvider = ({ children }) => {
     const { createDatasets, rawDatasets} = ColbyChartInfo
 
     if (chartType === 'custom') {
-        ColbyChartInfo.chartType = 'bar'; 
+        // ColbyChartInfo.chartType = 'bar'; 
         console.log("updated chart type?", chartType)
         if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
             if (botLoadingStatus == 'none') fetchBotRes()

@@ -53,7 +53,7 @@ const LabelAnnotation = () => {
             {labelEnabled &&
                 <div className="w-full grid grid-cols-3 gap-3 my-4 p-2">
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2 shrink-0" htmlFor="index-of-dimension" value="Index of Datasets:" />
                             {/* <TextInput id="index-of-dimension" type="text" placeholder="10" {...register("annotationTemp.label.datasetKey")} /> */}
                             <Select id="annotation-label-anchor" {...register('annotationTemp.label.datasetKey')}>
@@ -62,7 +62,7 @@ const LabelAnnotation = () => {
                         </div>
                     </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2 shrink-0" htmlFor="series-name" value="Series Name:" />
                             <Select id="annotation-label-anchor" {...register('annotationTemp.label.dataIndex')}>
                                 {dataset.map((value, idx) => <option value={idx} key={idx}>{value}</option>)}
@@ -70,7 +70,7 @@ const LabelAnnotation = () => {
                         </div>
                     </div>
                     <div className="col-span-1">
-                            <div className="flex items-center">
+                            <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                                 <Label className="inline mr-2" htmlFor="image-width" value="Image-Width:" />
                                 <Controller
                                     name='annotationTemp.label.imageWidth'
@@ -82,38 +82,38 @@ const LabelAnnotation = () => {
                             </div>
                         </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2 shrink-0" htmlFor="series-name" value="Line Opacity:" />
                             <TextInput id="series-name" type="number" placeholder="0.8" {...register("annotationTemp.label.opacity")} />
                         </div>
                     </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2 shrink-0" htmlFor="series-name" value="Caption:" />
                             <TextInput id="series-name" type="text" placeholder="10" {...register("annotationTemp.label.caption")} />
                         </div>
                     </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2" htmlFor="annotation-label-fontName" value="Font Name:" />
                             <TextInput id="annotation-label-fontName" type="text" placeholder="Lora" {...register('annotationTemp.label.fontName')} />
                         </div>
                     </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2" htmlFor="annotation-label-fontSize" value="Font Size:" />
                             <TextInput id="annotation-label-fontSize" type="number" placeholder="10" {...register('annotationTemp.label.fontSize')} />
                         </div>
                     </div>
                     
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2" htmlFor="annotation-image-url" value="Image Url:" />
                             <TextInput id="annotation-image-url" type="text" placeholder="Image Url" {...register('annotationTemp.label.imageUrl')} />
                         </div>
                     </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2" htmlFor="style-color" value="Color:" />
                             <Controller
                                 name="annotationTemp.label.color"
@@ -125,12 +125,12 @@ const LabelAnnotation = () => {
                         </div>
                     </div>
                         <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Button onClick={handleAddClick}> Add </Button>
                         </div>
                     </div>
                         <div className="col-span-1">
-                            <div className="flex items-center">
+                            <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                                 <Label className="inline mr-2" htmlFor="image-height" value="Image-Height:" />
                                 <Controller
                                     name='annotationTemp.label.imageHeight'

@@ -45,8 +45,8 @@ const BackgroundTab = () => {
                     <div>
                     </div>
                     <div className="w-full  grid grid-cols-3 gap-4">
-                        <div className="col-span-1 mt-4">
-                            <div className="flex items-center h-full">
+                        <div className="col-span-1" >
+                            <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                                 <Label className="inline mr-2 shrink-0" htmlFor="chartType" value="Chart Type:" />
                                 <Select className="w-full" {...register(`datasets.${key}.chartType`)}>
                                     <option value={'default'}>Default</option>
@@ -81,7 +81,7 @@ const BackgroundTab = () => {
                             </div>
                         </div>
                         <div className="col-span-1">
-                            <div className="flex items-center">
+                            <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                                 <Label className="inline mr-2 shrink-0" htmlFor="label-style" value="Gradient:" />
                                 <Select id="label-style" {...register(`datasets.${key}.gradient`)}>
                                     <option value='yes'>Yes</option>

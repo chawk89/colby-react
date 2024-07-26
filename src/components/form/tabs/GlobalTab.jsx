@@ -36,9 +36,9 @@ const GlobalTab = ({ keyLabels }) => {
                 <h3 className="w-full text-xl font-bold mb-2">
                     Main
                 </h3>
-                <div className="w-full grid grid-cols-3 gap-4 px-8">
+                <div className="w-full grid grid-cols-3 gap-4">
                     <div className="col-span-1">
-                        <div className="flex items-center h-full">
+                        <div className="flex items-center h-full" style={{display: 'flex'}}>
                             <Label className="inline mr-2" htmlFor="style-color" value="Background Color:" />
                             <Controller
                                 name="global.bgColor"
@@ -51,7 +51,7 @@ const GlobalTab = ({ keyLabels }) => {
                     </div>
 
                     {!isNonAxis && <div className="col-span-2">
-                        <div className="flex items-center">
+                        <div className="flex items-center " style={{display: 'flex', flexDirection: 'column', justifyContent:'center', alignItems:'flex-start'}}>
                             <Label className="inline mr-2 shrink-0" htmlFor="global stacking" value="Stacked:" />
                             <Select id="global stacking" {...register('global.stacked')}>
                                 <option value='none'>None</option>
@@ -62,11 +62,12 @@ const GlobalTab = ({ keyLabels }) => {
                     </div>}
                     <div className="col-span-1">
                         <div className="flex items-center">
+                        <Label className="inline mr-2" value="Switch rows and columns" />
                             <Controller
                                 name="global.switchRowColumn"
                                 control={control}
                                 render={({ field: { value, onChange } }) => {
-                                    return <ToggleSwitch label="Switch rows and columns" checked={value} onChange={onChange} />
+                                    return <ToggleSwitch checked={value} onChange={onChange} />
                                 }}
                             />
                         </div>
@@ -75,11 +76,12 @@ const GlobalTab = ({ keyLabels }) => {
 
                     <div className="col-span-1">
                         <div className="flex items-center">
+                        <Label className="inline mr-2 shrink-0" value="Show Labels" />
                             <Controller
                                 name="global.showLabels"
                                 control={control}
                                 render={({ field: { value, onChange } }) => {
-                                    return <ToggleSwitch label="Show Labels" checked={value} onChange={onChange} />
+                                    return <ToggleSwitch checked={value} onChange={onChange} />
                                 }}
                             />
                         </div>
@@ -106,8 +108,8 @@ const GlobalTab = ({ keyLabels }) => {
                 </h3>
                 <div className="w-full grid grid-cols-3 gap-4">
                     <div className="col-span-1">
-                        <div className="flex items-center">
-                            <Label className="inline mr-2" htmlFor="title" value="Title:" />
+                        <div className="flex items-center h-full" style={{display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
+                            <Label className="inline mr-2" htmlFor="title" value="Title:"  />
                             <ColbyTextInput
                                 type="text"
                                 control={control}
@@ -117,13 +119,19 @@ const GlobalTab = ({ keyLabels }) => {
                         </div>
                     </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2" htmlFor="titleFont" value="Title Font:" />
                             <TextInput id="titleFont" type="text" placeholder="" control={control} name='global.fontName' />
                         </div>
                     </div>
+                    <div className="col-span-1" >
+                        <div className="flex items-center" style={{display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
+                            <Label className="inline mr-2" htmlFor="style-fontsize" value="Font Size:" />
+                            <TextInput id="style-fontsize" type="text" placeholder="18" {...register('global.fontSize')} />
+                        </div>
+                    </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2 shrink-0" htmlFor="title-style" value="Title Style:" />
                             <Select id="title-style" {...register('global.titleStyle')}>
                                 <option value='normal'>Normal</option>
@@ -131,12 +139,6 @@ const GlobalTab = ({ keyLabels }) => {
                                 <option value='italic'>Italic</option>
                                 <option value='italic-bold'>Italic-Bold</option>
                             </Select>
-                        </div>
-                    </div>
-                    <div className="col-span-1">
-                        <div className="flex items-center">
-                            <Label className="inline mr-2" htmlFor="style-fontsize" value="Font Size:" />
-                            <TextInput id="style-fontsize" type="text" placeholder="18" {...register('global.fontSize')} />
                         </div>
                     </div>
                     <div className="col-span-1">
@@ -157,28 +159,17 @@ const GlobalTab = ({ keyLabels }) => {
                 <h3 className="w-full text-xl font-bold mb-2">
                     Datasets
                 </h3>
-                <div className="w-full grid grid-cols-3 gap-4 px-8">
-
+                <div className="w-full grid grid-cols-3 gap-4">
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2" htmlFor="globalXAxisSelect" value="X-Axis Dataset:" />
                             <Select id="globalXAxisSelect" {...register('global.xAxis')}>
                                 {keyLabels.map(({ key, label }) => <option key={key} value={key}>{label}</option>)}
                             </Select>
                         </div>
                     </div>
-                    <div className="col-span-2">
-                        <div className="flex items-center">
-                            <div className="flex items-center">
-                                <Label className="inline mr-2" htmlFor="plotted-datasets" value="Plotted Datasets:" />
-                                <div className="flex gap-3">
-                                    {keyLabels.map(({ key, label }) => key != xAxis && <div key={key}><Checkbox  {...register(`global.yAxis.${key}`)} /> <Label value={label} /> </div>)}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2" htmlFor="dataRange" value="Data Range:" />
                             <ColbyTextInput
                                 type="text"
@@ -187,6 +178,14 @@ const GlobalTab = ({ keyLabels }) => {
                             />
                         </div>
                     </div>
+                    <div className="col-span-2" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center'}}>
+                            <div className="flex items-center">
+                                <Label className="inline mr-2" htmlFor="plotted-datasets" value="Plotted Datasets:" />
+                                <div className="flex gap-3">
+                                    {keyLabels.map(({ key, label }) => key != xAxis && <div key={key}><Checkbox  {...register(`global.yAxis.${key}`)} /> <Label value={label} /> </div>)}
+                                </div>
+                            </div>
+                    </div>
                 </div>
             </Card>
             <Card className="w-full mt-2">
@@ -194,7 +193,7 @@ const GlobalTab = ({ keyLabels }) => {
                     Legend
                 </h3>
                 <div className="w-full grid grid-cols-3 gap-4 px-8">
-                    <div className="col-span-1">
+                    <div className="col-span-1" >
                         <div className="flex items-center">
                             <Controller
                                 name="global.showLegend"
@@ -206,7 +205,7 @@ const GlobalTab = ({ keyLabels }) => {
                         </div>
                     </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center'}}>
                             <Label className="inline mr-2 shrink-0" htmlFor="legend-pos" value="Legend Position:" />
                             <Select id="legend-pos" {...register('global.legendPosition')}>
                                 <option value='top'>Top</option>

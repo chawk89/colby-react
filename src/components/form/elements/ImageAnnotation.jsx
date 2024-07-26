@@ -48,7 +48,7 @@ const ImageAnnotation  = () => {
             {imageEnabled &&
                 <div className="w-full grid grid-cols-3 gap-3 my-4 p-2">
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2 shrink-0" htmlFor="index-of-dimension" value="Index of Datasets:" />
                             <Select id="annotation-image-anchor" {...register('annotationTemp.image.datasetKey')}>
                                 {keyLabels.map(({ key, label }) => selected[key] ? <option value={key} key={key}>{label}</option> : null)}
@@ -56,7 +56,7 @@ const ImageAnnotation  = () => {
                         </div>
                     </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2 shrink-0" htmlFor="series-name" value="Series Name:" />
                             <Select id="annotation-image-anchor" {...register('annotationTemp.image.dataIndex')}>
                                 {dataset.map((value, idx) => <option value={idx} key={idx}>{value}</option>)}
@@ -64,7 +64,7 @@ const ImageAnnotation  = () => {
                         </div>
                     </div>
                     <div className="col-span-1">
-                            <div className="flex items-center">
+                            <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                                 <Label className="inline mr-2" htmlFor="image-width" value="Image-Width:" />
                                 <Controller
                                     name='annotationTemp.image.imageWidth'
@@ -76,18 +76,18 @@ const ImageAnnotation  = () => {
                             </div>
                         </div>
                     <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Label className="inline mr-2" htmlFor="annotation-image-url" value="Image Url:" />
                             <TextInput id="annotation-image-url" type="text" placeholder="Image Url" {...register('annotationTemp.image.imageUrl')} />
                         </div>
                     </div>
                         <div className="col-span-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Button onClick={handleAddClick}> Add </Button>
                         </div>
                     </div>
                         <div className="col-span-1">
-                            <div className="flex items-center">
+                            <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                                 <Label className="inline mr-2" htmlFor="image-height" value="Image-Height:" />
                                 <Controller
                                     name='annotationTemp.image.imageHeight'

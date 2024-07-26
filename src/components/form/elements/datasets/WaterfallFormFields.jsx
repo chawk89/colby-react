@@ -10,7 +10,7 @@ const WaterfallFormFields = ({ datakey }) => {
   return (
     <>
       <div className="col-span-1 mt-4">
-        <div className="flex items-center h-full">
+        <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
           <Label className="inline mr-2 shrink-0" htmlFor="markertype" value="Marker Type:" />
           <Select className="w-full" {...register(`datasets.${datakey}.markertype`)}>
             <option value={'triangle'}>Triangle</option>

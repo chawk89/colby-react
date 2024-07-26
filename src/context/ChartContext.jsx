@@ -221,6 +221,14 @@ const initState = {
                             height: 30,
                             position: 'center',
                             content: ['DragMe']
+                        },
+                        enter({ element }, event) {
+                            element.label.options.display = true;
+                            return true; // force update
+                        },
+                        leave({ element }, event) {
+                            element.label.options.display = false;
+                            return true;
                         }
                     }
                 }
@@ -470,6 +478,10 @@ const getLineAnnotation = (line, state) => {
         borderColor: isSelected ? SELECTED_COLOR : lineColor,
         borderWidth: isSelected ? +lineThickness + 2 : lineThickness,
         draggable: true,
+        hover: {
+            borderColor: 'blue',
+            borderWidth: 4,
+        }
     };
 
     if (lineStyle == "dashed") {
@@ -1228,7 +1240,7 @@ const getChartDataObj = (labels, cols) => {
     return result
 }
 const initializeState = ({ state, info }) => {
-    console.log("initializing?", info)
+    console.log("initializing?", info, state)
     const { chartType, rawDatasets, defaultValues, rotateSheetData, botResponse, lastMessage } = info
 
     let chartData = rawDatasets

@@ -51,7 +51,7 @@ const LineAnnotation = () => {
                 <h4 className='w-full text-lg font-bold mb-2 col-span-3'> {lineEnabled ? 'New Line' : 'Edit Line'}</h4>
             </div>
             <div className="col-span-1">
-                <div className="flex items-center">
+                <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                     <Label className="inline mr-2" htmlFor="annotationAxisSelect" value="Axis:" />
                     <Select id="annotationAxisSelect" {...register('annotationTemp.line.axis')}>
                         <option value="x">X</option>
@@ -60,7 +60,7 @@ const LineAnnotation = () => {
                 </div>
             </div>
             <div className="col-span-1">
-                <div className="flex items-center">
+                <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                     <Label className="inline mr-2 shrink-0" htmlFor="axis-position" value="Axis Position:" />
                     {
                         axis == 'x' ?
@@ -73,7 +73,7 @@ const LineAnnotation = () => {
                 </div>
             </div>
             <div className="col-span-1">
-                <div className="flex items-center">
+                <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                     <Label className="inline mr-2 shrink-0" htmlFor="anno-linestyle" value="Line Style:" />
                     <Select id="anno-linestyle" {...register("annotationTemp.line.style")} >
                         <option value='none'>None</option>
@@ -83,13 +83,13 @@ const LineAnnotation = () => {
                 </div>
             </div>
             <div className="col-span-1">
-                <div className="flex items-center">
+                <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                     <Label className="inline mr-2 shrink-0" htmlFor="axis-label" value="Label:" />
                     <TextInput id="axis-label" type="text" placeholder="Default Label" {...register("annotationTemp.line.label")} />
                 </div>
             </div>
             <div className="col-span-1">
-                <div className="flex items-center h-full">
+                <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                     <Label className="inline mr-2 shrink-0" htmlFor="anno-linecolor" value="Line Color:" />
                     <Controller
                         name="annotationTemp.line.color"
@@ -101,14 +101,14 @@ const LineAnnotation = () => {
                 </div>
             </div>
             <div className="col-span-1">
-                <div className="flex items-center">
+                <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                     <Label className="inline mr-2 shrink-0" htmlFor="anno-line-thickness" value="Line Thickness:" />
                     <TextInput id="anno-line-thickness" type="text" placeholder="10" {...register("annotationTemp.line.thickness")} />
                 </div>
             </div>
 
             <div className="col-span-3">
-                <div className="flex items-center">
+                <div className="flex items-center" style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                     <Button onClick={handleAddClick}> Add </Button>
                 </div>
             </div>

@@ -23,6 +23,16 @@ import ChartMenu from './common/ChartMenu';
 import { findNearestDataPoint, getDatasetIndexWithoutXAxis } from '../utils/utils';
 import ChartjsPluginStacked100 from "chartjs-plugin-stacked100";
 
+
+class CustomBarController extends BarController {
+    draw() {
+      super.draw();
+    }
+  }
+
+  CustomBarController.id = 'custom'; 
+
+
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -30,6 +40,7 @@ ChartJS.register(
     BarController,
     LineController,
     LineElement,
+    CustomBarController, 
 
     PointElement,
     Title,
@@ -41,7 +52,6 @@ ChartJS.register(
     // ChartjsDraggablePlugin,
     ...registerables
 );
-
 
 const ColbyChart = () => {
     const context = useChartContext()

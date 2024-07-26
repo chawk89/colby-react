@@ -1662,7 +1662,6 @@ export const ChartProvider = ({ children }) => {
     const { createDatasets, rawDatasets} = ColbyChartInfo
 
     if (chartType === 'custom') {
-        // ColbyChartInfo.chartType = 'bar'; 
         console.log("updated chart type?", chartType)
         if (botLoadingStatus == 'none' || botLoadingStatus == 'loading') {
             if (botLoadingStatus == 'none') fetchBotRes()
